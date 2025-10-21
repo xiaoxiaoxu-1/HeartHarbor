@@ -1,0 +1,30 @@
+{
+  "name": "heartharbor",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "npx serve .",
+    "serve": "npx serve . -p 3000",
+    "info": "echo '项目已配置为使用静态服务器运行index.html界面'"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@dcloudio/uni-cli-i18n": "^2.0.2-4070620250821001",
+    "@dcloudio/uni-cli-shared": "^2.0.2-4070620250821001",
+    "@dcloudio/uni-h5": "^2.0.2-4070620250821001",
+    "@dcloudio/uni-migration": "^2.0.2-4070620250821001",
+    "@dcloudio/uni-mp-vue": "^2.0.2-4070620250821001",
+    "@dcloudio/uni-stat": "^2.0.2-4070620250821001",
+    "@dcloudio/uni-template-compiler": "^2.0.2-4070620250821001",
+    "@dcloudio/vue-cli-plugin-uni": "^2.0.2-4070620250821001",
+    "@dcloudio/webpack-uni-pages-loader": "^2.0.2-4070620250821001",
+    "@vue/cli-service": "^5.0.9",
+    "serve": "^14.2.1"
+  },
+  "dependencies": {
+    "vue": "^3.5.22"
+  }
+}
