@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>树洞 - 心屿</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #8EC5FC;
+            --secondary-color: #E0C3FC;
+            --accent-color: #FFB6C1;
+            --treehole-color: #48BB78;
+            --text-color: #333;
+            --light-text: #666;
+            --bg-color: #f9f7fe;
+            --card-bg: #ffffff;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --gradient: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            --treehole-gradient: linear-gradient(135deg, #48BB78, #38A169);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f0f8f4 0%, #e8f5ee 100%);
+            min-height: 100vh;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* 导航栏 */
+        header {
+            background: var(--gradient);
+            padding: 15px 0;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+            font-size: 28px;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 25px;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+        
+        .nav-links a:hover {
+            opacity: 0.8;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-links a.active {
+            background: rgba(255, 255, 255, 0.2);
+            opacity: 1;
+        }
+        
+        /* 主要内容区域 */
+        .treehole-section {
+            padding: 40px 0 80px;
+        }
+        
+        .treehole-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .treehole-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: #2D3748;
+            background: var(--treehole-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .treehole-header p {
+            font-size: 1.1rem;
+            color: var(--light-text);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* 树洞功能区域 */
+        .treehole-container {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 30px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        
+        /* 发布区域 */
+        .post-section {
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .post-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--treehole-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            margin-right: 15px;
+        }
+        
+        .post-info h3 {
+            margin-bottom: 5px;
+            color: #2D3748;
+        }
+        
+        .post-info p {
+            font-size: 0.9rem;
+            color: var(--light-text);
+        }
+        
+        .post-form {
+            margin-bottom: 20px;
+        }
+        
+        .post-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 15px;
+            border: 2px solid #E2E8F0;
+            border-radius: 12px;
+            font-size: 1rem;
+            resize: vertical;
+            transition: all 0.3s;
+            background: #F7FAFC;
+        }
+        
+        .post-textarea:focus {
+            outline: none;
+            border-color: var(--treehole-color);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(72, 187, 120, 0.1);
+        }
+        
+        .post-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+        
+        .mood-selector {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .mood-option {
+            padding: 8px 15px;
+            border: 2px solid #E2E8F0;
+            border-radius: 20px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+        
+        .mood-option:hover {
+            border-color: var(--treehole-color);
+        }
+        
+        .mood-option.active {
+            border-color: var(--treehole-color);
+            background: rgba(72, 187, 120, 0.1);
+        }
+        
+        .post-btn {
+            background: var(--treehole-gradient);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .post-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
+        }
+        
+        .post-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* 帖子列表 */
+        .posts-section {
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        
+        .posts-header {
+            background: var(--treehole-gradient);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .posts-header h3 {
+            margin-bottom: 5px;
+        }
+        
+        .posts-list {
+            max-height: 600px;
+            overflow-y: auto;
+            padding: 0;
+        }
+        
+        .post-item {
+            padding: 20px;
+            border-bottom: 1px solid #E2E8F0;
+            transition: all 0.3s;
+        }
+        
+        .post-item:hover {
+            background: #F7FAFC;
+        }
+        
+        .post-item:last-child {
+            border-bottom: none;
+        }
+        
+        .post-content {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        
+        .post-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: var(--light-text);
+        }
+        
+        .post-mood {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-right: 10px;
+        }
+        
+        .mood-happy { background: rgba(72, 187, 120, 0.1); color: #38A169; }
+        .mood-sad { background: rgba(66, 153, 225, 0.1); color: #3182CE; }
+        .mood-angry { background: rgba(245, 101, 101, 0.1); color: #E53E3E; }
+        .mood-anxious { background: rgba(237, 137, 54, 0.1); color: #DD6B20; }
+        .mood-calm { background: rgba(128, 90, 213, 0.1); color: #805AD5; }
+        
+        .post-actions-small {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .post-action {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--light-text);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .post-action:hover {
+            color: var(--treehole-color);
+        }
+        
+        /* 侧边栏 */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        .sidebar-section {
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            padding: 25px;
+        }
+        
+        .sidebar-section h3 {
+            margin-bottom: 15px;
+            color: var(--treehole-color);
+            display: flex;
+            align-items: center;
+        }
+        
+        .sidebar-section h3 i {
+            margin-right: 8px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: #F7FAFC;
+            border-radius: 12px;
+        }
+        
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--treehole-color);
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--light-text);
+        }
+        
+        .rules-list {
+            list-style: none;
+        }
+        
+        .rules-list li {
+            margin-bottom: 10px;
+            padding-left: 20px;
+            position: relative;
+            font-size: 0.9rem;
+        }
+        
+        .rules-list li:before {
+            content: "•";
+            color: var(--treehole-color);
+            position: absolute;
+            left: 0;
+        }
+        
+        .support-resources {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .resource-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: #F7FAFC;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--text-color);
+            transition: all 0.3s;
+        }
+        
+        .resource-item:hover {
+            background: rgba(72, 187, 120, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .resource-item i {
+            margin-right: 10px;
+            color: var(--treehole-color);
+            font-size: 18px;
+        }
+        
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--light-text);
+        }
+        
+        .empty-state i {
+            font-size: 48px;
+            color: #CBD5E0;
+            margin-bottom: 15px;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .treehole-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                order: -1;
+            }
+            
+            .treehole-header h1 {
+                font-size: 2rem;
+            }
+            
+            .post-actions {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+            }
+            
+            .mood-selector {
+                justify-content: center;
+            }
+        }
+        
+        /* 动画效果 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .post-item {
+            animation: fadeInUp 0.5s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="index.html" class="logo">
+                    <i class="fas fa-heart"></i>
+                    <span>心屿</span>
+                </a>
+                <ul class="nav-links">
+                    <li><a href="index.html">首页</a></li>
+                    <li><a href="ai-companion.html">AI心灵伙伴</a></li>
+                    <li><a href="treehole.html" class="active">树洞</a></li>
+                    <li><a href="knowledge-base.html">咨询库</a></li>
+                    <li><a href="login.html">登录</a></li>
+                    <li><a href="register.html">注册</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="treehole-section">
+        <div class="container">
+            <div class="treehole-header">
+                <h1>心灵树洞</h1>
+                <p>在这里，你可以匿名分享心情、倾诉烦恼，获得温暖的支持和理解</p>
+            </div>
+            
+            <div class="treehole-container">
+                <!-- 主内容区域 -->
+                <div class="main-content">
+                    <!-- 发布区域 -->
+                    <div class="post-section">
+                        <div class="post-header">
+                            <div class="post-avatar">
+                                <i class="fas fa-user-secret"></i>
+                            </div>
+                            <div class="post-info">
+                                <h3>匿名用户</h3>
+                                <p>分享你的心情...</p>
+                            </div>
+                        </div>
+                        
+                        <div class="post-form">
+                            <textarea class="post-textarea" id="postContent" placeholder="今天有什么想分享的吗？无论是快乐还是烦恼，我们都愿意倾听..." maxlength="500"></textarea>
+                            
+                            <div class="post-actions">
+                                <div class="mood-selector">
+                                    <div class="mood-option active" data-mood="happy">
+                                        <i class="fas fa-smile"></i> 开心
+                                    </div>
+                                    <div class="mood-option" data-mood="sad">
+                                        <i class="fas fa-sad-tear"></i> 难过
+                                    </div>
+                                    <div class="mood-option" data-mood="angry">
+                                        <i class="fas fa-angry"></i> 生气
+                                    </div>
+                                    <div class="mood-option" data-mood="anxious">
+                                        <i class="fas fa-flushed"></i> 焦虑
+                                    </div>
+                                    <div class="mood-option" data-mood="calm">
+                                        <i class="fas fa-spa"></i> 平静
+                                    </div>
+                                </div>
+                                
+                                <button class="post-btn" id="postButton">
+                                    <i class="fas fa-paper-plane"></i> 发布
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 帖子列表 -->
+                    <div class="posts-section">
+                        <div class="posts-header">
+                            <h3><i class="fas fa-comments"></i> 最新分享</h3>
+                            <p>来自社区的真实心声</p>
+                        </div>
+                        
+                        <div class="posts-list" id="postsList">
+                            <!-- 示例帖子 -->
+                            <div class="post-item">
+                                <div class="post-content">
+                                    今天考试考得不错，感觉所有的努力都值得了！希望继续保持这种状态，加油！
+                                </div>
+                                <div class="post-meta">
+                                    <div>
+                                        <span class="post-mood mood-happy">
+                                            <i class="fas fa-smile"></i> 开心
+                                        </span>
+                                        <span>匿名用户 • 2小时前</span>
+                                    </div>
+                                    <div class="post-actions-small">
+                                        <div class="post-action">
+                                            <i class="fas fa-heart"></i> 12
+                                        </div>
+                                        <div class="post-action">
+                                            <i class="fas fa-comment"></i> 5
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="post-item">
+                                <div class="post-content">
+                                    最近压力好大，感觉很多事情都处理不过来。希望有人能理解我的感受...
+                                </div>
+                                <div class="post-meta">
+                                    <div>
+                                        <span class="post-mood mood-anxious">
+                                            <i class="fas fa-flushed"></i> 焦虑
+                                        </span>
+                                        <span>匿名用户 • 5小时前</span>
+                                    </div>
+                                    <div class="post-actions-small">
+                                        <div class="post-action">
+                                            <i class="fas fa-heart"></i> 8
+                                        </div>
+                                        <div class="post-action">
+                                            <i class="fas fa-comment"></i> 3
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="post-item">
+                                <div class="post-content">
+                                    感谢树洞这个平台，让我可以倾诉内心的烦恼。看到大家的鼓励真的很温暖！
+                                </div>
+                                <div class="post-meta">
+                                    <div>
+                                        <span class="post-mood mood-calm">
+                                            <i class="fas fa-spa"></i> 平静
+                                        </span>
+                                        <span>匿名用户 • 1天前</span>
+                                    </div>
+                                    <div class="post-actions-small">
+                                        <div class="post-action">
+                                            <i class="fas fa-heart"></i> 25
+                                        </div>
+                                        <div class="post-action">
+                                            <i class="fas fa-comment"></i> 7
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 侧边栏 -->
+                <div class="sidebar">
+                    <div class="sidebar-section">
+                        <h3><i class="fas fa-chart-line"></i> 树洞统计</h3>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-number">1,234</div>
+                                <div class="stat-label">今日分享</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number">5,678</div>
+                                <div class="stat-label">总分享数</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number">89%</div>
+                                <div class="stat-label">积极反馈</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number">24/7</div>
+                                <div class="stat-label">全天开放</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="sidebar-section">
+                        <h3><i class="fas fa-shield-alt"></i> 社区守则</h3>
+                        <ul class="rules-list">
+                            <li>尊重他人，友善交流</li>
+                            <li>保护隐私，匿名分享</li>
+                            <li>禁止人身攻击和歧视</li>
+                            <li>互相支持，传递温暖</li>
+                            <li>遇到困难及时求助</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="sidebar-section">
+                        <h3><i class="fas fa-hands-helping"></i> 支持资源</h3>
+                        <div class="support-resources">
+                            <a href="ai-companion.html" class="resource-item">
+                                <i class="fas fa-robot"></i>
+                                <span>AI心灵伙伴</span>
+                            </a>
+                            <a href="#" class="resource-item">
+                                <i class="fas fa-book"></i>
+                                <span>心理知识库</span>
+                            </a>
+                            <a href="#" class="resource-item">
+                                <i class="fas fa-phone-alt"></i>
+                                <span>紧急求助热线</span>
+                            </a>
+                            <a href="#" class="resource-item">
+                                <i class="fas fa-users"></i>
+                                <span>互助小组</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // DOM元素
+        const postContent = document.getElementById('postContent');
+        const postButton = document.getElementById('postButton');
+        const postsList = document.getElementById('postsList');
+        const moodOptions = document.querySelectorAll('.mood-option');
+        
+        // 当前选中的心情
+        let currentMood = 'happy';
+        
+        // 初始化事件监听
+        function initEventListeners() {
+            // 心情选择
+            moodOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    moodOptions.forEach(opt => opt.classList.remove('active'));
+                    option.classList.add('active');
+                    currentMood = option.dataset.mood;
+                });
+            });
+            
+            // 发布按钮
+            postButton.addEventListener('click', createPost);
+            
+            // 输入框内容变化
+            postContent.addEventListener('input', () => {
+                postButton.disabled = !postContent.value.trim();
+            });
+            
+            // 回车发布
+            postContent.addEventListener('keydown', (e) => {
+                if (e.ctrlKey && e.key === 'Enter') {
+                    createPost();
+                }
+            });
+            
+            // 点赞功能
+            document.addEventListener('click', (e) => {
+                if (e.target.closest('.post-action')) {
+                    const action = e.target.closest('.post-action');
+                    if (action.querySelector('.fa-heart')) {
+                        toggleLike(action);
+                    }
+                }
+            });
+        }
+        
+        // 创建新帖子
+        function createPost() {
+            const content = postContent.value.trim();
+            if (!content) return;
+            
+            // 创建新帖子元素
+            const postElement = document.createElement('div');
+            postElement.className = 'post-item';
+            postElement.innerHTML = `
+                <div class="post-content">
+                    ${content}
+                </div>
+                <div class="post-meta">
+                    <div>
+                        <span class="post-mood mood-${currentMood}">
+                            <i class="fas fa-${getMoodIcon(currentMood)}"></i> ${getMoodText(currentMood)}
+                        </span>
+                        <span>匿名用户 • 刚刚</span>
+                    </div>
+                    <div class="post-actions-small">
+                        <div class="post-action">
+                            <i class="fas fa-heart"></i> 0
+                        </div>
+                        <div class="post-action">
+                            <i class="fas fa-comment"></i> 0
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // 添加到列表顶部
+            postsList.insertBefore(postElement, postsList.firstChild);
+            
+            // 清空输入框
+            postContent.value = '';
+            postButton.disabled = true;
+            
+            // 显示成功提示
+            showNotification('分享成功！你的心声已被树洞接收。');
+            
+            // 更新统计
+            updateStats();
+        }
+        
+        // 切换点赞状态
+        function toggleLike(action) {
+            const heartIcon = action.querySelector('.fa-heart');
+            const likeCount = action.textContent.trim();
+            let count = parseInt(likeCount) || 0;
+            
+            if (heartIcon.classList.contains('fas')) {
+                // 取消点赞
+                heartIcon.className = 'far fa-heart';
+                count = Math.max(0, count - 1);
+            } else {
+                // 点赞
+                heartIcon.className = 'fas fa-heart';
+                count += 1;
+                
+                // 添加点赞动画
+                heartIcon.style.transform = 'scale(1.3)';
+                setTimeout(() => {
+                    heartIcon.style.transform = 'scale(1)';
+                }, 300);
+            }
+            
+            action.innerHTML = `<i class="${heartIcon.className}"></i> ${count}`;
+        }
+        
+        // 获取心情图标
+        function getMoodIcon(mood) {
+            const icons = {
+                happy: 'smile',
+                sad: 'sad-tear',
+                angry: 'angry',
+                anxious: 'flushed',
+                calm: 'spa'
+            };
+            return icons[mood] || 'smile';
+        }
+        
+        // 获取心情文本
+        function getMoodText(mood) {
+            const texts = {
+                happy: '开心',
+                sad: '难过',
+                angry: '生气',
+                anxious: '焦虑',
+                calm: '平静'
+            };
+            return texts[mood] || '开心';
+        }
+        
+        // 显示通知
+        function showNotification(message) {
+            // 创建通知元素
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 100px;
+                right: 20px;
+                background: var(--treehole-gradient);
+                color: white;
+                padding: 15px 20px;
+                border-radius: 10px;
+                box-shadow: var(--shadow);
+                z-index: 1000;
+                animation: slideInRight 0.3s ease-out;
+            `;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // 3秒后自动消失
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.3s ease-in';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+        
+        // 更新统计（模拟）
+        function updateStats() {
+            const todayCount = document.querySelector('.stat-number:first-child');
+            const totalCount = document.querySelector('.stat-number:nth-child(2)');
+            
+            if (todayCount && totalCount) {
+                const today = parseInt(todayCount.textContent.replace(',', '')) + 1;
+                const total = parseInt(totalCount.textContent.replace(',', '')) + 1;
+                
+                todayCount.textContent = today.toLocaleString();
+                totalCount.textContent = total.toLocaleString();
+            }
+        }
+        
+        // 添加CSS动画
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOutRight {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            initEventListeners();
+            postButton.disabled = true;
+        });
+    </script>
+</body>
+</html>

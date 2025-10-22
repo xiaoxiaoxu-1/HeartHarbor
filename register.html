@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>注册 - 心屿</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
             --primary-color: #8EC5FC;
@@ -29,9 +30,80 @@
         body {
             background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
             min-height: 100vh;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* 导航栏 */
+        header {
+            background: var(--gradient);
+            padding: 15px 0;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+            font-size: 28px;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 25px;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+        
+        .nav-links a:hover {
+            opacity: 0.8;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-links a.active {
+            background: rgba(255, 255, 255, 0.2);
+            opacity: 1;
+        }
+        
+        .register-content {
             display: flex;
             align-items: center;
             justify-content: center;
+            min-height: calc(100vh - 80px);
             padding: 20px;
         }
         
@@ -51,7 +123,7 @@
             color: white;
         }
         
-        .logo {
+        .register-logo {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -60,7 +132,7 @@
             margin-bottom: 10px;
         }
         
-        .logo i {
+        .register-logo i {
             margin-right: 10px;
             font-size: 28px;
         }
@@ -96,19 +168,41 @@
         
         .input-group input {
             width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
+            padding: 18px 20px;
+            border: 2px solid #d1d9e6;
+            border-radius: 15px;
             font-size: 1rem;
-            transition: all 0.3s;
-            background: #f8fafc;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            color: #2d3748;
+            box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.05);
+            border-left: 5px solid transparent;
+            font-weight: 500;
         }
         
         .input-group input:focus {
             outline: none;
             border-color: var(--primary-color);
+            border-left-color: var(--primary-color);
             background: white;
-            box-shadow: 0 0 0 3px rgba(142, 197, 252, 0.1);
+            box-shadow: 0 0 0 5px rgba(142, 197, 252, 0.25), 
+                        inset 0 4px 12px rgba(0, 0, 0, 0.05);
+            transform: translateY(-3px);
+            scale: 1.02;
+        }
+        
+        .input-group input::placeholder {
+            color: #a0aec0;
+            font-weight: 400;
+        }
+        
+        .input-group input:valid {
+            border-color: #48bb78;
+        }
+        
+        .input-group input:invalid:not(:placeholder-shown) {
+            border-color: #f56565;
         }
         
         .input-group i {
@@ -312,9 +406,29 @@
     </style>
 </head>
 <body>
-    <div class="register-container">
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="index.html" class="logo">
+                    <i class="fas fa-heart"></i>
+                    <span>心屿</span>
+                </a>
+                <ul class="nav-links">
+                    <li><a href="index.html">首页</a></li>
+                    <li><a href="ai-companion.html">AI心灵伙伴</a></li>
+                    <li><a href="treehole.html">树洞</a></li>
+                    <li><a href="knowledge-base.html">咨询库</a></li>
+                    <li><a href="login.html">登录</a></li>
+                    <li><a href="register.html" class="active">注册</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="register-content">
+        <div class="register-container">
         <div class="register-header">
-            <div class="logo">
+            <div class="register-logo">
                 <i class="fas fa-heart"></i>
                 <span>心屿</span>
             </div>
@@ -395,14 +509,36 @@
             </a>
         </div>
     </div>
+    </div>
 
+    <script src="supabase-config.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
             const registerForm = document.querySelector('.register-form');
+            const registerButton = document.querySelector('.btn-register');
             const passwordInput = document.getElementById('password');
             const confirmPasswordInput = document.getElementById('confirm-password');
             const strengthText = document.getElementById('strength-text');
             const strengthFill = document.getElementById('strength-fill');
+            
+            // 检查用户是否已登录
+            try {
+                // 等待服务对象完全初始化
+                if (!window.HeartHarborServices) {
+                    console.log('等待服务初始化...');
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
+                
+                const { data: { user } } = await window.HeartHarborServices.supabaseClient.auth.getUser();
+                if (user) {
+                    // 用户已登录，跳转到首页
+                    window.location.href = 'index.html';
+                    return;
+                }
+            } catch (error) {
+                console.log('检查登录状态失败:', error);
+                // 继续注册流程
+            }
             
             // 密码强度检测
             passwordInput.addEventListener('input', function() {
@@ -441,7 +577,7 @@
                 }
             });
             
-            registerForm.addEventListener('submit', function(e) {
+            registerForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
                 const username = document.getElementById('username').value;
@@ -452,36 +588,138 @@
                 
                 // 表单验证
                 if (!username || !email || !password || !confirmPassword) {
-                    alert('请填写完整的注册信息');
+                    showMessage('请填写完整的注册信息', 'error');
+                    return;
+                }
+                
+                if (!isValidEmail(email)) {
+                    showMessage('请输入有效的邮箱地址', 'error');
                     return;
                 }
                 
                 if (password !== confirmPassword) {
-                    alert('两次输入的密码不一致');
+                    showMessage('两次输入的密码不一致', 'error');
+                    return;
+                }
+                
+                if (password.length < 6) {
+                    showMessage('密码长度至少为6位', 'error');
                     return;
                 }
                 
                 if (!agreeTerms) {
-                    alert('请同意服务条款和隐私政策');
+                    showMessage('请同意服务条款和隐私政策', 'error');
                     return;
                 }
                 
-                // 模拟注册成功
-                alert('注册成功！欢迎加入心屿社区。');
-                window.location.href = 'login.html';
+                // 禁用注册按钮，显示加载状态
+                registerButton.disabled = true;
+                registerButton.textContent = '注册中...';
+                
+                try {
+                    // 使用Supabase进行注册
+                    const result = await window.HeartHarborServices.AuthService.register(email, password, username);
+                    
+                    if (result.success) {
+                        showMessage('注册成功！已自动登录，欢迎加入心屿社区。', 'success');
+                        
+                        // 延迟跳转，让用户看到成功消息
+                        setTimeout(() => {
+                            window.location.href = 'index.html';
+                        }, 2000);
+                    } else {
+                        showMessage(result.error || '注册失败，请重试', 'error');
+                        registerButton.disabled = false;
+                        registerButton.textContent = '注册账户';
+                    }
+                } catch (error) {
+                    console.error('注册错误:', error);
+                    showMessage('注册失败，请检查网络连接', 'error');
+                    registerButton.disabled = false;
+                    registerButton.textContent = '注册账户';
+                }
             });
             
             // 社交注册按钮点击事件
             const socialButtons = document.querySelectorAll('.social-btn');
             socialButtons.forEach(button => {
                 button.addEventListener('click', function() {
-                    if (this.classList.contains('wechat')) {
-                        alert('微信注册功能正在开发中...');
-                    } else if (this.classList.contains('qq')) {
-                        alert('QQ注册功能正在开发中...');
-                    }
+                    const platform = this.classList.contains('wechat') ? '微信' : 'QQ';
+                    showMessage(`${platform}注册功能正在开发中，敬请期待！`, 'info');
                 });
             });
+            
+            // 显示消息函数
+            function showMessage(message, type = 'info') {
+                // 移除现有的消息
+                const existingMessage = document.querySelector('.message-toast');
+                if (existingMessage) {
+                    existingMessage.remove();
+                }
+                
+                // 创建消息元素
+                const messageEl = document.createElement('div');
+                messageEl.className = `message-toast message-${type}`;
+                messageEl.innerHTML = `
+                    <div class="message-content">
+                        <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
+                        <span>${message}</span>
+                    </div>
+                `;
+                
+                // 添加样式
+                messageEl.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: ${type === 'success' ? '#48bb78' : type === 'error' ? '#f56565' : '#4299e1'};
+                    color: white;
+                    padding: 15px 20px;
+                    border-radius: 10px;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                    z-index: 1000;
+                    animation: slideIn 0.3s ease-out;
+                    max-width: 300px;
+                `;
+                
+                // 添加动画样式
+                const style = document.createElement('style');
+                style.textContent = `
+                    @keyframes slideIn {
+                        from { transform: translateX(100%); opacity: 0; }
+                        to { transform: translateX(0); opacity: 1; }
+                    }
+                    @keyframes slideOut {
+                        from { transform: translateX(0); opacity: 1; }
+                        to { transform: translateX(100%); opacity: 0; }
+                    }
+                    .message-content {
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                    }
+                    .message-content i {
+                        font-size: 18px;
+                    }
+                `;
+                document.head.appendChild(style);
+                
+                document.body.appendChild(messageEl);
+                
+                // 3秒后自动移除
+                setTimeout(() => {
+                    if (messageEl.parentNode) {
+                        messageEl.style.animation = 'slideOut 0.3s ease-in forwards';
+                        setTimeout(() => messageEl.remove(), 300);
+                    }
+                }, 3000);
+            }
+            
+            // 邮箱验证函数
+            function isValidEmail(email) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return emailRegex.test(email);
+            }
         });
     </script>
 </body>

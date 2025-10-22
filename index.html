@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>心屿 - 校园匿名心理支持平台</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
     <style>
         :root {
             --primary-color: #8EC5FC;
@@ -115,6 +117,81 @@
         .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        /* 用户菜单样式 */
+        .user-menu {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+        }
+        
+        .user-info:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 8px;
+            color: var(--primary-color);
+        }
+        
+        .user-name {
+            margin-right: 8px;
+            font-weight: 500;
+        }
+        
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            min-width: 180px;
+            padding: 8px 0;
+            display: none;
+            z-index: 1000;
+        }
+        
+        .user-menu:hover .dropdown-menu {
+            display: block;
+        }
+        
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        
+        .dropdown-item:hover {
+            background-color: #f7fafc;
+        }
+        
+        .dropdown-item i {
+            margin-right: 8px;
+            width: 16px;
+            text-align: center;
         }
         
         /* 主要内容区域 */
@@ -567,14 +644,37 @@
                 </div>
                 <ul class="nav-links">
                     <li><a href="#features">功能</a></li>
-                    <li><a href="#ai-companion">AI心灵伙伴</a></li>
-                    <li><a href="#treehole">树洞</a></li>
-                    <li><a href="#resources">资源</a></li>
+                    <li><a href="ai-companion.html">AI心灵伙伴</a></li>
+                    <li><a href="treehole.html">树洞</a></li>
+                    <li><a href="knowledge-base.html">咨询库</a></li>
                     <li><a href="#about">关于我们</a></li>
                 </ul>
-                <div class="auth-buttons">
+                <div class="auth-buttons" id="auth-buttons">
                     <a href="login.html" class="btn btn-login">登录</a>
                     <a href="register.html" class="btn btn-register">注册</a>
+                </div>
+                <div class="user-menu" id="user-menu" style="display: none;">
+                    <div class="user-info">
+                        <div class="user-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <span class="user-name" id="user-name">用户</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="dropdown-menu">
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-user"></i>
+                            个人中心
+                        </a>
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-cog"></i>
+                            设置
+                        </a>
+                        <a href="#" class="dropdown-item" id="logout-btn">
+                            <i class="fas fa-sign-out-alt"></i>
+                            退出登录
+                        </a>
+                    </div>
                 </div>
             </nav>
         </div>
@@ -873,8 +973,175 @@
     </footer>
 
     <script>
+        // 用户状态管理
+        let currentUser = null;
+        
+        // 初始化用户状态
+        async function initUserState() {
+            try {
+                const { data: { user } } = await HeartHarborServices.supabaseClient.auth.getUser();
+                
+                if (user) {
+                    // 用户已登录
+                    currentUser = user;
+                    showUserMenu(user);
+                    
+                    // 获取用户详细信息
+                    const { data: userData, error } = await HeartHarborServices.supabaseClient
+                        .from('users')
+                        .select('username, full_name')
+                        .eq('id', user.id)
+                        .single();
+                    
+                    if (userData && !error) {
+                        updateUserInfo(userData);
+                    }
+                } else {
+                    // 用户未登录
+                    showAuthButtons();
+                }
+            } catch (error) {
+                console.error('初始化用户状态错误:', error);
+                showAuthButtons();
+            }
+        }
+        
+        // 显示用户菜单
+        function showUserMenu(user) {
+            const authButtons = document.getElementById('auth-buttons');
+            const userMenu = document.getElementById('user-menu');
+            
+            if (authButtons) authButtons.style.display = 'none';
+            if (userMenu) userMenu.style.display = 'flex';
+        }
+        
+        // 显示登录注册按钮
+        function showAuthButtons() {
+            const authButtons = document.getElementById('auth-buttons');
+            const userMenu = document.getElementById('user-menu');
+            
+            if (authButtons) authButtons.style.display = 'flex';
+            if (userMenu) userMenu.style.display = 'none';
+        }
+        
+        // 更新用户信息
+        function updateUserInfo(userData) {
+            const userNameElement = document.getElementById('user-name');
+            if (userNameElement && userData.username) {
+                userNameElement.textContent = userData.username;
+            }
+        }
+        
+        // 退出登录
+        async function logout() {
+            try {
+                const result = await HeartHarborServices.AuthService.logout();
+                if (result.success) {
+                    showMessage('已成功退出登录', 'success');
+                    currentUser = null;
+                    showAuthButtons();
+                    
+                    // 延迟刷新页面
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    showMessage('退出登录失败，请重试', 'error');
+                }
+            } catch (error) {
+                console.error('退出登录错误:', error);
+                showMessage('退出登录失败，请重试', 'error');
+            }
+        }
+        
+        // 显示消息函数
+        function showMessage(message, type = 'info') {
+            // 移除现有的消息
+            const existingMessage = document.querySelector('.global-message');
+            if (existingMessage) {
+                existingMessage.remove();
+            }
+            
+            // 创建新消息
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `global-message global-message-${type}`;
+            messageDiv.textContent = message;
+            
+            // 添加样式
+            messageDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 12px 20px;
+                border-radius: 8px;
+                color: white;
+                font-weight: 500;
+                z-index: 1000;
+                animation: slideIn 0.3s ease-out;
+                max-width: 300px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            `;
+            
+            // 根据类型设置背景色
+            const colors = {
+                success: '#48BB78',
+                error: '#F56565',
+                info: '#4299E1',
+                warning: '#ED8936'
+            };
+            messageDiv.style.background = colors[type] || colors.info;
+            
+            document.body.appendChild(messageDiv);
+            
+            // 3秒后自动消失
+            setTimeout(() => {
+                if (messageDiv.parentNode) {
+                    messageDiv.style.animation = 'slideOut 0.3s ease-in';
+                    setTimeout(() => messageDiv.remove(), 300);
+                }
+            }, 3000);
+        }
+        
+        // 添加动画样式
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            
+            @keyframes slideOut {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+        
         // AI虚拟人交互功能
         document.addEventListener('DOMContentLoaded', function() {
+            // 初始化用户状态
+            initUserState();
+            
+            // 退出登录按钮事件
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    logout();
+                });
+            }
             // 角色选择
             const roleOptions = document.querySelectorAll('.role-option');
             const aiName = document.getElementById('ai-name');
