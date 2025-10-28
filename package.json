@@ -25,6 +25,7 @@
     "serve": "^14.2.1"
   },
   "dependencies": {
+    "live2d-widget": "^3.1.4",
     "vue": "^3.5.22"
   }
 }
