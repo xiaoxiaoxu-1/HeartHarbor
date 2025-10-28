@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI心灵伙伴 - 心屿</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.38.0/dist/umd/supabase.min.js"></script>
     <style>
         :root {
             --primary-color: #8EC5FC;
@@ -40,14 +41,16 @@
             padding: 0 20px;
         }
         
-        /* 导航栏 */
+        /* 统一状态栏/导航栏 */
         header {
             background: var(--gradient);
             padding: 15px 0;
             box-shadow: var(--shadow);
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
         
         .navbar {
@@ -97,6 +100,105 @@
         .nav-links a.active {
             background: rgba(255, 255, 255, 0.2);
             opacity: 1;
+        }
+        
+        .auth-buttons {
+            display: flex;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn-login {
+            background: transparent;
+            color: white;
+            border: 1px solid white;
+            margin-right: 10px;
+        }
+        
+        .btn-register {
+            background: white;
+            color: var(--primary-color);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        /* 用户菜单样式 */
+        .user-menu {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+        }
+        
+        .user-info:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 8px;
+            color: var(--primary-color);
+        }
+        
+        .user-name {
+            margin-right: 8px;
+            font-weight: 500;
+        }
+        
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            min-width: 180px;
+            padding: 8px 0;
+            display: none;
+            z-index: 1000;
+        }
+        
+        .user-menu:hover .dropdown-menu {
+            display: block;
+        }
+        
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        
+        .dropdown-item:hover {
+            background-color: #f7fafc;
         }
         
         /* 主要内容区域 */
@@ -427,6 +529,64 @@
             background: rgba(93, 139, 244, 0.05);
         }
         
+        /* 语音交互样式 */
+        .voice-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .voice-btn {
+            flex: 1;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            color: var(--light-text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        
+        .voice-btn:hover {
+            border-color: var(--ai-color);
+            color: var(--ai-color);
+        }
+        
+        .voice-btn.recording {
+            background: #fee2e2;
+            border-color: #ef4444;
+            color: #dc2626;
+            animation: pulse 1.5s infinite;
+        }
+        
+        .voice-btn.listening {
+            background: #dbeafe;
+            border-color: #3b82f6;
+            color: #1d4ed8;
+        }
+        
+        .voice-visualizer {
+            height: 4px;
+            background: #e2e8f0;
+            border-radius: 2px;
+            margin-top: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .voice-level {
+            height: 100%;
+            background: var(--ai-color);
+            width: 0%;
+            transition: width 0.1s;
+            border-radius: 2px;
+        }
+        
         /* 功能按钮 */
         .action-buttons {
             display: flex;
@@ -449,6 +609,35 @@
         .action-btn:hover {
             border-color: var(--ai-color);
             color: var(--ai-color);
+        }
+        
+        /* 语音选择器样式 */
+        .voice-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .voice-select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            background: white;
+            font-size: 0.9rem;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.3s;
+            outline: none;
+        }
+        
+        .voice-select:focus {
+            border-color: var(--ai-color);
+            box-shadow: 0 0 0 3px rgba(93, 139, 244, 0.1);
+        }
+        
+        .voice-select:hover {
+            border-color: var(--ai-color);
         }
         
         /* 响应式设计 */
@@ -518,9 +707,34 @@
                     <li><a href="ai-companion.html" class="active">AI心灵伙伴</a></li>
                     <li><a href="treehole.html">树洞</a></li>
                     <li><a href="knowledge-base.html">咨询库</a></li>
-                    <li><a href="login.html">登录</a></li>
-                    <li><a href="register.html">注册</a></li>
                 </ul>
+                <div class="auth-buttons" id="auth-buttons">
+                    <a href="login.html" class="btn btn-login">登录</a>
+                    <a href="register.html" class="btn btn-register">注册</a>
+                </div>
+                <div class="user-menu" id="user-menu" style="display: none;">
+                    <div class="user-info">
+                        <div class="user-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <span class="user-name" id="user-name">用户</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="dropdown-menu">
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-user"></i>
+                            个人中心
+                        </a>
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-cog"></i>
+                            设置
+                        </a>
+                        <a href="#" class="dropdown-item" id="logout-btn">
+                            <i class="fas fa-sign-out-alt"></i>
+                            退出登录
+                        </a>
+                    </div>
+                </div>
             </nav>
         </div>
     </header>
@@ -571,6 +785,12 @@
                             <button class="send-btn" id="sendButton">
                                 <i class="fas fa-paper-plane"></i>
                             </button>
+                            <button class="send-btn" id="voiceButton" title="语音输入">
+                                <i class="fas fa-microphone"></i>
+                            </button>
+                        </div>
+                        <div class="voice-visualizer" id="voiceVisualizer" style="display: none;">
+                            <div class="voice-level" id="voiceLevel"></div>
                         </div>
                     </div>
                 </div>
@@ -587,14 +807,6 @@
                             <div class="role-option" data-role="counselor">
                                 <i class="fas fa-user-md"></i>
                                 专业顾问
-                            </div>
-                            <div class="role-option" data-role="friend">
-                                <i class="fas fa-user-friends"></i>
-                                知心朋友
-                            </div>
-                            <div class="role-option" data-role="mentor">
-                                <i class="fas fa-graduation-cap"></i>
-                                人生导师
                             </div>
                         </div>
                     </div>
@@ -622,25 +834,23 @@
                     </div>
                     
                     <div class="control-section">
-                        <h4><i class="fas fa-bolt"></i> 快捷操作</h4>
-                        <div class="quick-actions">
-                            <div class="quick-action" data-action="stress">
-                                <i class="fas fa-cloud-sun"></i>
-                                压力缓解指导
-                            </div>
-                            <div class="quick-action" data-action="sleep">
-                                <i class="fas fa-moon"></i>
-                                睡眠改善建议
-                            </div>
-                            <div class="quick-action" data-action="mood">
-                                <i class="fas fa-heartbeat"></i>
-                                情绪调节技巧
-                            </div>
-                            <div class="quick-action" data-action="relax">
-                                <i class="fas fa-spa"></i>
-                                放松练习指导
-                            </div>
+                        <h4><i class="fas fa-voice"></i> 语音选择</h4>
+                        <div class="voice-selector" id="voiceSelector">
+                            <select class="voice-select" id="voiceSelect">
+                                <option value="auto">自动选择最佳语音</option>
+                            </select>
                         </div>
+                    </div>
+                    
+
+                    
+                    <div class="voice-controls">
+                        <button class="voice-btn" id="startVoiceInput">
+                            <i class="fas fa-microphone"></i> 开始语音输入
+                        </button>
+                        <button class="voice-btn" id="toggleVoiceOutput">
+                            <i class="fas fa-volume-up"></i> 语音输出
+                        </button>
                     </div>
                     
                     <div class="action-buttons">
@@ -656,6 +866,8 @@
         </div>
     </section>
 
+    <script src="supabase-config.js"></script>
+    <script src="user-state.js"></script>
     <script>
         // 模拟AI回复数据
         const aiResponses = {
@@ -689,25 +901,195 @@
             ]
         };
 
-        // 快捷操作对应的回复
-        const quickActionResponses = {
-            stress: "压力管理很重要，我们可以尝试一些简单的放松技巧：深呼吸练习、渐进式肌肉放松，或者短时间的冥想。",
-            sleep: "改善睡眠质量可以从建立规律的作息开始，避免睡前使用电子设备，保持卧室环境舒适。",
-            mood: "情绪调节可以尝试：写情绪日记、进行正念练习、与信任的人交流，或者参与喜欢的活动。",
-            relax: "放松练习：找个安静的地方，深呼吸5次，每次吸气4秒，屏息2秒，呼气6秒。重复几次。"
-        };
+
 
         // DOM元素
         const chatBody = document.getElementById('chatBody');
         const messageInput = document.getElementById('messageInput');
         const sendButton = document.getElementById('sendButton');
+        const voiceButton = document.getElementById('voiceButton');
+        const startVoiceInputButton = document.getElementById('startVoiceInput');
+        const toggleVoiceOutputButton = document.getElementById('toggleVoiceOutput');
+        const voiceVisualizer = document.getElementById('voiceVisualizer');
+        const voiceLevel = document.getElementById('voiceLevel');
         const clearChatButton = document.getElementById('clearChat');
         const exportChatButton = document.getElementById('exportChat');
+        const voiceSelect = document.getElementById('voiceSelect');
         
         // 当前设置
         let currentRole = 'companion';
         let currentMood = 'warm';
+        let currentVoice = null;
+        
+        // Dify聊天模式配置
+        const DIFY_CONFIG = {
+            // Dify API配置
+            apiKey: "app-VlvTWUWxlfDZhLgTIVuGj22t", // 您的Dify API密钥
+            baseUrl: "https://dify.aipfuture.com/v1", // Dify API基础URL
+            
+            // 聊天模式配置
+            chatEndpoint: "/chat-messages", // Dify聊天模式端点
+            
+            // 图片处理配置（暂时留空）
+            imageWorkflowId: "", 
+            
+            // 通用配置
+            temperature: 0.7,
+            max_tokens: 1000,
+            
+            // 图片相关配置
+            imageSize: "1024x1024", // 图片尺寸
+            imageQuality: "standard", // 图片质量
+            imageStyle: "vivid" // 图片风格
+        };
+        
+        // 心理支持角色配置
+        const ROLE_PROFILES = {
+            companion: {
+                systemPrompt: `你是一个温暖贴心的心理陪伴助手，擅长倾听和提供情感支持。
+                请用亲切、温和的语气回复用户，给予积极的心理引导。
+                避免使用专业术语，用通俗易懂的语言交流。
+                当用户表达负面情绪时，先共情再提供建议。
+                你的目标是提供情感陪伴和日常心理支持。`
+            },
+            counselor: {
+                systemPrompt: `你是一个专业的心理咨询师，具备心理学专业知识。
+                请用专业、理性的语气提供心理支持和建议。
+                可以适当引用心理学概念，但要解释清楚。
+                注重问题的分析和解决方案的提供。
+                你的目标是提供专业的心理咨询和问题解决方案。`
+            }
+        };
+        
+        // 语音交互状态
+        let isRecording = false;
+        let isVoiceOutputEnabled = true;
+        let recognition = null;
+        let speechSynthesis = window.speechSynthesis;
+        let currentUtterance = null;
 
+        // 初始化语音选择器
+        function initVoiceSelector() {
+            // 等待语音列表加载完成
+            if (speechSynthesis.getVoices().length === 0) {
+                speechSynthesis.addEventListener('voiceschanged', function() {
+                    populateVoiceList();
+                    // 移除事件监听，避免重复触发
+                    speechSynthesis.removeEventListener('voiceschanged', arguments.callee);
+                });
+            } else {
+                populateVoiceList();
+            }
+            
+            // 语音选择事件
+            voiceSelect.addEventListener('change', function() {
+                const selectedVoiceName = this.value;
+                console.log('用户选择语音:', selectedVoiceName);
+                
+                if (selectedVoiceName === 'auto') {
+                    currentVoice = null;
+                    console.log('切换到自动选择模式');
+                } else {
+                    const voices = speechSynthesis.getVoices();
+                    const foundVoice = voices.find(voice => voice.name === selectedVoiceName);
+                    if (foundVoice) {
+                        currentVoice = foundVoice;
+                        console.log('成功切换到语音:', currentVoice.name);
+                    } else {
+                        console.error('找不到选择的语音:', selectedVoiceName);
+                        currentVoice = null;
+                    }
+                }
+                
+                // 立即测试新语音
+                testVoiceSelection();
+            });
+        }
+        
+        // 测试语音选择
+        function testVoiceSelection() {
+            if (isVoiceOutputEnabled && speechSynthesis) {
+                const testMessage = '语音切换测试成功';
+                const testUtterance = new SpeechSynthesisUtterance(testMessage);
+                testUtterance.lang = 'zh-CN';
+                testUtterance.rate = 0.9;
+                testUtterance.volume = 0.5; // 降低测试音量
+                
+                if (currentVoice) {
+                    testUtterance.voice = currentVoice;
+                    console.log('使用自定义语音:', currentVoice.name);
+                } else {
+                    setDefaultVoice(testUtterance, speechSynthesis.getVoices());
+                    console.log('使用默认语音');
+                }
+                
+                speechSynthesis.speak(testUtterance);
+            }
+        }
+        
+        // 填充语音列表（只保留中文语音）
+        function populateVoiceList() {
+            const voices = speechSynthesis.getVoices();
+            
+            // 清空现有选项（保留自动选择）
+            while (voiceSelect.options.length > 1) {
+                voiceSelect.remove(1);
+            }
+            
+            // 检查是否有可用语音
+            if (voices.length === 0) {
+                console.warn('没有检测到可用语音');
+                const option = document.createElement('option');
+                option.value = 'none';
+                option.textContent = '未检测到语音引擎';
+                option.disabled = true;
+                voiceSelect.appendChild(option);
+                return;
+            }
+            
+            console.log('检测到语音列表:', voices.map(v => `${v.name} (${v.lang})`));
+            
+            // 只保留中文语音
+            const chineseVoices = voices.filter(voice => 
+                voice.lang.includes('zh') || voice.lang.includes('CN')
+            );
+            
+            if (chineseVoices.length > 0) {
+                console.log('找到中文语音:', chineseVoices.map(v => `${v.name} (${v.lang})`));
+                
+                // 对中文语音进行友好命名
+                chineseVoices.forEach(voice => {
+                    const option = document.createElement('option');
+                    option.value = voice.name;
+                    
+                    // 为常见语音提供友好名称
+                    let displayName = voice.name;
+                    if (voice.name.includes('Microsoft')) {
+                        if (voice.name.includes('Xiaoxiao')) displayName = '晓晓（女声）';
+                        else if (voice.name.includes('Xiaoyi')) displayName = '晓伊（女声）';
+                        else if (voice.name.includes('Yunxi')) displayName = '云希（男声）';
+                        else if (voice.name.includes('Yunjian')) displayName = '云健（男声）';
+                    } else if (voice.name.includes('Google')) {
+                        if (voice.name.includes('zh-CN')) displayName = '谷歌中文语音';
+                    } else if (voice.name.includes('Apple')) {
+                        displayName = '苹果中文语音';
+                    }
+                    
+                    option.textContent = displayName;
+                    voiceSelect.appendChild(option);
+                });
+                
+                console.log('中文语音列表已加载，共', chineseVoices.length, '个中文语音');
+            } else {
+                console.warn('未检测到中文语音');
+                const option = document.createElement('option');
+                option.value = 'none';
+                option.textContent = '未检测到中文语音';
+                option.disabled = true;
+                voiceSelect.appendChild(option);
+            }
+        }
+        
         // 初始化事件监听
         function initEventListeners() {
             // 发送消息
@@ -734,54 +1116,127 @@
                 });
             });
 
-            // 快捷操作
-            document.querySelectorAll('.quick-action').forEach(action => {
-                action.addEventListener('click', () => {
-                    const actionType = action.dataset.action;
-                    sendQuickAction(actionType);
-                });
-            });
+
 
             // 清空对话
             clearChatButton.addEventListener('click', clearChat);
 
             // 导出对话
             exportChatButton.addEventListener('click', exportChat);
+            
+            // 语音交互事件
+            voiceButton.addEventListener('click', toggleVoiceInput);
+            startVoiceInputButton.addEventListener('click', toggleVoiceInput);
+            toggleVoiceOutputButton.addEventListener('click', toggleVoiceOutput);
+            
+            // 初始化语音识别
+            initSpeechRecognition();
         }
 
-        // 发送消息
-        function sendMessage() {
+        // 发送消息（异步版本）
+        async function sendMessage() {
             const message = messageInput.value.trim();
             if (!message) return;
 
             // 添加用户消息
             addUserMessage(message);
             messageInput.value = '';
-
+            
             // 显示输入中状态
             showTypingIndicator();
 
-            // 模拟AI思考时间
-            setTimeout(() => {
+            try {
+                // 首先检查是否是图片请求
+                const imageResponse = await handleImageRequest(message);
+                
+                let aiResponse;
+                if (imageResponse) {
+                    // 如果是图片请求，使用图片回复
+                    aiResponse = imageResponse;
+                } else {
+                    // 否则调用Dify工作流生成回复
+                    aiResponse = await generateAIResponse(message);
+                }
+                
+                // 隐藏输入指示器并添加AI回复
                 hideTypingIndicator();
-                addAIMessage(generateAIResponse(message));
-            }, 1000 + Math.random() * 2000);
+                addAIMessage(aiResponse);
+                
+            } catch (error) {
+                console.error('消息发送失败:', error);
+                hideTypingIndicator();
+                
+                // 显示错误信息
+                addAIMessage('抱歉，服务暂时不可用。我会继续用基础模式为您服务。');
+                
+                // 使用降级回复
+                const fallbackResponse = getFallbackResponse(message);
+                addAIMessage(fallbackResponse);
+            }
         }
 
-        // 发送快捷操作
-        function sendQuickAction(actionType) {
-            // 添加用户快捷操作消息
-            addUserMessage(`使用快捷操作：${actionType}`);
 
-            // 显示输入中状态
-            showTypingIndicator();
 
-            // 模拟AI思考时间
-            setTimeout(() => {
-                hideTypingIndicator();
-                addAIMessage(quickActionResponses[actionType]);
-            }, 800);
+        // 测试Dify集成
+        async function testDifyIntegration() {
+            console.log('开始测试Dify集成...');
+            
+            try {
+                console.log('直接测试Dify API连接...');
+                
+                // 使用成功代码的格式
+                const apiUrl = "https://dify.aipfuture.com/v1/chat-messages";
+                const testData = {
+                    inputs: {
+                        query: "你好，这是一条测试消息",
+                        role: "学生",
+                        mood: "好奇"
+                    },
+                    query: "你好，请介绍一下你自己",
+                    response_mode: "blocking",
+                    user: "test-user-001"
+                };
+                
+                console.log('API端点:', apiUrl);
+                
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${DIFY_CONFIG.apiKey}`
+                    },
+                    body: JSON.stringify(testData)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error('❌ Dify API测试失败:', response.status, JSON.stringify(errorData));
+                    return;
+                }
+
+                const data = await response.json();
+                console.log('✅ Dify API测试成功');
+                console.log('API响应:', data);
+                
+                // 测试完整的generateAIResponse函数
+                console.log('测试完整功能...');
+                const testMessage = '你好，测试消息';
+                const testResponse = await generateAIResponse(testMessage);
+                
+                if (testResponse && testResponse.length > 0) {
+                    console.log('✅ 完整功能测试成功');
+                    console.log('测试回复:', testResponse.substring(0, 50) + '...');
+                } else {
+                    console.warn('⚠️ 完整功能测试异常：返回空回复');
+                }
+                
+            } catch (error) {
+                console.error('❌ Dify集成测试失败:', error.message);
+                console.log('将使用降级模式运行');
+            }
         }
+
+
 
         // 添加用户消息
         function addUserMessage(message) {
@@ -812,6 +1267,9 @@
             `;
             chatBody.appendChild(messageElement);
             scrollToBottom();
+            
+            // 语音输出AI回复
+            speakAIMessage(message);
         }
 
         // 显示输入中指示器
@@ -843,12 +1301,180 @@
             }
         }
 
-        // 生成AI回复
-        function generateAIResponse(userMessage) {
+        // 调用Dify聊天模式生成回复
+        async function generateAIResponse(userMessage) {
+            try {
+                console.log('开始调用Dify聊天模式...当前角色:', currentRole);
+                
+                // 根据当前角色构建不同的请求数据
+                const apiUrl = "https://dify.aipfuture.com/v1/chat-messages";
+                
+                // 根据界面选择的角色构建参数
+                let roleParams = {};
+                if (currentRole === 'companion') {
+                    // 心灵伙伴模式参数
+                    roleParams = {
+                        role: "心灵伙伴",
+                        mood: "温暖关怀",
+                        style: "亲切友好",
+                        ai_persona: "温暖陪伴型AI助手"
+                    };
+                } else if (currentRole === 'counselor') {
+                    // 专业顾问模式参数
+                    roleParams = {
+                        role: "专业顾问",
+                        mood: "专业严谨",
+                        style: "专业分析",
+                        expertise: "心理咨询",
+                        ai_persona: "专业心理咨询师"
+                    };
+                }
+                
+                const requestData = {
+                    inputs: {
+                        query: userMessage,
+                        ...roleParams
+                    },
+                    query: userMessage,
+                    response_mode: "blocking",
+                    user: "heart-harbor-user"
+                };
+
+                console.log('Dify API请求:', {
+                    url: apiUrl,
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${DIFY_CONFIG.apiKey}`
+                    },
+                    body: requestData
+                });
+                
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${DIFY_CONFIG.apiKey}`
+                    },
+                    body: JSON.stringify(requestData)
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Dify API错误详情:', {
+                        status: response.status,
+                        statusText: response.statusText,
+                        error: errorText
+                    });
+                    
+                    throw new Error(`Dify API错误: ${response.status} ${response.statusText} - ${errorText}`);
+                }
+
+                const data = await response.json();
+                console.log('Dify API完整响应:', data);
+                
+                // 直接返回answer字段
+                if (data.answer) {
+                    console.log('Dify聊天模式回复:', data.answer);
+                    return data.answer;
+                }
+                
+                throw new Error('Dify聊天模式返回数据格式异常');
+                
+            } catch (error) {
+                console.error('Dify工作流调用失败:', error);
+                
+                // 降级到模拟回复
+                return getFallbackResponse(userMessage);
+            }
+        }
+
+
+
+        // 生成图片（使用Dify工作流）
+        async function generateImage(prompt, size = DIFY_CONFIG.imageSize) {
+            try {
+                console.log('开始生成图片...');
+                
+                // 构建图片生成请求数据
+                const requestData = {
+                    inputs: {
+                        prompt: prompt,
+                        size: size,
+                        quality: DIFY_CONFIG.imageQuality,
+                        style: DIFY_CONFIG.imageStyle
+                    },
+                    response_mode: "blocking",
+                    user: "heart-harbor-user"
+                };
+
+                // 调用Dify图片生成工作流
+                const response = await fetch(`${DIFY_CONFIG.baseUrl}/workflows/${DIFY_CONFIG.imageWorkflowId}/run`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${DIFY_CONFIG.apiKey}`
+                    },
+                    body: JSON.stringify(requestData)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Dify图片生成API错误: ${response.status} ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                
+                if (data.data && data.data.outputs) {
+                    // 从工作流输出中提取图片URL
+                    const imageUrl = data.data.outputs.image_url || data.data.outputs.url;
+                    if (imageUrl) {
+                        console.log('图片生成成功:', imageUrl);
+                        return imageUrl;
+                    }
+                }
+                
+                throw new Error('Dify图片生成返回数据格式异常');
+                
+            } catch (error) {
+                console.error('图片生成失败:', error);
+                return null;
+            }
+        }
+
+        // 处理包含图片请求的消息
+        async function handleImageRequest(userMessage) {
+            // 检测是否包含图片生成关键词
+            const imageKeywords = ['画', '图片', '图像', '生成图片', 'create image', 'draw'];
+            const hasImageRequest = imageKeywords.some(keyword => 
+                userMessage.toLowerCase().includes(keyword.toLowerCase())
+            );
+
+            if (hasImageRequest && DIFY_CONFIG.imageWorkflowId) {
+                try {
+                    // 提取图片描述
+                    const imagePrompt = userMessage.replace(/画|图片|图像|生成图片|create image|draw/gi, '').trim();
+                    
+                    if (imagePrompt) {
+                        const imageUrl = await generateImage(imagePrompt);
+                        if (imageUrl) {
+                            return `好的，我为您生成了一张图片：
+![生成的图片](${imageUrl})`;
+                        }
+                    }
+                } catch (error) {
+                    console.error('图片生成处理失败:', error);
+                }
+            }
+            
+            return null;
+        }
+
+        // 降级回复函数（保持原有逻辑）
+        function getFallbackResponse(userMessage) {
             const responses = aiResponses[currentRole];
             const randomResponse = responses[Math.floor(Math.random() * responses.length)];
             
-            // 根据用户消息内容添加一些上下文相关的回复
+            // 原有的关键词匹配逻辑
             if (userMessage.toLowerCase().includes('压力') || userMessage.includes('焦虑')) {
                 return randomResponse + " 关于压力管理，我们可以尝试一些放松技巧...";
             } else if (userMessage.toLowerCase().includes('睡眠') || userMessage.includes('失眠')) {
@@ -869,6 +1495,320 @@
         // 滚动到底部
         function scrollToBottom() {
             chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        // 初始化语音识别
+        function initSpeechRecognition() {
+            // 检查浏览器是否支持语音识别
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                console.warn('当前浏览器不支持语音识别功能');
+                voiceButton.style.display = 'none';
+                startVoiceInputButton.style.display = 'none';
+                return;
+            }
+            
+            // 创建语音识别实例
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            
+            // 配置语音识别
+            recognition.continuous = false;
+            recognition.interimResults = true;
+            recognition.lang = 'zh-CN';
+            
+            // 语音识别事件处理
+            recognition.onstart = function() {
+                console.log('语音识别开始');
+                isRecording = true;
+                updateVoiceButtonState();
+                voiceVisualizer.style.display = 'block';
+            };
+            
+            recognition.onresult = function(event) {
+                let finalTranscript = '';
+                let interimTranscript = '';
+                
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const transcript = event.results[i][0].transcript;
+                    if (event.results[i].isFinal) {
+                        finalTranscript += transcript;
+                    } else {
+                        interimTranscript += transcript;
+                    }
+                }
+                
+                // 更新输入框内容
+                if (finalTranscript) {
+                    messageInput.value = finalTranscript;
+                    // 自动发送消息
+                    setTimeout(() => sendMessage(), 500);
+                } else if (interimTranscript) {
+                    messageInput.value = interimTranscript;
+                }
+            };
+            
+            recognition.onerror = function(event) {
+                console.error('语音识别错误:', event.error);
+                if (event.error === 'not-allowed') {
+                    alert('请允许浏览器使用麦克风权限');
+                }
+                stopVoiceInput();
+            };
+            
+            recognition.onend = function() {
+                console.log('语音识别结束');
+                stopVoiceInput();
+            };
+            
+            // 音频处理（用于可视化）
+            let audioContext = null;
+            let analyser = null;
+            let microphone = null;
+            let javascriptNode = null;
+            let audioStream = null;
+            
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ audio: true })
+                    .then(function(stream) {
+                        audioStream = stream;
+                        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                        analyser = audioContext.createAnalyser();
+                        microphone = audioContext.createMediaStreamSource(stream);
+                        javascriptNode = audioContext.createScriptProcessor(2048, 1, 1);
+                        
+                        analyser.smoothingTimeConstant = 0.8;
+                        analyser.fftSize = 1024;
+                        
+                        microphone.connect(analyser);
+                        analyser.connect(javascriptNode);
+                        javascriptNode.connect(audioContext.destination);
+                        
+                        javascriptNode.onaudioprocess = function() {
+                            if (!isRecording) return;
+                            
+                            const array = new Uint8Array(analyser.frequencyBinCount);
+                            analyser.getByteFrequencyData(array);
+                            
+                            let values = 0;
+                            const length = array.length;
+                            for (let i = 0; i < length; i++) {
+                                values += array[i];
+                            }
+                            
+                            const average = values / length;
+                            const level = Math.min(average / 100, 1);
+                            
+                            // 更新可视化
+                            voiceLevel.style.width = (level * 100) + '%';
+                        };
+                    })
+                    .catch(function(err) {
+                        console.error('获取麦克风权限失败:', err);
+                    });
+            }
+            
+            // 清理音频资源
+            recognition.onend = function() {
+                console.log('语音识别结束');
+                stopVoiceInput();
+                
+                // 清理音频资源
+                if (audioStream) {
+                    audioStream.getTracks().forEach(track => track.stop());
+                }
+                if (javascriptNode) {
+                    javascriptNode.disconnect();
+                }
+                if (microphone) {
+                    microphone.disconnect();
+                }
+                if (analyser) {
+                    analyser.disconnect();
+                }
+                if (audioContext) {
+                    audioContext.close();
+                }
+            };
+        }
+        
+        // 切换语音输入
+        function toggleVoiceInput() {
+            if (isRecording) {
+                stopVoiceInput();
+            } else {
+                startVoiceInput();
+            }
+        }
+        
+        // 开始语音输入
+        function startVoiceInput() {
+            if (recognition) {
+                try {
+                    recognition.start();
+                } catch (error) {
+                    console.error('启动语音识别失败:', error);
+                }
+            }
+        }
+        
+        // 停止语音输入
+        function stopVoiceInput() {
+            if (recognition && isRecording) {
+                recognition.stop();
+                isRecording = false;
+                updateVoiceButtonState();
+                voiceVisualizer.style.display = 'none';
+                voiceLevel.style.width = '0%';
+            }
+        }
+        
+        // 更新语音按钮状态
+        function updateVoiceButtonState() {
+            if (isRecording) {
+                voiceButton.classList.add('recording');
+                startVoiceInputButton.classList.add('recording');
+                voiceButton.innerHTML = '<i class="fas fa-stop"></i>';
+                startVoiceInputButton.innerHTML = '<i class="fas fa-stop"></i> 停止录音';
+            } else {
+                voiceButton.classList.remove('recording');
+                startVoiceInputButton.classList.remove('recording');
+                voiceButton.innerHTML = '<i class="fas fa-microphone"></i>';
+                startVoiceInputButton.innerHTML = '<i class="fas fa-microphone"></i> 开始语音输入';
+            }
+        }
+        
+        // 切换语音输出
+        function toggleVoiceOutput() {
+            isVoiceOutputEnabled = !isVoiceOutputEnabled;
+            updateVoiceOutputButtonState();
+            
+            if (!isVoiceOutputEnabled && currentUtterance) {
+                speechSynthesis.cancel();
+            }
+        }
+        
+        // 更新语音输出按钮状态
+        function updateVoiceOutputButtonState() {
+            if (isVoiceOutputEnabled) {
+                toggleVoiceOutputButton.classList.add('listening');
+                toggleVoiceOutputButton.innerHTML = '<i class="fas fa-volume-up"></i> 语音输出';
+            } else {
+                toggleVoiceOutputButton.classList.remove('listening');
+                toggleVoiceOutputButton.innerHTML = '<i class="fas fa-volume-mute"></i> 语音输出';
+            }
+        }
+        
+        // 设置默认语音
+        function setDefaultVoice(utterance, voices) {
+            if (voices.length === 0) {
+                console.warn('没有可用的语音');
+                return;
+            }
+            
+            // 优先选择中文语音
+            const chineseVoice = voices.find(voice => 
+                voice.lang.includes('zh') || voice.lang.includes('CN')
+            );
+            
+            if (chineseVoice) {
+                utterance.voice = chineseVoice;
+                console.log('使用默认中文语音:', chineseVoice.name);
+            } else {
+                // 如果没有中文语音，使用第一个可用语音
+                utterance.voice = voices[0];
+                console.log('使用默认语音:', voices[0].name);
+            }
+        }
+        
+        // 语音输出AI回复
+        function speakAIMessage(message) {
+            if (!isVoiceOutputEnabled || !speechSynthesis) {
+                console.log('语音输出已禁用或语音合成不可用');
+                return;
+            }
+            
+            // 检查浏览器是否支持语音合成
+            if (typeof SpeechSynthesisUtterance === 'undefined') {
+                console.error('当前浏览器不支持语音合成功能');
+                return;
+            }
+            
+            try {
+                // 停止当前语音
+                speechSynthesis.cancel();
+                
+                // 创建新的语音合成
+                currentUtterance = new SpeechSynthesisUtterance(message);
+                currentUtterance.lang = 'zh-CN';
+                currentUtterance.rate = 0.9;
+                currentUtterance.pitch = 1;
+                currentUtterance.volume = 0.8;
+                
+                // 设置语音 - 修复语音设置问题
+                const voices = speechSynthesis.getVoices();
+                
+                if (voices.length === 0) {
+                    console.warn('没有可用的语音，等待语音列表加载');
+                    // 等待语音列表加载完成
+                    speechSynthesis.addEventListener('voiceschanged', function onVoicesChanged() {
+                        speechSynthesis.removeEventListener('voiceschanged', onVoicesChanged);
+                        const loadedVoices = speechSynthesis.getVoices();
+                        if (loadedVoices.length > 0) {
+                            setVoiceForUtterance(currentUtterance, loadedVoices);
+                            speechSynthesis.speak(currentUtterance);
+                        } else {
+                            console.error('语音列表加载后仍然为空');
+                        }
+                    });
+                    return;
+                }
+                
+                setVoiceForUtterance(currentUtterance, voices);
+                
+                // 语音合成事件
+                currentUtterance.onstart = function() {
+                    console.log('语音输出开始');
+                    toggleVoiceOutputButton.classList.add('listening');
+                };
+                
+                currentUtterance.onend = function() {
+                    console.log('语音输出结束');
+                    toggleVoiceOutputButton.classList.remove('listening');
+                    currentUtterance = null;
+                };
+                
+                currentUtterance.onerror = function(event) {
+                    console.error('语音输出错误:', event.error, event.type);
+                    toggleVoiceOutputButton.classList.remove('listening');
+                    currentUtterance = null;
+                };
+                
+                // 开始语音输出
+                speechSynthesis.speak(currentUtterance);
+                
+            } catch (error) {
+                console.error('语音输出异常:', error);
+                toggleVoiceOutputButton.classList.remove('listening');
+                currentUtterance = null;
+            }
+        }
+        
+        // 设置语音到语音合成对象
+        function setVoiceForUtterance(utterance, voices) {
+            if (currentVoice && voices.length > 0) {
+                // 使用用户选择的语音
+                const selectedVoice = voices.find(voice => voice.name === currentVoice.name);
+                if (selectedVoice) {
+                    utterance.voice = selectedVoice;
+                    console.log('使用自定义语音:', selectedVoice.name);
+                } else {
+                    console.warn('选择的语音不可用，使用默认语音');
+                    setDefaultVoice(utterance, voices);
+                }
+            } else {
+                // 自动选择最佳中文语音
+                setDefaultVoice(utterance, voices);
+            }
         }
 
         // 清空对话
@@ -907,11 +1847,96 @@
             URL.revokeObjectURL(url);
         }
 
+        // 检查登录状态
+        async function checkLoginStatus() {
+            try {
+                // 等待服务对象完全初始化
+                if (!window.HeartHarborServices) {
+                    console.log('等待服务初始化...');
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
+                
+                const { data: { user } } = await window.HeartHarborServices.supabaseClient.auth.getUser();
+                return !!user;
+            } catch (error) {
+                console.error('检查登录状态失败:', error);
+                return false;
+            }
+        }
+
+        // 显示未登录状态界面
+        function showUnauthorizedView() {
+            const mainContent = document.querySelector('.ai-companion-section');
+            if (mainContent) {
+                mainContent.innerHTML = `
+                    <div class="unauthorized-container" style="text-align: center; padding: 80px 20px;">
+                        <div class="unauthorized-icon" style="font-size: 80px; color: #8EC5FC; margin-bottom: 20px;">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <h2 style="color: #4a5568; margin-bottom: 20px;">需要登录</h2>
+                        <p style="color: #666; margin-bottom: 30px; max-width: 500px; margin-left: auto; margin-right: auto;">
+                            请先登录后才能使用AI心灵伙伴功能
+                        </p>
+                        <div style="display: flex; gap: 15px; justify-content: center;">
+                            <a href="login.html" class="btn" style="background: #8EC5FC; color: white; padding: 12px 30px; border-radius: 25px; text-decoration: none;">
+                                立即登录
+                            </a>
+                            <a href="index.html" class="btn" style="background: transparent; color: #8EC5FC; border: 2px solid #8EC5FC; padding: 12px 30px; border-radius: 25px; text-decoration: none;">
+                                返回首页
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // 用户状态管理 - 使用全局的UserStateManager和NavigationManager
+
         // 初始化
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
+            // 等待用户状态管理器初始化
+            await window.UserStateManager.waitForInitialization();
+            
+            // 检查登录状态
+            const isLoggedIn = window.UserStateManager.isLoggedIn();
+            if (!isLoggedIn) {
+                showUnauthorizedView();
+                return;
+            }
+            
+            // 用户已登录，正常初始化
+            initVoiceSelector();
             initEventListeners();
             scrollToBottom();
+            
+            // 添加诊断按钮
+            addDiagnosticButton();
+            
+            // 测试Dify集成
+            testDifyIntegration();
         });
+
+        // 添加诊断按钮
+        function addDiagnosticButton() {
+            const chatControls = document.querySelector('.chat-controls');
+            if (chatControls) {
+                const diagnosticBtn = document.createElement('button');
+                diagnosticBtn.id = 'diagnosticBtn';
+                diagnosticBtn.innerHTML = '<i class="fas fa-bug"></i> 诊断连接';
+                diagnosticBtn.style.cssText = `
+                    background: #f56565;
+                    color: white;
+                    border: none;
+                    padding: 8px 16px;
+                    border-radius: 20px;
+                    cursor: pointer;
+                    font-size: 12px;
+                    margin-left: 10px;
+                `;
+                diagnosticBtn.onclick = diagnoseDifyConnection;
+                chatControls.appendChild(diagnosticBtn);
+            }
+        }
     </script>
 </body>
 </html>

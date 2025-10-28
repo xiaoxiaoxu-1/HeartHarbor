@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>树洞 - 心屿</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.38.0/dist/umd/supabase.min.js"></script>
     <style>
         :root {
             --primary-color: #8EC5FC;
@@ -40,14 +41,16 @@
             padding: 0 20px;
         }
         
-        /* 导航栏 */
+        /* 统一状态栏/导航栏 */
         header {
             background: var(--gradient);
             padding: 15px 0;
             box-shadow: var(--shadow);
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
         
         .navbar {
@@ -97,6 +100,105 @@
         .nav-links a.active {
             background: rgba(255, 255, 255, 0.2);
             opacity: 1;
+        }
+        
+        .auth-buttons {
+            display: flex;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn-login {
+            background: transparent;
+            color: white;
+            border: 1px solid white;
+            margin-right: 10px;
+        }
+        
+        .btn-register {
+            background: white;
+            color: var(--primary-color);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        /* 用户菜单样式 */
+        .user-menu {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+        }
+        
+        .user-info:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 8px;
+            color: var(--primary-color);
+        }
+        
+        .user-name {
+            margin-right: 8px;
+            font-weight: 500;
+        }
+        
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            min-width: 180px;
+            padding: 8px 0;
+            display: none;
+            z-index: 1000;
+        }
+        
+        .user-menu:hover .dropdown-menu {
+            display: block;
+        }
+        
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        
+        .dropdown-item:hover {
+            background-color: #f7fafc;
         }
         
         /* 主要内容区域 */
@@ -334,6 +436,166 @@
             color: var(--treehole-color);
         }
         
+        .like-action {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .like-action:hover {
+            color: #e74c3c;
+            transform: scale(1.1);
+        }
+        
+        .like-action.liking {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        
+        .like-action .fa-heart {
+            transition: all 0.3s ease;
+        }
+        
+        .like-count {
+            font-weight: 500;
+            margin-left: 2px;
+        }
+        
+        /* 评论相关样式 */
+        .comments-section {
+            margin-top: 15px;
+            border-top: 1px solid #E2E8F0;
+            padding-top: 15px;
+        }
+        
+        .comments-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--light-text);
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+        
+        .comments-toggle:hover {
+            color: var(--treehole-color);
+        }
+        
+        .comments-toggle i {
+            transition: transform 0.3s;
+        }
+        
+        .comments-toggle.expanded i {
+            transform: rotate(180deg);
+        }
+        
+        .comments-container {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        
+        .comments-container.expanded {
+            max-height: 400px;
+        }
+        
+        .comment-form {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #F7FAFC;
+            border-radius: 12px;
+        }
+        
+        .comment-textarea {
+            width: 100%;
+            min-height: 60px;
+            padding: 10px;
+            border: 1px solid #E2E8F0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            resize: vertical;
+            transition: all 0.3s;
+            background: white;
+        }
+        
+        .comment-textarea:focus {
+            outline: none;
+            border-color: var(--treehole-color);
+            box-shadow: 0 0 0 2px rgba(72, 187, 120, 0.1);
+        }
+        
+        .comment-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+        
+        .comment-btn {
+            background: var(--treehole-gradient);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 16px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+        
+        .comment-btn:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(72, 187, 120, 0.3);
+        }
+        
+        .comment-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .comments-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .comment-item {
+            padding: 12px;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #E2E8F0;
+        }
+        
+        .comment-content {
+            margin-bottom: 8px;
+            line-height: 1.5;
+            font-size: 0.9rem;
+        }
+        
+        .comment-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--light-text);
+        }
+        
+        .comment-author {
+            font-weight: 500;
+        }
+        
+        .comment-time {
+            font-size: 0.75rem;
+        }
+        
+        .no-comments {
+            text-align: center;
+            padding: 20px;
+            color: var(--light-text);
+            font-size: 0.9rem;
+        }
+        
         /* 侧边栏 */
         .sidebar {
             display: flex;
@@ -498,9 +760,34 @@
                     <li><a href="ai-companion.html">AI心灵伙伴</a></li>
                     <li><a href="treehole.html" class="active">树洞</a></li>
                     <li><a href="knowledge-base.html">咨询库</a></li>
-                    <li><a href="login.html">登录</a></li>
-                    <li><a href="register.html">注册</a></li>
                 </ul>
+                <div class="auth-buttons" id="auth-buttons">
+                    <a href="login.html" class="btn btn-login">登录</a>
+                    <a href="register.html" class="btn btn-register">注册</a>
+                </div>
+                <div class="user-menu" id="user-menu" style="display: none;">
+                    <div class="user-info">
+                        <div class="user-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <span class="user-name" id="user-name">用户</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="dropdown-menu">
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-user"></i>
+                            个人中心
+                        </a>
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-cog"></i>
+                            设置
+                        </a>
+                        <a href="#" class="dropdown-item" id="logout-btn">
+                            <i class="fas fa-sign-out-alt"></i>
+                            退出登录
+                        </a>
+                    </div>
+                </div>
             </nav>
         </div>
     </header>
@@ -564,71 +851,9 @@
                         </div>
                         
                         <div class="posts-list" id="postsList">
-                            <!-- 示例帖子 -->
-                            <div class="post-item">
-                                <div class="post-content">
-                                    今天考试考得不错，感觉所有的努力都值得了！希望继续保持这种状态，加油！
-                                </div>
-                                <div class="post-meta">
-                                    <div>
-                                        <span class="post-mood mood-happy">
-                                            <i class="fas fa-smile"></i> 开心
-                                        </span>
-                                        <span>匿名用户 • 2小时前</span>
-                                    </div>
-                                    <div class="post-actions-small">
-                                        <div class="post-action">
-                                            <i class="fas fa-heart"></i> 12
-                                        </div>
-                                        <div class="post-action">
-                                            <i class="fas fa-comment"></i> 5
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="post-item">
-                                <div class="post-content">
-                                    最近压力好大，感觉很多事情都处理不过来。希望有人能理解我的感受...
-                                </div>
-                                <div class="post-meta">
-                                    <div>
-                                        <span class="post-mood mood-anxious">
-                                            <i class="fas fa-flushed"></i> 焦虑
-                                        </span>
-                                        <span>匿名用户 • 5小时前</span>
-                                    </div>
-                                    <div class="post-actions-small">
-                                        <div class="post-action">
-                                            <i class="fas fa-heart"></i> 8
-                                        </div>
-                                        <div class="post-action">
-                                            <i class="fas fa-comment"></i> 3
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="post-item">
-                                <div class="post-content">
-                                    感谢树洞这个平台，让我可以倾诉内心的烦恼。看到大家的鼓励真的很温暖！
-                                </div>
-                                <div class="post-meta">
-                                    <div>
-                                        <span class="post-mood mood-calm">
-                                            <i class="fas fa-spa"></i> 平静
-                                        </span>
-                                        <span>匿名用户 • 1天前</span>
-                                    </div>
-                                    <div class="post-actions-small">
-                                        <div class="post-action">
-                                            <i class="fas fa-heart"></i> 25
-                                        </div>
-                                        <div class="post-action">
-                                            <i class="fas fa-comment"></i> 7
-                                        </div>
-                                    </div>
-                                </div>
+                            <!-- 帖子列表将由JavaScript动态加载 -->
+                            <div style="text-align: center; padding: 40px; color: var(--light-text);">
+                                <i class="fas fa-spinner fa-spin"></i> 加载中...
                             </div>
                         </div>
                     </div>
@@ -695,6 +920,8 @@
         </div>
     </section>
 
+    <script src="supabase-config.js"></script>
+    <script src="user-state.js"></script>
     <script>
         // DOM元素
         const postContent = document.getElementById('postContent');
@@ -704,6 +931,177 @@
         
         // 当前选中的心情
         let currentMood = 'happy';
+        
+        // 从数据库加载帖子
+        async function loadPosts() {
+            try {
+                // 显示加载状态
+                postsList.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--light-text);"><i class="fas fa-spinner fa-spin"></i> 加载中...</div>';
+                
+                // 并行初始化服务和获取帖子数据
+                const [servicesReady, postsResult] = await Promise.allSettled([
+                    waitForServices(),
+                    window.HeartHarborServices?.TreeholeService?.getPosts(15, 0) || Promise.reject('服务未初始化')
+                ]);
+                
+                // 如果服务初始化失败，尝试直接获取帖子
+                if (servicesReady.status === 'rejected' && postsResult.status === 'fulfilled') {
+                    console.log('服务初始化失败，但帖子数据已获取');
+                }
+                
+                if (postsResult.status === 'fulfilled' && postsResult.value.success && postsResult.value.data) {
+                    displayPosts(postsResult.value.data);
+                } else {
+                    postsList.innerHTML = '<div style="text-align: center; padding: 60px 20px; color: var(--light-text);"><i class="fas fa-comments" style="font-size: 48px; margin-bottom: 15px; color: #CBD5E0;"></i><p>还没有人分享心声，成为第一个分享的人吧！</p></div>';
+                }
+            } catch (error) {
+                console.error('加载帖子失败:', error);
+                postsList.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--light-text);">加载失败，请刷新页面重试</div>';
+            }
+        }
+        
+        // 等待服务初始化完成（带超时机制）
+        async function waitForServices() {
+            return new Promise((resolve, reject) => {
+                const timeout = setTimeout(() => {
+                    reject(new Error('服务初始化超时'));
+                }, 3000); // 3秒超时
+                
+                const checkServices = () => {
+                    if (window.HeartHarborServices && window.HeartHarborServices.TreeholeService) {
+                        clearTimeout(timeout);
+                        resolve();
+                    } else {
+                        setTimeout(checkServices, 50); // 减少检查间隔
+                    }
+                };
+                checkServices();
+            });
+        }
+        
+        // 显示帖子列表
+        function displayPosts(posts) {
+            if (!posts || posts.length === 0) {
+                postsList.innerHTML = `
+                    <div style="text-align: center; padding: 60px 20px; color: var(--light-text);">
+                        <i class="fas fa-comments" style="font-size: 48px; margin-bottom: 15px; color: #CBD5E0;"></i>
+                        <p>还没有人分享心声，成为第一个分享的人吧！</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // 先快速渲染帖子内容，再异步加载点赞状态
+            renderPostsWithLikeStatus(posts, {});
+            
+            // 异步批量获取点赞状态
+            const postIds = posts.map(post => post.id);
+            window.HeartHarborServices.TreeholeService.getPostsLikeStatus(postIds)
+                .then(result => {
+                    if (result.success) {
+                        updateLikeStatus(result.data);
+                    }
+                })
+                .catch(error => {
+                    console.error('获取点赞状态失败:', error);
+                    // 静默失败，不影响主流程
+                });
+        }
+        
+        // 渲染带点赞状态的帖子列表
+        function renderPostsWithLikeStatus(posts, likeStatusMap) {
+            postsList.innerHTML = posts.map(post => {
+                const postDate = new Date(post.created_at);
+                const timeAgo = getTimeAgo(postDate);
+                const username = post.is_anonymous ? '匿名用户' : (post.user?.username || '用户');
+                const isLiked = likeStatusMap[post.id] || false;
+                const heartIcon = isLiked ? 'fas fa-heart' : 'far fa-heart';
+                const heartColor = isLiked ? 'style="color: #e74c3c;"' : '';
+                
+                return `
+                    <div class="post-item" data-post-id="${post.id}">
+                        <div class="post-content">
+                            ${post.content}
+                        </div>
+                        <div class="post-meta">
+                            <div>
+                                <span class="post-mood mood-${post.mood || 'happy'}">
+                                    <i class="fas fa-${getMoodIcon(post.mood || 'happy')}"></i> ${getMoodText(post.mood || 'happy')}
+                                </span>
+                                <span>${username} • ${timeAgo}</span>
+                            </div>
+                            <div class="post-actions-small">
+                                <div class="post-action like-action" onclick="toggleLike(this, '${post.id}')" data-liked="${isLiked}">
+                                    <i class="${heartIcon}" ${heartColor}></i> 
+                                    <span class="like-count">${post.like_count || 0}</span>
+                                </div>
+                                <div class="post-action comment-action" onclick="toggleComments(this, '${post.id}')">
+                                    <i class="fas fa-comment"></i> <span class="comment-count">${post.comment_count || 0}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 评论区域 -->
+                        <div class="comments-section">
+                            <div class="comments-toggle" onclick="toggleComments(this, '${post.id}')">
+                                <i class="fas fa-chevron-down"></i>
+                                <span>查看评论</span>
+                            </div>
+                            <div class="comments-container">
+                                <div class="comment-form">
+                                    <textarea class="comment-textarea" placeholder="写下你的评论..." maxlength="300"></textarea>
+                                    <div class="comment-actions">
+                                        <span class="comment-length">0/300</span>
+                                        <button class="comment-btn" onclick="addComment(this, '${post.id}')">发布评论</button>
+                                    </div>
+                                </div>
+                                <div class="comments-list" id="comments-${post.id}">
+                                    <!-- 评论列表将动态加载 -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // 更新点赞状态（异步）
+        function updateLikeStatus(likeStatusMap) {
+            Object.keys(likeStatusMap).forEach(postId => {
+                const postItem = document.querySelector(`[data-post-id="${postId}"]`);
+                if (postItem) {
+                    const likeAction = postItem.querySelector('.like-action');
+                    const heartIcon = likeAction.querySelector('.fa-heart');
+                    const isLiked = likeStatusMap[postId];
+                    
+                    if (isLiked) {
+                        heartIcon.className = 'fas fa-heart';
+                        heartIcon.style.color = '#e74c3c';
+                        likeAction.dataset.liked = 'true';
+                    } else {
+                        heartIcon.className = 'far fa-heart';
+                        heartIcon.style.color = '';
+                        likeAction.dataset.liked = 'false';
+                    }
+                }
+            });
+        }
+        
+        // 获取相对时间
+        function getTimeAgo(date) {
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+            
+            if (diffMins < 1) return '刚刚';
+            if (diffMins < 60) return `${diffMins}分钟前`;
+            if (diffHours < 24) return `${diffHours}小时前`;
+            if (diffDays < 7) return `${diffDays}天前`;
+            
+            return date.toLocaleDateString('zh-CN');
+        }
         
         // 初始化事件监听
         function initEventListeners() {
@@ -730,85 +1128,156 @@
                     createPost();
                 }
             });
-            
-            // 点赞功能
-            document.addEventListener('click', (e) => {
-                if (e.target.closest('.post-action')) {
-                    const action = e.target.closest('.post-action');
-                    if (action.querySelector('.fa-heart')) {
-                        toggleLike(action);
-                    }
-                }
-            });
         }
         
         // 创建新帖子
-        function createPost() {
+        async function createPost() {
             const content = postContent.value.trim();
             if (!content) return;
             
-            // 创建新帖子元素
-            const postElement = document.createElement('div');
-            postElement.className = 'post-item';
-            postElement.innerHTML = `
-                <div class="post-content">
-                    ${content}
-                </div>
-                <div class="post-meta">
-                    <div>
-                        <span class="post-mood mood-${currentMood}">
-                            <i class="fas fa-${getMoodIcon(currentMood)}"></i> ${getMoodText(currentMood)}
-                        </span>
-                        <span>匿名用户 • 刚刚</span>
-                    </div>
-                    <div class="post-actions-small">
-                        <div class="post-action">
-                            <i class="fas fa-heart"></i> 0
-                        </div>
-                        <div class="post-action">
-                            <i class="fas fa-comment"></i> 0
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            // 添加到列表顶部
-            postsList.insertBefore(postElement, postsList.firstChild);
-            
-            // 清空输入框
-            postContent.value = '';
-            postButton.disabled = true;
-            
-            // 显示成功提示
-            showNotification('分享成功！你的心声已被树洞接收。');
-            
-            // 更新统计
-            updateStats();
+            try {
+                // 检查用户是否登录
+                const isLoggedIn = window.UserStateManager.isLoggedIn();
+                if (!isLoggedIn) {
+                    showNotification('请先登录后再发布帖子');
+                    return;
+                }
+                
+                // 禁用发布按钮，防止重复提交
+                postButton.disabled = true;
+                postButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 发布中...';
+                
+                // 调用树洞服务创建帖子
+                const result = await window.HeartHarborServices.TreeholeService.createPost(
+                    content, 
+                    currentMood, 
+                    true // 匿名发布
+                );
+                
+                if (result.success) {
+                    // 清空输入框
+                    postContent.value = '';
+                    
+                    // 显示成功提示
+                    showNotification('分享成功！你的心声已被树洞接收。');
+                    
+                    // 重新加载帖子列表
+                    await loadPosts();
+                    
+                    // 更新统计
+                    updateStats();
+                } else {
+                    showNotification('发布失败：' + result.error);
+                }
+            } catch (error) {
+                console.error('发布帖子失败:', error);
+                showNotification('发布过程中发生错误，请重试');
+            } finally {
+                // 恢复发布按钮状态
+                postButton.disabled = !postContent.value.trim();
+                postButton.innerHTML = '<i class="fas fa-paper-plane"></i> 发布';
+            }
         }
         
         // 切换点赞状态
-        function toggleLike(action) {
-            const heartIcon = action.querySelector('.fa-heart');
-            const likeCount = action.textContent.trim();
-            let count = parseInt(likeCount) || 0;
-            
-            if (heartIcon.classList.contains('fas')) {
-                // 取消点赞
-                heartIcon.className = 'far fa-heart';
-                count = Math.max(0, count - 1);
-            } else {
-                // 点赞
-                heartIcon.className = 'fas fa-heart';
-                count += 1;
+        async function toggleLike(action, postId) {
+            try {
+                // 检查用户是否登录
+                const isLoggedIn = window.UserStateManager.isLoggedIn();
+                if (!isLoggedIn) {
+                    showNotification('请先登录后再点赞');
+                    return;
+                }
                 
-                // 添加点赞动画
-                heartIcon.style.transform = 'scale(1.3)';
-                setTimeout(() => {
-                    heartIcon.style.transform = 'scale(1)';
-                }, 300);
+                // 防止重复点击
+                if (action.classList.contains('liking')) {
+                    return;
+                }
+                
+                action.classList.add('liking');
+                
+                const heartIcon = action.querySelector('.fa-heart');
+                const likeCountElement = action.querySelector('.like-count');
+                let count = parseInt(likeCountElement.textContent) || 0;
+                const isCurrentlyLiked = action.dataset.liked === 'true';
+                
+                // 保存原始状态用于回滚
+                const originalState = {
+                    heartClass: heartIcon.className,
+                    heartColor: heartIcon.style.color,
+                    count: count,
+                    liked: isCurrentlyLiked
+                };
+                
+                // 立即更新UI状态（乐观更新）
+                if (isCurrentlyLiked) {
+                    // 取消点赞
+                    heartIcon.className = 'far fa-heart';
+                    heartIcon.style.color = '';
+                    count = Math.max(0, count - 1);
+                    action.dataset.liked = 'false';
+                } else {
+                    // 点赞
+                    heartIcon.className = 'fas fa-heart';
+                    heartIcon.style.color = '#e74c3c';
+                    count += 1;
+                    action.dataset.liked = 'true';
+                    
+                    // 点赞动画效果
+                    heartIcon.style.transform = 'scale(1.3)';
+                    heartIcon.style.transition = 'transform 0.3s ease, color 0.3s ease';
+                    setTimeout(() => {
+                        heartIcon.style.transform = 'scale(1)';
+                    }, 300);
+                }
+                
+                likeCountElement.textContent = count;
+                
+                // 调用树洞服务进行点赞/取消点赞
+                const result = await window.HeartHarborServices.TreeholeService.likePost(postId);
+                
+                if (!result.success) {
+                    // 如果API调用失败，回滚UI状态
+                    heartIcon.className = originalState.heartClass;
+                    heartIcon.style.color = originalState.heartColor;
+                    likeCountElement.textContent = originalState.count;
+                    action.dataset.liked = originalState.liked.toString();
+                    
+                    // 显示详细的错误信息
+                    showNotification('点赞失败：' + result.error);
+                    
+                    // 如果是权限问题，建议重新登录
+                    if (result.error.includes('权限') || result.error.includes('登录')) {
+                        setTimeout(() => {
+                            showNotification('请尝试重新登录后重试');
+                        }, 2000);
+                    }
+                } else {
+                    // 成功提示
+                    if (result.action === 'like') {
+                        showNotification('点赞成功！');
+                    } else {
+                        showNotification('已取消点赞');
+                    }
+                    
+                    // 刷新帖子列表以获取最新数据
+                    setTimeout(() => {
+                        loadPosts();
+                    }, 500);
+                }
+            } catch (error) {
+                console.error('点赞操作失败:', error);
+                
+                // 显示详细的错误信息
+                let errorMessage = '点赞失败，请重试';
+                if (error.message.includes('Network') || error.message.includes('fetch')) {
+                    errorMessage = '网络连接失败，请检查网络后重试';
+                }
+                
+                showNotification(errorMessage);
+            } finally {
+                action.classList.remove('liking');
             }
-            
-            action.innerHTML = `<i class="${heartIcon.className}"></i> ${count}`;
         }
         
         // 获取心情图标
@@ -864,6 +1333,149 @@
             }, 3000);
         }
         
+        // 切换评论显示/隐藏
+        async function toggleComments(element, postId) {
+            const commentsContainer = element.closest('.post-item').querySelector('.comments-container');
+            const commentsToggle = element.closest('.post-item').querySelector('.comments-toggle');
+            const commentsList = commentsContainer.querySelector('.comments-list');
+            
+            // 切换展开状态
+            const isExpanded = commentsContainer.classList.contains('expanded');
+            
+            if (!isExpanded) {
+                // 展开评论区域
+                commentsContainer.classList.add('expanded');
+                commentsToggle.classList.add('expanded');
+                commentsToggle.querySelector('span').textContent = '收起评论';
+                
+                // 加载评论
+                await loadComments(postId, commentsList);
+                
+                // 初始化评论输入框事件
+                const commentTextarea = commentsContainer.querySelector('.comment-textarea');
+                const commentBtn = commentsContainer.querySelector('.comment-btn');
+                const commentLength = commentsContainer.querySelector('.comment-length');
+                
+                commentTextarea.addEventListener('input', function() {
+                    const length = this.value.length;
+                    commentLength.textContent = `${length}/300`;
+                    commentBtn.disabled = !this.value.trim();
+                });
+            } else {
+                // 收起评论区域
+                commentsContainer.classList.remove('expanded');
+                commentsToggle.classList.remove('expanded');
+                commentsToggle.querySelector('span').textContent = '查看评论';
+            }
+        }
+        
+        // 加载评论
+        async function loadComments(postId, commentsList) {
+            try {
+                commentsList.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--light-text);"><i class="fas fa-spinner fa-spin"></i> 加载评论中...</div>';
+                
+                const result = await window.HeartHarborServices.TreeholeService.getComments(postId);
+                
+                if (result.success && result.data) {
+                    displayComments(result.data, commentsList);
+                } else {
+                    commentsList.innerHTML = '<div class="no-comments">暂无评论</div>';
+                }
+            } catch (error) {
+                console.error('加载评论失败:', error);
+                commentsList.innerHTML = '<div class="no-comments">加载评论失败</div>';
+            }
+        }
+        
+        // 显示评论列表
+        function displayComments(comments, commentsList) {
+            if (!comments || comments.length === 0) {
+                commentsList.innerHTML = '<div class="no-comments">暂无评论，成为第一个评论的人吧！</div>';
+                return;
+            }
+            
+            commentsList.innerHTML = comments.map(comment => {
+                const commentDate = new Date(comment.created_at);
+                const timeAgo = getTimeAgo(commentDate);
+                const username = comment.is_anonymous ? '匿名用户' : (comment.user?.username || '用户');
+                
+                return `
+                    <div class="comment-item">
+                        <div class="comment-content">
+                            ${comment.content}
+                        </div>
+                        <div class="comment-meta">
+                            <span class="comment-author">${username}</span>
+                            <span class="comment-time">${timeAgo}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // 添加评论
+        async function addComment(button, postId) {
+            const commentForm = button.closest('.comment-form');
+            const commentTextarea = commentForm.querySelector('.comment-textarea');
+            const commentBtn = commentForm.querySelector('.comment-btn');
+            const commentsList = commentForm.closest('.comments-container').querySelector('.comments-list');
+            
+            const content = commentTextarea.value.trim();
+            if (!content) return;
+            
+            try {
+                // 检查用户是否登录
+                const isLoggedIn = window.UserStateManager.isLoggedIn();
+                if (!isLoggedIn) {
+                    showNotification('请先登录后再评论');
+                    return;
+                }
+                
+                // 禁用按钮，防止重复提交
+                commentBtn.disabled = true;
+                commentBtn.textContent = '发布中...';
+                
+                // 调用树洞服务添加评论
+                const result = await window.HeartHarborServices.TreeholeService.addComment(postId, content, true);
+                
+                if (result.success) {
+                    // 清空输入框
+                    commentTextarea.value = '';
+                    commentForm.querySelector('.comment-length').textContent = '0/300';
+                    
+                    // 显示成功提示
+                    showNotification('评论发布成功！');
+                    
+                    // 重新加载评论列表
+                    await loadComments(postId, commentsList);
+                    
+                    // 更新帖子评论计数
+                    updateCommentCount(postId);
+                } else {
+                    showNotification('评论失败：' + result.error);
+                }
+            } catch (error) {
+                console.error('发布评论失败:', error);
+                showNotification('评论过程中发生错误，请重试');
+            } finally {
+                // 恢复按钮状态
+                commentBtn.disabled = false;
+                commentBtn.textContent = '发布评论';
+            }
+        }
+        
+        // 更新帖子评论计数
+        async function updateCommentCount(postId) {
+            const postItem = document.querySelector(`[data-post-id="${postId}"]`);
+            if (postItem) {
+                const commentCountElement = postItem.querySelector('.comment-count');
+                if (commentCountElement) {
+                    const currentCount = parseInt(commentCountElement.textContent) || 0;
+                    commentCountElement.textContent = currentCount + 1;
+                }
+            }
+        }
+        
         // 更新统计（模拟）
         function updateStats() {
             const todayCount = document.querySelector('.stat-number:first-child');
@@ -892,9 +1504,68 @@
         `;
         document.head.appendChild(style);
         
+        // 检查登录状态
+        async function checkLoginStatus() {
+            try {
+                // 等待服务对象完全初始化
+                if (!window.HeartHarborServices) {
+                    console.log('等待服务初始化...');
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
+                
+                const { data: { user } } = await window.HeartHarborServices.supabaseClient.auth.getUser();
+                return !!user;
+            } catch (error) {
+                console.error('检查登录状态失败:', error);
+                return false;
+            }
+        }
+
+        // 显示未登录状态界面
+        function showUnauthorizedView() {
+            const mainContent = document.querySelector('.treehole-section');
+            if (mainContent) {
+                mainContent.innerHTML = `
+                    <div class="unauthorized-container" style="text-align: center; padding: 80px 20px;">
+                        <div class="unauthorized-icon" style="font-size: 80px; color: #48BB78; margin-bottom: 20px;">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <h2 style="color: #4a5568; margin-bottom: 20px;">需要登录</h2>
+                        <p style="color: #666; margin-bottom: 30px; max-width: 500px; margin-left: auto; margin-right: auto;">
+                            请先登录后才能使用树洞功能
+                        </p>
+                        <div style="display: flex; gap: 15px; justify-content: center;">
+                            <a href="login.html" class="btn" style="background: #48BB78; color: white; padding: 12px 30px; border-radius: 25px; text-decoration: none;">
+                                立即登录
+                            </a>
+                            <a href="index.html" class="btn" style="background: transparent; color: #48BB78; border: 2px solid #48BB78; padding: 12px 30px; border-radius: 25px; text-decoration: none;">
+                                返回首页
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
         // 初始化
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
+            // 等待用户状态管理器初始化
+            await window.UserStateManager.waitForInitialization();
+            
+            // 检查登录状态
+            const isLoggedIn = window.UserStateManager.isLoggedIn();
+            if (!isLoggedIn) {
+                showUnauthorizedView();
+                return;
+            }
+            
+            // 初始化事件监听
             initEventListeners();
+            
+            // 从数据库加载帖子
+            await loadPosts();
+            
+            // 初始化发布按钮状态
             postButton.disabled = true;
         });
     </script>

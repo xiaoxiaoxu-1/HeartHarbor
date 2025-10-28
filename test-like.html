@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>点赞功能测试</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.38.0/dist/umd/supabase.min.js"></script>
+    <script src="supabase-config.js"></script>
+</head>
+<body>
+    <h1>点赞功能测试</h1>
+    <div id="status">正在初始化...</div>
+    <div id="posts"></div>
+    
+    <script>
+        async function testLikeFunction() {
+            const statusDiv = document.getElementById('status');
+            const postsDiv = document.getElementById('posts');
+            
+            try {
+                // 等待服务初始化
+                await new Promise(resolve => {
+                    const checkInit = () => {
+                        if (window.HeartHarborServices && window.HeartHarborServices.supabaseClient) {
+                            resolve();
+                        } else {
+                            setTimeout(checkInit, 100);
+                        }
+                    };
+                    checkInit();
+                });
+                
+                statusDiv.innerHTML = '✓ Supabase客户端初始化成功<br>';
+                
+                // 测试获取帖子
+                const postsResult = await window.HeartHarborServices.TreeholeService.getPosts(5, 0);
+                
+                if (postsResult.success) {
+                    statusDiv.innerHTML += `✓ 成功获取 ${postsResult.data.length} 个帖子<br>`;
+                    
+                    postsDiv.innerHTML = '<h2>帖子列表：</h2>';
+                    postsResult.data.forEach(post => {
+                        postsDiv.innerHTML += `
+                            <div style="border: 1px solid #ccc; padding: 10px; margin: 10px;">
+                                <p><strong>内容：</strong>${post.content}</p>
+                                <p><strong>心情：</strong>${post.mood}</p>
+                                <p><strong>点赞数：</strong>${post.like_count}</p>
+                                <p><strong>评论数：</strong>${post.comment_count}</p>
+                                <button onclick="testLikePost('${post.id}')">测试点赞此帖子</button>
+                            </div>
+                        `;
+                    });
+                } else {
+                    statusDiv.innerHTML += `✗ 获取帖子失败：${postsResult.error}<br>`;
+                }
+                
+            } catch (error) {
+                statusDiv.innerHTML += `✗ 测试过程中发生错误：${error.message}<br>`;
+                console.error('测试错误:', error);
+            }
+        }
+        
+        async function testLikePost(postId) {
+            const statusDiv = document.getElementById('status');
+            
+            try {
+                statusDiv.innerHTML += `正在测试点赞帖子 ${postId}...<br>`;
+                
+                const likeResult = await window.HeartHarborServices.TreeholeService.likePost(postId);
+                
+                if (likeResult.success) {
+                    statusDiv.innerHTML += `✓ 点赞操作成功：${likeResult.action}<br>`;
+                    
+                    // 重新获取帖子数据验证
+                    const postsResult = await window.HeartHarborServices.TreeholeService.getPosts(5, 0);
+                    if (postsResult.success) {
+                        const updatedPost = postsResult.data.find(p => p.id === postId);
+                        if (updatedPost) {
+                            statusDiv.innerHTML += `✓ 帖子点赞数已更新：${updatedPost.like_count}<br>`;
+                        }
+                    }
+                } else {
+                    statusDiv.innerHTML += `✗ 点赞操作失败：${likeResult.error}<br>`;
+                }
+                
+            } catch (error) {
+                statusDiv.innerHTML += `✗ 点赞测试错误：${error.message}<br>`;
+                console.error('点赞测试错误:', error);
+            }
+        }
+        
+        // 页面加载完成后开始测试
+        document.addEventListener('DOMContentLoaded', testLikeFunction);
+    </script>
+</body>
+</html>

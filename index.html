@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
+    <script src="user-state.js"></script>
     <style>
         :root {
             --primary-color: #8EC5FC;
@@ -40,14 +41,16 @@
             padding: 0 20px;
         }
         
-        /* 导航栏 */
+        /* 统一状态栏/导航栏 */
         header {
             background: var(--gradient);
             padding: 15px 0;
             box-shadow: var(--shadow);
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
         
         .navbar {
@@ -83,10 +86,19 @@
             text-decoration: none;
             font-weight: 500;
             transition: opacity 0.3s;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.3s;
         }
         
         .nav-links a:hover {
             opacity: 0.8;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-links a.active {
+            background: rgba(255, 255, 255, 0.2);
+            opacity: 1;
         }
         
         .auth-buttons {
@@ -634,20 +646,19 @@
     </style>
 </head>
 <body>
-    <!-- 导航栏 -->
+    <!-- 统一状态栏 -->
     <header>
         <div class="container">
             <nav class="navbar">
-                <div class="logo">
+                <a href="index.html" class="logo">
                     <i class="fas fa-heart"></i>
                     <span>心屿</span>
-                </div>
+                </a>
                 <ul class="nav-links">
-                    <li><a href="#features">功能</a></li>
+                    <li><a href="index.html">首页</a></li>
                     <li><a href="ai-companion.html">AI心灵伙伴</a></li>
                     <li><a href="treehole.html">树洞</a></li>
                     <li><a href="knowledge-base.html">咨询库</a></li>
-                    <li><a href="#about">关于我们</a></li>
                 </ul>
                 <div class="auth-buttons" id="auth-buttons">
                     <a href="login.html" class="btn btn-login">登录</a>
@@ -1129,10 +1140,57 @@
         `;
         document.head.appendChild(style);
         
+        // 检查登录状态
+        async function checkLoginStatus() {
+            try {
+                // 等待服务对象完全初始化
+                if (!window.HeartHarborServices) {
+                    console.log('等待服务初始化...');
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
+                
+                const { data: { user } } = await window.HeartHarborServices.supabaseClient.auth.getUser();
+                return !!user;
+            } catch (error) {
+                console.error('检查登录状态失败:', error);
+                return false;
+            }
+        }
+
+        // 功能页面链接点击事件处理
+        async function handleFeatureLinkClick(e, pageName) {
+            e.preventDefault();
+            
+            const isLoggedIn = await checkLoginStatus();
+            if (!isLoggedIn) {
+                alert(`请先登录后再使用${pageName}功能`);
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // 用户已登录，正常跳转
+            window.location.href = e.target.href;
+        }
+
         // AI虚拟人交互功能
         document.addEventListener('DOMContentLoaded', function() {
             // 初始化用户状态
             initUserState();
+            
+            // 为功能页面链接添加登录检查
+            const aiCompanionLink = document.getElementById('ai-companion-link');
+            const treeholeLink = document.getElementById('treehole-link');
+            const knowledgeBaseLink = document.getElementById('knowledge-base-link');
+            
+            if (aiCompanionLink) {
+                aiCompanionLink.addEventListener('click', (e) => handleFeatureLinkClick(e, 'AI心灵伙伴'));
+            }
+            if (treeholeLink) {
+                treeholeLink.addEventListener('click', (e) => handleFeatureLinkClick(e, '树洞'));
+            }
+            if (knowledgeBaseLink) {
+                knowledgeBaseLink.addEventListener('click', (e) => handleFeatureLinkClick(e, '咨询库'));
+            }
             
             // 退出登录按钮事件
             const logoutBtn = document.getElementById('logout-btn');
