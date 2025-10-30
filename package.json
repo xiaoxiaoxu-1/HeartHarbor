@@ -6,7 +6,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "npx serve .",
     "serve": "npx serve . -p 3000",
-    "info": "echo '项目已配置为使用静态服务器运行index.html界面'"
+    "info": "echo '项目已配置为使用静态服务器运行index.html界面'",
+    "vue-serve": "vue-cli-service serve",
+    "vue-build": "vue-cli-service build",
+    "vue-lint": "vue-cli-service lint"
   },
   "author": "",
   "license": "ISC",
@@ -22,10 +25,20 @@
     "@dcloudio/vue-cli-plugin-uni": "^2.0.2-4070620250821001",
     "@dcloudio/webpack-uni-pages-loader": "^2.0.2-4070620250821001",
     "@vue/cli-service": "^5.0.9",
-    "serve": "^14.2.1"
+    "serve": "^14.2.1",
+    "@babel/core": "^7.12.16",
+    "@babel/eslint-parser": "^7.12.16",
+    "@vue/cli-plugin-babel": "~5.0.0",
+    "@vue/cli-plugin-eslint": "~5.0.0",
+    "eslint": "^7.32.0",
+    "eslint-plugin-vue": "^8.0.3",
+    "vue-template-compiler": "^2.6.14"
   },
   "dependencies": {
     "live2d-widget": "^3.1.4",
-    "vue": "^3.5.22"
+    "vue": "^3.5.22",
+    "core-js": "^3.8.3",
+    "element-plus": "^2.8.4",
+    "vue-router": "^4.3.2"
   }
 }
