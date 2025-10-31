@@ -1,2 +1,7 @@
 <!--pages/register/register.wxml-->
-<text>pages/register/register.wxml</text>
+<view class="container">
+    <text class="title">注册页面</text>
+    <view class="nav-buttons">
+        <button class="nav-btn" bindtap="goToProfile">进入个人中心</button>
+    </view>
+</view>

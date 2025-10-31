@@ -62,5 +62,14 @@ Page({
    */
   onShareAppMessage() {
 
+  },
+
+  /**
+   * 跳转到个人中心
+   */
+  goToProfile() {
+    wx.navigateTo({
+      url: '/pages/profile/profile'
+    });
   }
 })

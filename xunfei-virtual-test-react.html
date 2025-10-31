@@ -232,6 +232,16 @@
             background: #000;
             position: relative;
             overflow: hidden;
+            border: 1px solid #333;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 确保父容器也有正确的尺寸 */
+        .wrapper {
+            width: 100%;
+            height: 500px;
+            margin: 20px 0;
         }
         
         .subtitle {
@@ -357,8 +367,8 @@
         </div>
         
         <div class="wrapper">
-            <div class="wp wrapper1" id="avatarContainer">
-                <div style="color: white; text-align: center; padding: 20px;">虚拟人视频将在此处显示</div>
+            <div class="wrapper1" id="avatarContainer">
+                <!-- <div style="color: white; text-align: center; padding: 20px;">虚拟人视频将在此处显示</div> -->
             </div>
             <div class="wp wrapper2"></div>
             <p class="subtitle">
@@ -596,7 +606,7 @@
                 
                 // 显示视频容器
                 const avatarContainer = document.querySelector('.wrapper1');
-                avatarContainer.innerHTML = '<div style="color: white; text-align: center; padding: 20px;">视频流加载中...</div>';
+                // avatarContainer.innerHTML = '<div style="color: white; text-align: center; padding: 20px;">视频流加载中...</div>';
                 
                 // 检查是否创建了player实例
                 if (interactiveSDK.player) {
@@ -791,6 +801,20 @@
                     throw new Error('视频容器未找到，请检查#avatarContainer ID是否存在');
                 }
                 
+                // 确保容器有正确的类名
+                avatarContainer.className = 'wrapper1';
+                
+                // 确保容器可见且可访问
+                avatarContainer.style.display = 'flex';
+                avatarContainer.style.visibility = 'visible';
+                
+                // 确保容器有正确的类名
+                avatarContainer.className = 'wrapper1';
+                
+                // 确保容器可见且可访问
+                avatarContainer.style.display = 'flex';
+                avatarContainer.style.visibility = 'visible';
+                
                 console.log('视频容器信息:', {
                     container: avatarContainer,
                     className: avatarContainer.className,
@@ -868,11 +892,49 @@
                 // 关键修复：按照demo项目的标准方式启动虚拟人
                 if (interactiveSDK.start) {
                     // 使用start方法 - 按照demo项目的标准参数格式
+                    // 确保容器有正确的样式和尺寸
+                    avatarContainer.style.width = '100%';
+                    avatarContainer.style.height = '100%';
+                    avatarContainer.style.minHeight = '400px';
+                    avatarContainer.style.display = 'flex';
+                    avatarContainer.style.alignItems = 'center';
+                    avatarContainer.style.justifyContent = 'center';
+                    avatarContainer.style.background = '#000';
+                    avatarContainer.style.position = 'relative';
+                    avatarContainer.style.overflow = 'hidden';
+                    
+                    // 关键修复：按照demo项目的标准参数格式
                     const startParams = {
-                        wrapper: avatarContainer
+                        wrapper: avatarContainer,
+                        avatar: {
+                            avatar_id: validAvatarId,
+                            width: 720,
+                            height: 1280,
+                            audio_format: 1
+                        },
+                        stream: {
+                            protocol: 'xrtc',
+                            alpha: 0,
+                            bitrate: 1000000,
+                            fps: 25
+                        },
+                        tts: {
+                            vcn: 'x4_yezi',
+                            speed: 50,
+                            pitch: 50,
+                            volume: 100
+                        }
                     };
                     
                     console.log('使用start方法启动虚拟人，参数:', startParams);
+                    
+                    // 关键修复：添加更详细的调试信息
+                    console.log('SDK实例详细信息:', {
+                        SDK类型: typeof interactiveSDK,
+                        SDK方法: Object.keys(interactiveSDK),
+                        player状态: interactiveSDK.player ? '存在' : '不存在',
+                        player方法: interactiveSDK.player ? Object.keys(interactiveSDK.player) : '无'
+                    });
                     
                     await interactiveSDK.start(startParams)
                         .then(() => {
@@ -881,6 +943,15 @@
                             
                             // 检查是否创建了video标签 - 增加更详细的检查
                             setTimeout(() => {
+                                // 检查容器中的所有元素
+                                console.log('容器子元素数量:', avatarContainer.children.length);
+                                console.log('容器子元素详情:');
+                                for (let i = 0; i < avatarContainer.children.length; i++) {
+                                    console.log(`子元素 ${i}:`, avatarContainer.children[i]);
+                                    console.log(`子元素 ${i} tagName:`, avatarContainer.children[i].tagName);
+                                    console.log(`子元素 ${i} className:`, avatarContainer.children[i].className);
+                                }
+                                
                                 const videoElement = avatarContainer.querySelector('video');
                                 console.log('检查video标签:', videoElement);
                                 
@@ -907,18 +978,23 @@
                                 } else {
                                     console.warn('SDK没有创建video标签');
                                     console.warn('容器内容:', avatarContainer.innerHTML);
-                                    console.warn('容器子元素数量:', avatarContainer.children.length);
                                     
                                     // 检查player实例是否存在
                                     if (interactiveSDK.player) {
-                                        console.log('Player实例存在:', interactiveSDK.player);
-                                        console.log('Player状态:', {
-                                            isPlaying: interactiveSDK.player.isPlaying,
-                                            isConnected: interactiveSDK.player.isConnected
-                                        });
+                                        const manualVideo = createVideoElementManually(avatarContainer);
                                         
-                                        // 关键修复：如果player存在但没有video，尝试手动创建
-                                        createVideoElementManually(avatarContainer);
+                                        // 再次检查player的绑定方法
+                                        console.log('检查player的可用方法:', Object.keys(interactiveSDK.player));
+                                        
+                                        // 尝试直接设置src（如果player有流地址）
+                                        if (interactiveSDK.player.getStreamUrl) {
+                                            const streamUrl = interactiveSDK.player.getStreamUrl();
+                                            console.log('获取流地址:', streamUrl);
+                                            if (streamUrl) {
+                                                manualVideo.src = streamUrl;
+                                                console.log('设置video src为流地址');
+                                            }
+                                        }
                                     } else {
                                         console.warn('Player实例不存在');
                                         showMessage('Player实例未创建，请检查SDK初始化', 'error');
@@ -995,13 +1071,14 @@
             videoElement.className = 'avatar-video';
             videoElement.autoplay = true;
             videoElement.playsInline = true;
-            videoElement.muted = false;
+            videoElement.muted = true; // 关键修复：必须设置为muted才能自动播放
             videoElement.style.width = '100%';
             videoElement.style.height = '100%';
             videoElement.style.objectFit = 'contain';
             videoElement.style.background = 'transparent';
             
             // 添加到容器
+            // container.innerHTML = ''
             container.appendChild(videoElement);
             
             console.log('手动创建video元素成功:', videoElement);
@@ -1024,6 +1101,10 @@
             
             videoElement.addEventListener('canplay', () => {
                 console.log('video canplay事件触发');
+                // 关键修复：在canplay事件中尝试播放
+                videoElement.play().catch(err => {
+                    console.warn('自动播放失败:', err);
+                });
             });
             
             videoElement.addEventListener('error', (e) => {
@@ -1031,10 +1112,27 @@
                 console.error('Video错误详情:', videoElement.error);
             });
             
-            // 尝试将player实例绑定到手动创建的video元素
+            // 关键修复：尝试将player实例绑定到手动创建的video元素
             if (interactiveSDK && interactiveSDK.player) {
                 console.log('尝试绑定player到手动创建的video元素');
-                // 这里可能需要根据SDK的具体实现来绑定
+                
+                // 检查player是否有attachVideo方法
+                if (interactiveSDK.player.attachVideo) {
+                    console.log('使用attachVideo方法绑定video元素');
+                    interactiveSDK.player.attachVideo(videoElement);
+                }
+                
+                // 检查player是否有setVideoElement方法
+                if (interactiveSDK.player.setVideoElement) {
+                    console.log('使用setVideoElement方法绑定video元素');
+                    interactiveSDK.player.setVideoElement(videoElement);
+                }
+                
+                // 检查player是否有videoElement属性
+                if (interactiveSDK.player.videoElement !== undefined) {
+                    console.log('直接设置player.videoElement属性');
+                    interactiveSDK.player.videoElement = videoElement;
+                }
             }
             
             return videoElement;

@@ -1,0 +1,90 @@
+<!--pages/profile/profile.wxml-->
+<view class="profile-container">
+    <!-- 用户信息头部 -->
+    <view class="user-header">
+        <view class="user-avatar-section">
+            <image class="user-avatar" src="{{userInfo.avatar || '/static/logo.png'}}"></image>
+            <view class="user-info">
+                <text class="user-name">{{userInfo.name || '未登录用户'}}</text>
+                <text class="user-id">ID: {{userInfo.id || '--'}}</text>
+            </view>
+            <view class="edit-btn" bindtap="editProfile">
+                <text class="edit-text">编辑</text>
+            </view>
+        </view>
+    </view>
+
+    <!-- 统计信息 -->
+    <view class="stats-section">
+        <view class="stat-item" bindtap="goToMyPosts">
+            <text class="stat-number">{{userStats.posts || 0}}</text>
+            <text class="stat-label">我的帖子</text>
+        </view>
+        <view class="stat-item" bindtap="goToMyLikes">
+            <text class="stat-number">{{userStats.likes || 0}}</text>
+            <text class="stat-label">获赞</text>
+        </view>
+        <view class="stat-item" bindtap="goToMyComments">
+            <text class="stat-number">{{userStats.comments || 0}}</text>
+            <text class="stat-label">评论</text>
+        </view>
+    </view>
+
+    <!-- 功能菜单 -->
+    <view class="menu-section">
+        <view class="menu-title">个人设置</view>
+        
+        <view class="menu-list">
+            <view class="menu-item" bindtap="goToAccountSettings">
+                <view class="menu-item-left">
+                    <view class="menu-icon">🔒</view>
+                    <text class="menu-text">账号设置</text>
+                </view>
+                <view class="menu-arrow">></view>
+            </view>
+
+            <view class="menu-item" bindtap="goToPrivacySettings">
+                <view class="menu-item-left">
+                    <view class="menu-icon">👁️</view>
+                    <text class="menu-text">隐私设置</text>
+                </view>
+                <view class="menu-arrow">></view>
+            </view>
+
+            <view class="menu-item" bindtap="goToNotificationSettings">
+                <view class="menu-item-left">
+                    <view class="menu-icon">🔔</view>
+                    <text class="menu-text">通知设置</text>
+                </view>
+                <view class="menu-arrow">></view>
+            </view>
+
+            <view class="menu-item" bindtap="goToHelpCenter">
+                <view class="menu-item-left">
+                    <view class="menu-icon">❓</view>
+                    <text class="menu-text">帮助中心</text>
+                </view>
+                <view class="menu-arrow">></view>
+            </view>
+
+            <view class="menu-item" bindtap="goToAboutUs">
+                <view class="menu-item-left">
+                    <view class="menu-icon">ℹ️</view>
+                    <text class="menu-text">关于我们</text>
+                </view>
+                <view class="menu-arrow">></view>
+            </view>
+        </view>
+    </view>
+
+    <!-- 登录状态 -->
+    <view class="login-section">
+        <view wx:if="{{isLoggedIn}}" class="logout-btn" bindtap="logout">
+            <text class="logout-text">退出登录</text>
+        </view>
+        <view wx:else class="login-prompt">
+            <text class="login-text">您还未登录，</text>
+            <text class="login-link" bindtap="goToLogin">立即登录</text>
+        </view>
+    </view>
+</view>

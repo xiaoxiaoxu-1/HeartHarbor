@@ -1,2 +1,7 @@
 <!--pages/login/login.wxml-->
-<text>pages/login/login.wxml</text>
+<view class="container">
+    <text class="title">登录页面</text>
+    <view class="nav-buttons">
+        <button class="nav-btn" bindtap="goToProfile">进入个人中心</button>
+    </view>
+</view>

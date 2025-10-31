@@ -1,2 +1,7 @@
 <!--pages/treehole/treehole.wxml-->
-<text>pages/treehole/treehole.wxml</text>
+<view class="container">
+    <text class="title">树洞页面</text>
+    <view class="nav-buttons">
+        <button class="nav-btn" bindtap="goToProfile">进入个人中心</button>
+    </view>
+</view>
