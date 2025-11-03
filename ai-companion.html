@@ -230,26 +230,112 @@
             margin: 0 auto;
         }
         
-        /* AI聊天界面 */
+        /* 三栏布局 - AI聊天界面 */
         .ai-chat-container {
             display: grid;
-            grid-template-columns: 280px 1fr 300px;
+            grid-template-columns: 350px 1fr 350px;
+            grid-template-areas: "left-panel character-panel right-panel";
             gap: 30px;
-            max-width: 1200px;
+            max-width: 1800px;
             margin: 0 auto;
             background: white;
-            border-radius: 20px;
-            box-shadow: var(--shadow);
+            border-radius: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
             overflow: hidden;
+            min-height: 800px;
+            padding: 0;
         }
         
-        /* 虚拟人物板块 */
-        .virtual-character-panel {
+        /* 左侧面板 - 角色选择 */
+        .left-panel {
+            display: flex;
+            flex-direction: column;
             background: #f8fafc;
             border-right: 1px solid #e2e8f0;
+            height: 100%;
+            grid-area: left-panel;
+            align-self: stretch;
+            min-height: 800px;
+        }
+        
+        /* 心灵助手聊天区域 */
+        .ai-chat-main {
+            flex: 1;
             display: flex;
             flex-direction: column;
             height: 100%;
+            border-radius: 0;
+            overflow: hidden;
+            box-shadow: none;
+        }
+        
+        .ai-chat-header {
+            background: var(--ai-gradient);
+            color: white;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .ai-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: var(--ai-color);
+            font-size: 24px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .ai-info h3 {
+            margin-bottom: 5px;
+            font-size: 1.2rem;
+        }
+        
+        .ai-status {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            display: flex;
+            align-items: center;
+        }
+        
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #48bb78;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+        
+        .ai-chat-body {
+            flex: 1;
+            height: 500px;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f8fafc;
+        }
+        
+        .ai-chat-input {
+            padding: 20px;
+            border-top: 1px solid #e2e8f0;
+            background: white;
+        }
+        
+        /* 中间面板 - 虚拟人物 */
+        .virtual-character-panel {
+            background: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            border-left: 1px solid #e2e8f0;
+            border-right: 1px solid #e2e8f0;
+            grid-area: character-panel;
         }
         
         .character-header {
@@ -276,26 +362,23 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
-            min-height: 300px;
+            padding: 30px;
+            min-height: 500px;
             background: white;
         }
         
-        .character-placeholder {
-            text-align: center;
-            color: var(--light-text);
-        }
-        
-        .character-placeholder i {
-            font-size: 80px;
-            color: var(--ai-color);
-            margin-bottom: 15px;
-            display: block;
-        }
-        
-        .character-placeholder p {
-            margin: 0;
-            font-size: 0.9rem;
+        /* 虚拟人视频流容器 */
+        #remote_stream {
+            width: 100%;
+            height: 100%;
+            background: #f0f0f0;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            min-height: 500px;
+            border: 2px solid #e2e8f0;
         }
         
         .character-controls {
@@ -350,60 +433,134 @@
             gap: 5px;
         }
         
-        /* 虚拟人物动画样式 */
-        .static-character {
-            text-align: center;
-            position: relative;
+        /* 右侧面板 - 心灵助手 */
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            background: #f8fafc;
+            height: 100%;
+            grid-area: right-panel;
         }
         
-        .character-avatar {
-            font-size: 120px;
+        /* 控制面板 */
+        .ai-controls {
+            height: 100%;
+            overflow-y: auto;
+            background: #f8fafc;
+            padding: 25px;
+            border-radius: 0;
+            border-left: none;
+            border-top: none;
+            box-shadow: none;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .control-section {
+            margin-bottom: 25px;
+        }
+        
+        .control-section h4 {
+            margin-bottom: 15px;
             color: var(--ai-color);
-            margin-bottom: 20px;
-            animation: float 3s ease-in-out infinite;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
         }
         
-        .character-animation {
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
+        .control-section h4 i {
+            margin-right: 8px;
         }
         
-        .breathing-animation {
-            width: 100px;
-            height: 20px;
-            background: var(--ai-color);
+        .role-selector {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        
+        .role-option {
+            background: white;
+            border: 2px solid #e2e8f0;
             border-radius: 10px;
-            opacity: 0.3;
-            animation: warmBreath 2s infinite;
-        }
-        
-        .character-loading {
+            padding: 12px;
             text-align: center;
-            color: var(--light-text);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
         }
         
-        .loading-spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid var(--ai-color);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
+        .role-option:hover {
+            border-color: var(--ai-color);
+            transform: translateY(-2px);
         }
         
-        .character-success {
-            text-align: center;
-            color: #48bb78;
+        .role-option.active {
+            border-color: var(--ai-color);
+            background: rgba(93, 139, 244, 0.1);
+            box-shadow: 0 2px 8px rgba(93, 139, 244, 0.2);
         }
         
-        .character-success i {
-            font-size: 40px;
-            margin-bottom: 10px;
+        .role-option i {
+            font-size: 20px;
+            margin-bottom: 5px;
             display: block;
+            color: var(--ai-color);
         }
+        
+        .mood-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .mood-option {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .mood-option:hover {
+            border-color: var(--ai-color);
+        }
+        
+        .mood-option.active {
+            border-color: var(--ai-color);
+            background: rgba(93, 139, 244, 0.1);
+        }
+        
+        .mood-option i {
+            margin-right: 10px;
+            color: var(--ai-color);
+            font-size: 16px;
+        }
+        
+
+        
+        /* 调整聊天区域高度 */
+        .ai-chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 450px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        }
+        
+        .ai-chat-body {
+            flex: 1;
+            height: 300px;
+            overflow-y: auto;
+            padding: 25px;
+            background: #f8fafc;
+        }
+        
+
         
         /* 虚拟人物动画关键帧 */
         @keyframes float {
@@ -619,80 +776,7 @@
             transform: none;
         }
         
-        /* AI控制面板 */
-        .ai-controls {
-            background: #f8fafc;
-            padding: 25px;
-            border-left: 1px solid #e2e8f0;
-        }
-        
-        .control-section {
-            margin-bottom: 25px;
-        }
-        
-        .control-section h4 {
-            margin-bottom: 15px;
-            color: var(--ai-color);
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-        }
-        
-        .control-section h4 i {
-            margin-right: 8px;
-        }
-        
-        .role-selector {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-        
-        .role-option {
-            background: white;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            padding: 12px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 0.9rem;
-        }
-        
-        .role-option:hover {
-            border-color: var(--ai-color);
-            transform: translateY(-2px);
-        }
-        
-        .role-option.active {
-            border-color: var(--ai-color);
-            background: rgba(93, 139, 244, 0.1);
-            box-shadow: 0 2px 8px rgba(93, 139, 244, 0.2);
-        }
-        
-        .role-option i {
-            font-size: 20px;
-            margin-bottom: 5px;
-            display: block;
-            color: var(--ai-color);
-        }
-        
-        .mood-selector {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        
-        .mood-option {
-            display: flex;
-            align-items: center;
-            padding: 10px 12px;
-            background: white;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
+
         
         .mood-option:hover {
             border-color: var(--ai-color);
@@ -845,7 +929,7 @@
         /* 响应式设计 */
         @media (max-width: 1200px) {
             .ai-chat-container {
-                grid-template-columns: 250px 1fr 280px;
+                grid-template-columns: 300px 1fr 300px;
                 max-width: 100%;
                 margin: 0 20px;
             }
@@ -853,47 +937,64 @@
         
         @media (max-width: 992px) {
             .ai-chat-container {
-                grid-template-columns: 1fr 300px;
+                grid-template-columns: 1fr;
                 grid-template-areas: 
-                    "character character"
-                    "chat controls";
+                    "character"
+                    "left-panel"
+                    "right-panel";
+            }
+            
+            .left-panel {
+                grid-area: left-panel;
+                border-right: none;
+                border-bottom: 1px solid #e2e8f0;
+                height: 400px;
             }
             
             .virtual-character-panel {
                 grid-area: character;
                 border-right: none;
                 border-bottom: 1px solid #e2e8f0;
+                height: 500px;
+            }
+            
+            .right-panel {
+                grid-area: right-panel;
                 height: auto;
             }
             
             .ai-chat-main {
-                grid-area: chat;
+                height: 300px;
             }
             
             .ai-controls {
-                grid-area: controls;
-                border-left: 1px solid #e2e8f0;
+                height: auto;
+                max-height: 400px;
+                border-left: none;
+                border-top: 1px solid #e2e8f0;
+                overflow-y: auto;
             }
         }
         
         @media (max-width: 768px) {
             .ai-chat-container {
-                grid-template-columns: 1fr;
-                grid-template-areas: 
-                    "character"
-                    "chat"
-                    "controls";
                 margin: 0 10px;
             }
             
+            .left-panel {
+                height: 350px;
+            }
+            
             .virtual-character-panel {
-                border-right: none;
-                border-bottom: 1px solid #e2e8f0;
+                height: 400px;
+            }
+            
+            .ai-chat-main {
+                height: 250px;
             }
             
             .ai-controls {
-                border-left: none;
-                border-top: 1px solid #e2e8f0;
+                max-height: 350px;
             }
             
             .ai-header h1 {
@@ -907,6 +1008,21 @@
             
             .character-actions {
                 grid-template-columns: 1fr;
+            }
+            
+            /* 移动端优化角色选择器 */
+            .role-selector {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            
+            .role-option {
+                padding: 10px;
+                font-size: 0.85rem;
+            }
+            
+            .control-section {
+                margin-bottom: 20px;
             }
         }
         
@@ -996,14 +1112,83 @@
             </div>
             
             <div class="ai-chat-container">
-                <!-- 虚拟人物板块 -->
+                <!-- 左侧面板 - 角色选择 -->
+                <div class="left-panel">
+                    <!-- AI控制面板 -->
+                    <div class="ai-controls">
+                        <div class="control-section">
+                            <h4><i class="fas fa-user-tie"></i> 角色选择</h4>
+                            <div class="role-selector">
+                                <div class="role-option active" data-role="companion">
+                                    <i class="fas fa-heart"></i>
+                                    心灵伙伴
+                                </div>
+                                <div class="role-option" data-role="counselor">
+                                    <i class="fas fa-user-md"></i>
+                                    专业顾问
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="control-section">
+                            <h4><i class="fas fa-smile"></i> 情绪模式</h4>
+                            <div class="mood-selector">
+                                <div class="mood-option active" data-mood="warm">
+                                    <i class="fas fa-sun"></i>
+                                    温暖关怀
+                                </div>
+                                <div class="mood-option" data-mood="professional">
+                                    <i class="fas fa-stethoscope"></i>
+                                    专业严谨
+                                </div>
+                                <div class="mood-option" data-mood="friendly">
+                                    <i class="fas fa-laugh"></i>
+                                    轻松友好
+                                </div>
+                                <div class="mood-option" data-mood="encouraging">
+                                    <i class="fas fa-trophy"></i>
+                                    积极鼓励
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="control-section">
+                            <h4><i class="fas fa-voice"></i> 语音选择</h4>
+                            <div class="voice-selector" id="voiceSelector">
+                                <select class="voice-select" id="voiceSelect">
+                                    <option value="auto">自动选择最佳语音</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="voice-controls">
+                            <button class="voice-btn" id="startVoiceInput">
+                                <i class="fas fa-microphone"></i> 开始语音输入
+                            </button>
+                            <button class="voice-btn" id="toggleVoiceOutput">
+                                <i class="fas fa-volume-up"></i> 语音输出
+                            </button>
+                        </div>
+                        
+                        <div class="action-buttons">
+                            <button class="action-btn" id="clearChat">
+                                <i class="fas fa-trash"></i> 清空对话
+                            </button>
+                            <button class="action-btn" id="exportChat">
+                                <i class="fas fa-download"></i> 导出
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 中间面板 - 虚拟人物 -->
                 <div class="virtual-character-panel">
                     <div class="character-header">
                         <h4><i class="fas fa-user"></i> 虚拟陪伴</h4>
                     </div>
                     <div class="character-container" id="characterContainer">
                         <!-- VMS虚拟人视频流显示区域 -->
-                        <div id="remote_stream" style="width: 100%; height: 300px; background: #f0f0f0; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #666;">
+                        <div id="remote_stream">
                             <div style="text-align: center;">
                                 <i class="fas fa-video" style="font-size: 48px; margin-bottom: 10px;"></i>
                                 <p>虚拟人视频流</p>
@@ -1033,119 +1218,54 @@
                     </div>
                 </div>
                 
-                <!-- 聊天主区域 -->
-                <div class="ai-chat-main">
-                    <div class="ai-chat-header">
-                        <div class="ai-avatar">
-                            <i class="fas fa-robot"></i>
-                        </div>
-                        <div class="ai-info">
-                            <h3>心灵助手</h3>
-                            <div class="ai-status">
-                                <span class="status-indicator"></span>
-                                在线 - 随时为你服务
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="ai-chat-body" id="chatBody">
-                        <!-- 初始欢迎消息 -->
-                        <div class="message ai-message">
-                            <div class="message-avatar">
+                <!-- 右侧面板 - 心灵助手 -->
+                <div class="right-panel">
+                    <!-- 聊天主区域 -->
+                    <div class="ai-chat-main">
+                        <div class="ai-chat-header">
+                            <div class="ai-avatar">
                                 <i class="fas fa-robot"></i>
                             </div>
-                            <div class="message-content">
-                                你好！我是你的AI心灵伙伴，很高兴为你服务。
-                                <br><br>
-                                我可以倾听你的心声，提供情感支持，帮助你缓解压力，或者只是陪你聊聊天。
-                                <br><br>
-                                今天有什么想和我分享的吗？
-                                <div class="message-time">刚刚</div>
+                            <div class="ai-info">
+                                <h3>心灵助手</h3>
+                                <div class="ai-status">
+                                    <span class="status-indicator"></span>
+                                    在线 - 随时为你服务
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div class="ai-chat-input">
-                        <div class="input-group">
-                            <input type="text" class="chat-input" id="messageInput" placeholder="输入你想说的话..." maxlength="500">
-                            <button class="send-btn" id="sendButton">
-                                <i class="fas fa-paper-plane"></i>
-                            </button>
-                            <button class="send-btn" id="voiceButton" title="语音输入">
-                                <i class="fas fa-microphone"></i>
-                            </button>
-                        </div>
-                        <div class="voice-visualizer" id="voiceVisualizer" style="display: none;">
-                            <div class="voice-level" id="voiceLevel"></div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- AI控制面板 -->
-                <div class="ai-controls">
-                    <div class="control-section">
-                        <h4><i class="fas fa-user-tie"></i> 角色选择</h4>
-                        <div class="role-selector">
-                            <div class="role-option active" data-role="companion">
-                                <i class="fas fa-heart"></i>
-                                心灵伙伴
-                            </div>
-                            <div class="role-option" data-role="counselor">
-                                <i class="fas fa-user-md"></i>
-                                专业顾问
+                        
+                        <div class="ai-chat-body" id="chatBody">
+                            <!-- 初始欢迎消息 -->
+                            <div class="message ai-message">
+                                <div class="message-avatar">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <div class="message-content">
+                                    你好！我是你的AI心灵伙伴，很高兴为你服务。
+                                    <br><br>
+                                    我可以倾听你的心声，提供情感支持，帮助你缓解压力，或者只是陪你聊聊天。
+                                    <br><br>
+                                    今天有什么想和我分享的吗？
+                                    <div class="message-time">刚刚</div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div class="control-section">
-                        <h4><i class="fas fa-smile"></i> 情绪模式</h4>
-                        <div class="mood-selector">
-                            <div class="mood-option active" data-mood="warm">
-                                <i class="fas fa-sun"></i>
-                                温暖关怀
+                        
+                        <div class="ai-chat-input">
+                            <div class="input-group">
+                                <input type="text" class="chat-input" id="messageInput" placeholder="输入你想说的话..." maxlength="500">
+                                <button class="send-btn" id="sendButton">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                                <button class="send-btn" id="voiceButton" title="语音输入">
+                                    <i class="fas fa-microphone"></i>
+                                </button>
                             </div>
-                            <div class="mood-option" data-mood="professional">
-                                <i class="fas fa-stethoscope"></i>
-                                专业严谨
-                            </div>
-                            <div class="mood-option" data-mood="friendly">
-                                <i class="fas fa-laugh"></i>
-                                轻松友好
-                            </div>
-                            <div class="mood-option" data-mood="encouraging">
-                                <i class="fas fa-trophy"></i>
-                                积极鼓励
+                            <div class="voice-visualizer" id="voiceVisualizer" style="display: none;">
+                                <div class="voice-level" id="voiceLevel"></div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div class="control-section">
-                        <h4><i class="fas fa-voice"></i> 语音选择</h4>
-                        <div class="voice-selector" id="voiceSelector">
-                            <select class="voice-select" id="voiceSelect">
-                                <option value="auto">自动选择最佳语音</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-
-                    
-                    <div class="voice-controls">
-                        <button class="voice-btn" id="startVoiceInput">
-                            <i class="fas fa-microphone"></i> 开始语音输入
-                        </button>
-                        <button class="voice-btn" id="toggleVoiceOutput">
-                            <i class="fas fa-volume-up"></i> 语音输出
-                        </button>
-                    </div>
-                    
-                    <div class="action-buttons">
-                        <button class="action-btn" id="clearChat">
-                            <i class="fas fa-trash"></i> 清空对话
-                        </button>
-                        <button class="action-btn" id="exportChat">
-                            <i class="fas fa-download"></i> 导出
-                        </button>
                     </div>
                 </div>
             </div>
