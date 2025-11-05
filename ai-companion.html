@@ -507,12 +507,14 @@
             width: 100%;
             height: 100%;
             min-height: 500px;
-            background: #000;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
             position: relative;
             overflow: hidden;
             border-radius: 15px;
             display: flex;
             flex-direction: column;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
         
         .wrapper1 {
@@ -544,47 +546,9 @@
             padding: 0;
         }
         
-        /* 新的视频流容器样式 */
-        .wrapper {
-            width: 100%;
-            height: 100%;
-            min-height: 500px;
-            background: #000;
-            position: relative;
-            overflow: hidden;
-            border-radius: 15px;
-            display: flex;
-            flex-direction: column;
-        }
         
-        .wrapper1 {
-            flex: 1;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-        
-        .wp.wrapper2 {
-            height: 0;
-            width: 100%;
-        }
-        
-        .subtitle {
-            position: absolute;
-            font-size: 16px;
-            color: #fff;
-            font-weight: 600;
-            bottom: 20px;
-            width: 100%;
-            left: 0;
-            z-index: 2;
-            text-align: center;
-            margin: 0;
-            padding: 0;
-        }
+
+    
         
         .character-controls {
             padding: 20px;
@@ -1270,6 +1234,7 @@
                     <li><a href="ai-companion.html" class="active">AI心灵伙伴</a></li>
                     <li><a href="treehole.html">树洞</a></li>
                     <li><a href="knowledge-base.html">咨询库</a></li>
+                    <li><a href="profile.html">个人中心</a></li>
                 </ul>
                 <div class="auth-buttons" id="auth-buttons">
                     <a href="login.html" class="btn btn-login">登录</a>
@@ -1512,6 +1477,10 @@
         let finalTranscript = '';
         let interimTranscript = '';
         
+        // 聊天记录相关变量
+        let chatHistory = [];
+        let currentSessionId = generateSessionId();
+        
         // Dify聊天模式配置
         const DIFY_CONFIG = {
             // Dify API配置
@@ -1543,7 +1512,7 @@
                 protocol: "xrtc",
                 fps: 25,
                 bitrate: 1000000,
-                alpha: 0
+                alpha: 1
             },
             
             // 虚拟人配置
@@ -1600,7 +1569,7 @@
         
         // 初始化虚拟人物
         function initVirtualCharacter() {
-            console.log('初始化虚拟人物...');
+            console.log('1 - 初始化虚拟人物...');
             
             // 直接使用讯飞虚拟人API
             initXunfeiVirtualHuman();
@@ -1609,7 +1578,7 @@
         
         // 初始化讯飞虚拟人SDK - 按照测试文件的方式
         function initXunfeiVirtualHuman() {
-            console.log('初始化讯飞虚拟人SDK...');
+            console.log('2 - 初始化讯飞虚拟人SDK...');
             
             // 显示初始化状态
             // characterContainer.innerHTML = `
@@ -1634,6 +1603,7 @@
         
         // 更新虚拟人物模式显示
         function updateCharacterMode(mode) {
+            console.log('3 - 更新虚拟人物模式显示');
             const modeElement = document.getElementById('characterMode');
             if (modeElement) {
                 modeElement.textContent = mode;
@@ -1654,6 +1624,7 @@
         
         // 检查SDK是否可用
         function checkSDKAvailability() {
+            console.log('4 - 检查SDK是否可用');
             const SDKClass = window.Interactive || window.AvatarPlatform;
             if (typeof SDKClass === 'undefined') {
                 showMessage('SDK未加载，请等待SDK模块加载完成', 'warning');
@@ -1664,6 +1635,7 @@
         
         // 初始化SDK - 严格按照测试文件的方式
         function initSDK() {
+            console.log('5 - 初始化SDK');
             if (!checkSDKAvailability()) {
                 return;
             }
@@ -1870,6 +1842,7 @@
         
         // 启动虚拟人 - 严格按照测试文件的方式
         async function startAvatar() {
+            console.log('6 - 启动虚拟人');
             if (!interactiveSDK || !isSDKInitialized) {
                 showMessage('请先初始化SDK', 'error');
                 return;
@@ -1919,7 +1892,7 @@
                             protocol: 'xrtc', // 使用xrtc协议
                             fps: 25,
                             bitrate: 1000000,
-                            alpha: 0 // 按照demo项目默认关闭alpha通道
+                            alpha: 1 // 按照demo项目默认关闭alpha通道
                         },
                         avatar: {
                             avatar_id: validAvatarId, // 使用验证后的avatar_id
@@ -2109,6 +2082,7 @@
         
         // 销毁SDK
         function destroySDK() {
+            console.log('7 - 销毁SDK');
             if (!interactiveSDK) {
                 showMessage('SDK未初始化', 'warning');
                 return;
@@ -2213,6 +2187,7 @@
         
         // 发送文本到虚拟人
         async function sendTextToAvatar(text) {
+            console.log('8 - 发送文本到虚拟人');
             if (!interactiveSDK || !isXunfeiConnected) {
                 showMessage('请先连接虚拟人', 'error');
                 return false;
@@ -2435,7 +2410,7 @@
             if (!message) return;
 
             // 添加用户消息
-            addUserMessage(message);
+            await addUserMessage(message);
             messageInput.value = '';
             
             // 显示输入中状态
@@ -2447,18 +2422,18 @@
                 
                 // 隐藏输入指示器并添加AI回复
                 hideTypingIndicator();
-                addAIMessage(aiResponse);
+                await addAIMessage(aiResponse);
                 
             } catch (error) {
                 console.error('消息发送失败:', error);
                 hideTypingIndicator();
                 
                 // 显示错误信息
-                addAIMessage('抱歉，服务暂时不可用。我会继续用基础模式为您服务。');
+                await addAIMessage('抱歉，服务暂时不可用。我会继续用基础模式为您服务。');
                 
                 // 使用降级回复
                 const fallbackResponse = getFallbackResponse(message);
-                addAIMessage(fallbackResponse);
+                await addAIMessage(fallbackResponse);
             }
         }
 
@@ -2730,116 +2705,7 @@
 
         // 用户状态管理 - 使用全局的UserStateManager和NavigationManager
 
-        // VMS虚拟人控制功能
-        let vmsInstance = null;
-        let isVMSRunning = false;
 
-        // 启动VMS虚拟人
-        async function startVMS() {
-            try {
-                console.log('正在启动VMS虚拟人...');
-                
-                // 检查VMS SDK是否可用
-                if (typeof Interactive === 'undefined') {
-                    throw new Error('VMS SDK未正确加载');
-                }
-
-                // 创建VMS实例配置
-                const config = {
-                    appId: 'your_appid', // 需要替换为实际的appId
-                    apiKey: 'your_apikey', // 需要替换为实际的apiKey
-                    apiSecret: 'your_apisecret', // 需要替换为实际的apiSecret
-                    avatarId: '118801001',
-                    streamDomId: 'remote_stream',
-                    width: 1280,
-                    height: 720
-                };
-
-                // 使用avatar-sdk-web启动虚拟人
-                vmsInstance = new Interactive({
-                    container: document.getElementById('remote_stream'),
-                    playerType: 'xrtc', // 使用xrtc播放器
-                    videoSize: { width: 1280, height: 720 }
-                });
-
-                // 设置API信息
-                vmsInstance.setApiInfo({
-                    appId: '8b636816', // 讯飞应用ID
-                    apiKey: '62911d28b5b7013c52ec2ef3cc3ced71', // 讯飞API Key
-                    apiSecret: 'ODcxM2QwNmQxMWQzMTQzYWUwNWNhN2Zm', // 讯飞API Secret
-                    serverUrl: 'wss://avatar.cn-huadong-1.xf-yun.com/v1/interact'
-                });
-
-                // 设置播放器事件监听
-                vmsInstance.on('play', () => {
-                    console.log('虚拟人开始播放');
-                    isVMSRunning = true;
-                    updateVMSStatus('running');
-                    showNotification('虚拟人启动成功', 'success');
-                });
-
-                vmsInstance.on('error', (error) => {
-                    console.error('虚拟人播放错误:', error);
-                    showNotification('虚拟人播放错误: ' + error.message, 'error');
-                    updateVMSStatus('error');
-                });
-
-                // 启动虚拟人播放流（这里需要实际的流地址）
-                const streamUrl = 'wss://your-vms-server.com/ws'; // 需要替换为实际的VMS服务器地址
-                await vmsInstance.playStream(streamUrl);
-                
-                console.log('VMS虚拟人启动成功');
-                
-            } catch (error) {
-                console.error('启动VMS虚拟人失败:', error);
-                showNotification('虚拟人启动失败: ' + error.message, 'error');
-                updateVMSStatus('error');
-            }
-        }
-
-        // 停止VMS虚拟人
-        async function stopVMS() {
-            try {
-                if (vmsInstance && isVMSRunning) {
-                    console.log('正在停止VMS虚拟人...');
-                    vmsInstance.stop();
-                    vmsInstance = null;
-                    isVMSRunning = false;
-                    updateVMSStatus('stopped');
-                    console.log('VMS虚拟人已停止');
-                    showNotification('虚拟人已停止', 'info');
-                }
-            } catch (error) {
-                console.error('停止VMS虚拟人失败:', error);
-                showNotification('虚拟人停止失败: ' + error.message, 'error');
-            }
-        }
-
-        // 更新VMS状态显示
-        function updateVMSStatus(status) {
-            const statusIndicator = document.querySelector('.character-status .status-indicator');
-            const statusText = document.getElementById('characterMode');
-            
-            if (statusIndicator && statusText) {
-                switch (status) {
-                    case 'running':
-                        statusIndicator.style.background = '#10B981';
-                        statusText.textContent = '运行中';
-                        break;
-                    case 'stopped':
-                        statusIndicator.style.background = '#6B7280';
-                        statusText.textContent = '已停止';
-                        break;
-                    case 'error':
-                        statusIndicator.style.background = '#EF4444';
-                        statusText.textContent = '错误';
-                        break;
-                    default:
-                        statusIndicator.style.background = '#6B7280';
-                        statusText.textContent = 'VMS模式';
-                }
-            }
-        }
 
         // 讯飞虚拟人全局变量
         let interactiveSDK = null;
@@ -2958,9 +2824,6 @@
             return true;
         }
 
-
-        
-
         // 停止虚拟人
         function stopAvatar() {
             console.log('停止虚拟人按钮被点击，当前状态:', {
@@ -2987,6 +2850,7 @@
 
         // 销毁SDK
         function destroySDK() {
+            console.log('7 - 销毁SDK');
             if (!interactiveSDK) {
                 showMessage('SDK未初始化', 'warning');
                 return;
@@ -3446,7 +3310,420 @@
             }
         }
 
-
+        // 聊天记录功能
+        
+        // 生成会话ID
+        function generateSessionId() {
+            return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+        
+        // 保存聊天记录到本地存储
+        async function saveChatHistory() {
+            try {
+                const sessionData = {
+                    sessionId: currentSessionId,
+                    startTime: new Date().toISOString(),
+                    role: currentRole,
+                    messages: chatHistory,
+                    messageCount: chatHistory.length
+                };
+                
+                // 获取现有会话列表
+                let sessions = JSON.parse(localStorage.getItem('aiChatSessions') || '[]');
+                
+                // 检查是否已存在当前会话
+                const existingIndex = sessions.findIndex(session => session.sessionId === currentSessionId);
+                if (existingIndex !== -1) {
+                    // 更新现有会话
+                    sessions[existingIndex] = sessionData;
+                } else {
+                    // 添加新会话（最多保存10个会话）
+                    sessions.unshift(sessionData);
+                    if (sessions.length > 10) {
+                        sessions = sessions.slice(0, 10);
+                    }
+                }
+                
+                localStorage.setItem('aiChatSessions', JSON.stringify(sessions));
+                console.log('聊天记录已保存到本地存储，当前会话:', currentSessionId);
+                
+            } catch (error) {
+                console.error('保存聊天记录到本地存储失败:', error);
+            }
+        }
+        
+        // 加载聊天记录
+        async function loadChatHistory(sessionId = null) {
+            try {
+                // 首先尝试从Supabase加载
+                const supabaseLoaded = await loadChatHistoryFromSupabase(sessionId);
+                if (supabaseLoaded) {
+                    return true;
+                }
+                
+                // 如果Supabase加载失败，回退到本地存储
+                const sessions = JSON.parse(localStorage.getItem('aiChatSessions') || '[]');
+                
+                if (sessionId) {
+                    // 加载指定会话
+                    const session = sessions.find(s => s.sessionId === sessionId);
+                    if (session) {
+                        chatHistory = session.messages || [];
+                        currentSessionId = session.sessionId;
+                        currentRole = session.role || 'companion';
+                        
+                        // 清空聊天界面并重新渲染消息
+                        chatBody.innerHTML = '';
+                        chatHistory.forEach(msg => {
+                            if (msg.type === 'user') {
+                                addUserMessageToUI(msg.content, msg.timestamp);
+                            } else if (msg.type === 'ai') {
+                                addAIMessageToUI(msg.content, msg.timestamp);
+                            }
+                        });
+                        
+                        // 更新角色选择
+                        if (document.getElementById(currentRole)) {
+                            document.getElementById(currentRole).checked = true;
+                        }
+                        
+                        console.log('聊天记录加载成功，会话:', sessionId);
+                        return true;
+                    }
+                } else {
+                    // 加载最新会话
+                    if (sessions.length > 0) {
+                        const latestSession = sessions[0];
+                        return loadChatHistory(latestSession.sessionId);
+                    }
+                }
+                
+            } catch (error) {
+                console.error('加载聊天记录失败:', error);
+            }
+            return false;
+        }
+        
+        // 从Supabase加载聊天记录
+        async function loadChatHistoryFromSupabase(sessionId = null) {
+            try {
+                // 检查用户是否已登录
+                const user = await window.HeartHarborServices.AuthService.getCurrentUser();
+                if (!user.data.user) {
+                    console.warn('用户未登录，跳过Supabase加载');
+                    return false;
+                }
+                
+                // 获取用户的聊天会话
+                const sessionsResult = await window.HeartHarborServices.AIChatService.getSessions();
+                if (!sessionsResult.success) {
+                    console.error('获取Supabase会话失败:', sessionsResult.error);
+                    return false;
+                }
+                
+                const sessions = sessionsResult.data || [];
+                if (sessions.length === 0) {
+                    console.log('Supabase中没有聊天会话');
+                    return false;
+                }
+                
+                // 选择会话
+                let targetSession = null;
+                if (sessionId) {
+                    targetSession = sessions.find(s => s.id === sessionId);
+                } else {
+                    // 选择最新的会话
+                    targetSession = sessions[0];
+                }
+                
+                if (!targetSession) {
+                    console.log('未找到指定的Supabase会话');
+                    return false;
+                }
+                
+                // 获取会话消息
+                const messagesResult = await window.HeartHarborServices.AIChatService.getMessages(targetSession.id);
+                if (!messagesResult.success) {
+                    console.error('获取Supabase消息失败:', messagesResult.error);
+                    return false;
+                }
+                
+                const messages = messagesResult.data || [];
+                
+                // 转换消息格式
+                chatHistory = messages.map(msg => ({
+                    type: msg.role === 'user' ? 'user' : 'ai',
+                    content: msg.content,
+                    timestamp: msg.created_at,
+                    sessionId: targetSession.id
+                }));
+                
+                currentSessionId = targetSession.id;
+                currentRole = 'companion'; // 默认角色
+                
+                // 保存Supabase会话ID到本地存储
+                localStorage.setItem('supabase_session_id', targetSession.id);
+                
+                // 清空聊天界面并重新渲染消息
+                chatBody.innerHTML = '';
+                chatHistory.forEach(msg => {
+                    if (msg.type === 'user') {
+                        addUserMessageToUI(msg.content, msg.timestamp);
+                    } else if (msg.type === 'ai') {
+                        addAIMessageToUI(msg.content, msg.timestamp);
+                    }
+                });
+                
+                console.log('从Supabase加载聊天记录成功，会话:', targetSession.id);
+                return true;
+                
+            } catch (error) {
+                console.error('从Supabase加载聊天记录异常:', error);
+                return false;
+            }
+        }
+        
+        // 获取会话列表
+        async function getChatSessions() {
+            try {
+                // 首先尝试从Supabase获取会话列表
+                const user = await window.HeartHarborServices.AuthService.getCurrentUser();
+                if (user.data.user) {
+                    const sessionsResult = await window.HeartHarborServices.AIChatService.getSessions();
+                    if (sessionsResult.success && sessionsResult.data && sessionsResult.data.length > 0) {
+                        // 转换Supabase会话格式为本地格式
+                        const supabaseSessions = sessionsResult.data.map(session => ({
+                            sessionId: session.id,
+                            startTime: session.created_at,
+                            role: 'companion', // 默认角色
+                            messages: [], // 消息内容在加载时单独获取
+                            messageCount: session.message_count || 0,
+                            title: session.title || 'AI心灵伙伴对话',
+                            isSupabase: true // 标记为Supabase会话
+                        }));
+                        
+                        // 合并本地会话和Supabase会话
+                        const localSessions = JSON.parse(localStorage.getItem('aiChatSessions') || '[]');
+                        const allSessions = [...supabaseSessions, ...localSessions];
+                        
+                        // 按时间排序（最新的在前）
+                        allSessions.sort((a, b) => new Date(b.startTime) - new Date(a.startTime));
+                        
+                        return allSessions;
+                    }
+                }
+                
+                // 如果Supabase获取失败，返回本地会话
+                return JSON.parse(localStorage.getItem('aiChatSessions') || '[]');
+                
+            } catch (error) {
+                console.error('获取会话列表失败:', error);
+                return JSON.parse(localStorage.getItem('aiChatSessions') || '[]');
+            }
+        }
+        
+        // 删除会话
+        async function deleteChatSession(sessionId) {
+            try {
+                // 删除本地存储的会话
+                let sessions = getChatSessions();
+                sessions = sessions.filter(session => session.sessionId !== sessionId);
+                localStorage.setItem('aiChatSessions', JSON.stringify(sessions));
+                
+                // 删除Supabase中的会话
+                try {
+                    const user = await window.HeartHarborServices.AuthService.getCurrentUser();
+                    if (user.data.user) {
+                        const deleteResult = await window.HeartHarborServices.AIChatService.deleteSession(sessionId);
+                        if (deleteResult.success) {
+                            console.log('Supabase会话已删除:', sessionId);
+                        } else {
+                            console.warn('Supabase会话删除失败:', deleteResult.error);
+                        }
+                    }
+                } catch (supabaseError) {
+                    console.warn('删除Supabase会话异常:', supabaseError);
+                }
+                
+                // 如果删除的是当前会话，创建新会话
+                if (sessionId === currentSessionId) {
+                    await startNewSession();
+                }
+                
+                console.log('会话已删除:', sessionId);
+                return true;
+                
+            } catch (error) {
+                console.error('删除会话失败:', error);
+                return false;
+            }
+        }
+        
+        // 开始新会话
+        async function startNewSession() {
+            currentSessionId = generateSessionId();
+            chatHistory = [];
+            chatBody.innerHTML = '';
+            
+            // 在Supabase中创建新会话
+            try {
+                const user = await window.HeartHarborServices.AuthService.getCurrentUser();
+                if (user.data.user) {
+                    const sessionResult = await window.HeartHarborServices.AIChatService.createSession('AI心灵伙伴对话');
+                    if (sessionResult.success) {
+                        currentSessionId = sessionResult.data.id;
+                        localStorage.setItem('supabase_session_id', currentSessionId);
+                        console.log('Supabase新会话已创建:', currentSessionId);
+                    } else {
+                        console.warn('Supabase会话创建失败，使用本地会话ID');
+                    }
+                }
+            } catch (error) {
+                console.warn('Supabase会话创建异常，使用本地会话ID:', error);
+            }
+            
+            // 添加欢迎消息
+            const welcomeMessage = currentRole === 'companion' ? 
+                '你好！我是你的心灵伙伴，很高兴能陪伴你。有什么想聊的吗？' : 
+                '您好！我是专业心理咨询师，很乐意为您提供专业的心理支持。';
+            
+            addAIMessageToUI(welcomeMessage, new Date().toISOString());
+            
+            console.log('新会话已开始:', currentSessionId);
+        }
+        
+        // 添加消息到聊天记录
+        async function addMessageToHistory(type, content) {
+            const message = {
+                type: type,
+                content: content,
+                timestamp: new Date().toISOString(),
+                sessionId: currentSessionId
+            };
+            
+            chatHistory.push(message);
+            
+            // 同时保存到本地存储和Supabase数据库
+            await saveChatHistory();
+            await saveMessageToSupabase(type, content);
+        }
+        
+        // 带时间戳的用户消息UI
+        function addUserMessageToUI(message, timestamp = null) {
+            const messageElement = document.createElement('div');
+            messageElement.className = 'message user-message';
+            messageElement.innerHTML = `
+                <div class="message-content">
+                    ${message}
+                    <div class="message-time">${timestamp ? formatTimestamp(timestamp) : getCurrentTime()}</div>
+                </div>
+            `;
+            chatBody.appendChild(messageElement);
+            scrollToBottom();
+        }
+        
+        // 带时间戳的AI消息UI
+        function addAIMessageToUI(message, timestamp = null) {
+            const messageElement = document.createElement('div');
+            messageElement.className = 'message ai-message';
+            messageElement.innerHTML = `
+                <div class="message-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="message-content">
+                    ${message}
+                    <div class="message-time">${timestamp ? formatTimestamp(timestamp) : getCurrentTime()}</div>
+                </div>
+            `;
+            chatBody.appendChild(messageElement);
+            scrollToBottom();
+        }
+        
+        // 格式化时间戳
+        function formatTimestamp(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diff = now - date;
+            
+            // 如果是今天
+            if (date.toDateString() === now.toDateString()) {
+                return date.toLocaleTimeString('zh-CN', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+            }
+            
+            // 如果是昨天
+            const yesterday = new Date(now);
+            yesterday.setDate(yesterday.getDate() - 1);
+            if (date.toDateString() === yesterday.toDateString()) {
+                return '昨天 ' + date.toLocaleTimeString('zh-CN', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+            }
+            
+            // 其他情况显示完整日期
+            return date.toLocaleDateString('zh-CN') + ' ' + 
+                   date.toLocaleTimeString('zh-CN', { 
+                       hour: '2-digit', 
+                       minute: '2-digit' 
+                   });
+        }
+        
+        // 保存消息到Supabase数据库
+        async function saveMessageToSupabase(type, content) {
+            try {
+                // 检查用户是否已登录
+                const user = await window.HeartHarborServices.AuthService.getCurrentUser();
+                if (!user.data.user) {
+                    console.warn('用户未登录，跳过Supabase保存');
+                    return;
+                }
+                
+                // 检查是否已有Supabase会话
+                let supabaseSessionId = localStorage.getItem('supabase_session_id');
+                if (!supabaseSessionId) {
+                    // 创建新的Supabase会话
+                    const sessionResult = await window.HeartHarborServices.AIChatService.createSession('AI心灵伙伴对话');
+                    if (sessionResult.success) {
+                        supabaseSessionId = sessionResult.data.id;
+                        localStorage.setItem('supabase_session_id', supabaseSessionId);
+                        console.log('创建新的Supabase会话:', supabaseSessionId);
+                    } else {
+                        console.error('创建Supabase会话失败:', sessionResult.error);
+                        return;
+                    }
+                }
+                
+                // 保存消息到Supabase
+                const messageResult = await window.HeartHarborServices.AIChatService.sendMessage(
+                    supabaseSessionId, 
+                    content, 
+                    type === 'user' ? 'user' : 'assistant'
+                );
+                
+                if (messageResult.success) {
+                    console.log('消息已保存到Supabase');
+                } else {
+                    console.error('保存消息到Supabase失败:', messageResult.error);
+                }
+                
+            } catch (error) {
+                console.error('保存消息到Supabase异常:', error);
+            }
+        }
+        
+        // 修改原有的消息添加函数，添加记录功能
+        async function addUserMessage(message) {
+            addUserMessageToUI(message);
+            await addMessageToHistory('user', message);
+        }
+        
+        async function addAIMessage(message) {
+            addAIMessageToUI(message);
+            await addMessageToHistory('ai', message);
+        }
 
         // 初始化
         document.addEventListener('DOMContentLoaded', async () => {
@@ -3464,6 +3741,13 @@
             initEventListeners();
             initXunfeiEventListeners(); // 初始化讯飞虚拟人事件监听
             initVMSEventListeners(); // 初始化VMS虚拟人事件监听
+            
+            // 初始化聊天记录
+            const hasHistory = await loadChatHistory();
+            if (!hasHistory) {
+                startNewSession();
+            }
+            
             scrollToBottom();
         });
     </script>

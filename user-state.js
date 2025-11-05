@@ -65,15 +65,108 @@ class UserStateManager {
         return !!this.currentUser;
     }
 
+    // 获取用户信息（兼容性方法）
+    getUserInfo() {
+        return this.currentUser;
+    }
+
     // 更新用户状态
     async updateUserState() {
         try {
-            const { data: { user } } = await window.HeartHarborServices.supabaseClient.auth.getUser();
+            console.log('开始更新用户状态...');
+            
+            // 检查Supabase服务是否可用
+            if (!window.HeartHarborServices || !window.HeartHarborServices.supabaseClient) {
+                console.warn('Supabase服务不可用，检查本地会话');
+                
+                // 检查本地存储的会话
+                const sessionData = localStorage.getItem('heart-harbor-session');
+                if (sessionData) {
+                    try {
+                        const session = JSON.parse(sessionData);
+                        if (session.user && session.user.id) {
+                            console.log('使用本地存储的用户信息');
+                            this.currentUser = session.user;
+                            this.dispatchStateChange();
+                            return session.user;
+                        }
+                    } catch (parseError) {
+                        console.error('解析本地会话失败:', parseError);
+                        localStorage.removeItem('heart-harbor-session');
+                    }
+                }
+                
+                this.currentUser = null;
+                this.dispatchStateChange();
+                return null;
+            }
+            
+            // 使用Supabase获取最新用户信息
+            const { data: { user }, error } = await window.HeartHarborServices.supabaseClient.auth.getUser();
+            
+            if (error) {
+                console.error('获取用户信息失败:', error);
+                
+                // 检查本地存储作为备用
+                const sessionData = localStorage.getItem('heart-harbor-session');
+                if (sessionData) {
+                    try {
+                        const session = JSON.parse(sessionData);
+                        if (session.user && session.user.id) {
+                            console.log('Supabase失败，使用本地存储的用户信息');
+                            this.currentUser = session.user;
+                            this.dispatchStateChange();
+                            return session.user;
+                        }
+                    } catch (parseError) {
+                        console.error('解析本地会话失败:', parseError);
+                    }
+                }
+                
+                this.currentUser = null;
+                this.dispatchStateChange();
+                return null;
+            }
+            
+            console.log('获取到用户信息:', user ? user.email : 'null');
+            
+            if (user) {
+                // 更新本地存储
+                const sessionData = {
+                    user: user,
+                    timestamp: Date.now()
+                };
+                localStorage.setItem('heart-harbor-session', JSON.stringify(sessionData));
+            } else {
+                // 清除本地存储
+                localStorage.removeItem('heart-harbor-session');
+            }
+            
             this.currentUser = user;
             this.dispatchStateChange();
             return user;
+            
         } catch (error) {
             console.error('更新用户状态失败:', error);
+            
+            // 错误时检查本地存储
+            const sessionData = localStorage.getItem('heart-harbor-session');
+            if (sessionData) {
+                try {
+                    const session = JSON.parse(sessionData);
+                    if (session.user && session.user.id) {
+                        console.log('更新失败，使用本地存储的用户信息');
+                        this.currentUser = session.user;
+                        this.dispatchStateChange();
+                        return session.user;
+                    }
+                } catch (parseError) {
+                    console.error('解析本地会话失败:', parseError);
+                }
+            }
+            
+            this.currentUser = null;
+            this.dispatchStateChange();
             return null;
         }
     }

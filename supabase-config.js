@@ -63,6 +63,7 @@ async function initializeSupabase() {
             TreeholeService,
             KnowledgeBaseService,
             AIChatService,
+            UserStatsService,
             supabaseClient
         };
         
@@ -102,6 +103,222 @@ function showSupabaseError(message) {
 
 // 立即开始初始化
 initializeSupabase();
+
+// 用户统计服务
+class UserStatsService {
+    // 获取用户帖子数量
+    static async getUserPostsCount(userId) {
+        try {
+            const { count, error } = await supabaseClient
+                .from('treehole_posts')
+                .select('*', { count: 'exact', head: true })
+                .eq('user_id', userId);
+            
+            if (error) throw error;
+            return count || 0;
+        } catch (error) {
+            console.error('获取用户帖子数量失败:', error);
+            return 0;
+        }
+    }
+    
+    // 获取用户获赞数量
+    static async getUserLikesCount(userId) {
+        try {
+            // 获取用户所有帖子的点赞总数
+            const { data, error } = await supabaseClient
+                .from('treehole_posts')
+                .select('like_count')
+                .eq('user_id', userId);
+            
+            if (error) throw error;
+            
+            const totalLikes = data.reduce((sum, post) => sum + (post.like_count || 0), 0);
+            return totalLikes;
+        } catch (error) {
+            console.error('获取用户获赞数量失败:', error);
+            return 0;
+        }
+    }
+    
+    // 获取用户评论数量
+    static async getUserCommentsCount(userId) {
+        try {
+            const { count, error } = await supabaseClient
+                .from('treehole_comments')
+                .select('*', { count: 'exact', head: true })
+                .eq('user_id', userId);
+            
+            if (error) throw error;
+            return count || 0;
+        } catch (error) {
+            console.error('获取用户评论数量失败:', error);
+            return 0;
+        }
+    }
+    
+    // 获取用户活跃天数
+    static async getUserActivityDays(userId) {
+        try {
+            // 获取用户最早的活动日期
+            const { data: posts, error: postsError } = await supabaseClient
+                .from('treehole_posts')
+                .select('created_at')
+                .eq('user_id', userId)
+                .order('created_at', { ascending: true })
+                .limit(1);
+            
+            const { data: comments, error: commentsError } = await supabaseClient
+                .from('treehole_comments')
+                .select('created_at')
+                .eq('user_id', userId)
+                .order('created_at', { ascending: true })
+                .limit(1);
+            
+            if (postsError && commentsError) {
+                throw new Error('无法获取用户活动数据');
+            }
+            
+            // 找到最早的活动日期
+            const earliestDates = [];
+            if (posts && posts.length > 0) earliestDates.push(new Date(posts[0].created_at));
+            if (comments && comments.length > 0) earliestDates.push(new Date(comments[0].created_at));
+            
+            if (earliestDates.length === 0) return 0;
+            
+            const earliestDate = new Date(Math.min(...earliestDates.map(d => d.getTime())));
+            const today = new Date();
+            const diffTime = Math.abs(today - earliestDate);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            return Math.min(diffDays, 365); // 最多显示365天
+        } catch (error) {
+            console.error('获取用户活跃天数失败:', error);
+            return 0;
+        }
+    }
+    
+    // 获取用户完整统计数据
+    static async getUserStats(userId) {
+        try {
+            const [posts, likes, comments, activityDays] = await Promise.all([
+                this.getUserPostsCount(userId),
+                this.getUserLikesCount(userId),
+                this.getUserCommentsCount(userId),
+                this.getUserActivityDays(userId)
+            ]);
+            
+            return {
+                posts: posts,
+                likes: likes,
+                comments: comments,
+                activityDays: activityDays
+            };
+        } catch (error) {
+            console.error('获取用户统计数据失败:', error);
+            return {
+                posts: 0,
+                likes: 0,
+                comments: 0,
+                activityDays: 0
+            };
+        }
+    }
+    
+    // 获取用户详细信息
+    static async getUserDetails(userId) {
+        try {
+            const { data, error } = await supabaseClient
+                .from('users')
+                .select('username, email, avatar_url, bio, created_at, last_login')
+                .eq('id', userId)
+                .single();
+            
+            if (error) throw error;
+            return { success: true, data };
+        } catch (error) {
+            console.error('获取用户详细信息失败:', error);
+            return { success: false, error: error.message };
+        }
+    }
+    
+    // 获取用户帖子列表
+    static async getUserPosts(userId, limit = 10, offset = 0) {
+        try {
+            const { data, error } = await supabaseClient
+                .from('treehole_posts')
+                .select('*')
+                .eq('user_id', userId)
+                .order('created_at', { ascending: false })
+                .range(offset, offset + limit - 1);
+            
+            if (error) throw error;
+            return { success: true, data };
+        } catch (error) {
+            console.error('获取用户帖子列表失败:', error);
+            return { success: false, error: error.message };
+        }
+    }
+    
+    // 获取用户点赞记录
+    static async getUserLikes(userId, limit = 10, offset = 0) {
+        try {
+            const { data, error } = await supabaseClient
+                .from('treehole_likes')
+                .select(`
+                    *,
+                    post:treehole_posts(content, created_at)
+                `)
+                .eq('user_id', userId)
+                .order('created_at', { ascending: false })
+                .range(offset, offset + limit - 1);
+            
+            if (error) throw error;
+            return { success: true, data };
+        } catch (error) {
+            console.error('获取用户点赞记录失败:', error);
+            return { success: false, error: error.message };
+        }
+    }
+    
+    // 获取用户评论记录
+    static async getUserComments(userId, limit = 10, offset = 0) {
+        try {
+            const { data, error } = await supabaseClient
+                .from('treehole_comments')
+                .select(`
+                    *,
+                    post:treehole_posts(content, created_at)
+                `)
+                .eq('user_id', userId)
+                .order('created_at', { ascending: false })
+                .range(offset, offset + limit - 1);
+            
+            if (error) throw error;
+            return { success: true, data };
+        } catch (error) {
+            console.error('获取用户评论记录失败:', error);
+            return { success: false, error: error.message };
+        }
+    }
+    
+    // 更新用户信息
+    static async updateUserProfile(userId, profileData) {
+        try {
+            const { data, error } = await supabaseClient
+                .from('users')
+                .update(profileData)
+                .eq('id', userId)
+                .select();
+            
+            if (error) throw error;
+            return { success: true, data };
+        } catch (error) {
+            console.error('更新用户信息失败:', error);
+            return { success: false, error: error.message };
+        }
+    }
+}
 
 // 用户认证相关函数
 class AuthService {
@@ -742,6 +959,7 @@ if (!window.HeartHarborServices) {
         TreeholeService,
         KnowledgeBaseService,
         AIChatService,
+        UserStatsService,
         supabaseClient
     };
 }

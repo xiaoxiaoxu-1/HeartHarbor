@@ -292,11 +292,28 @@
             text-align: center;
             transition: all 0.3s;
             cursor: pointer;
+            position: relative;
+            overflow: hidden;
         }
         
         .stat-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+        
+        .stat-card:hover::before {
+            left: 100%;
         }
         
         .stat-icon {
@@ -310,6 +327,11 @@
             margin: 0 auto 15px;
             color: white;
             font-size: 24px;
+            transition: transform 0.3s;
+        }
+        
+        .stat-card:hover .stat-icon {
+            transform: scale(1.1);
         }
         
         .stat-number {
@@ -317,11 +339,41 @@
             font-weight: bold;
             color: var(--primary-color);
             margin-bottom: 5px;
+            transition: color 0.3s;
+        }
+        
+        .stat-card:hover .stat-number {
+            color: var(--secondary-color);
         }
         
         .stat-label {
             font-size: 0.9rem;
             color: var(--light-text);
+            transition: color 0.3s;
+        }
+        
+        .stat-card:hover .stat-label {
+            color: var(--text-color);
+        }
+        
+        .stat-progress {
+            margin-top: 15px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #f0f0f0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient);
+            border-radius: 3px;
+            transition: width 0.5s ease-out;
+            width: 0%;
         }
         
         /* 功能菜单 */
@@ -457,6 +509,820 @@
         .stat-card, .menu-card {
             animation: fadeInUp 0.5s ease-out;
         }
+        
+        /* 模态框样式 */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideInUp 0.3s ease-out;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 25px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .modal-header h3 {
+            margin: 0;
+            color: #2D3748;
+            font-size: 1.3rem;
+        }
+        
+        .close-modal {
+            font-size: 24px;
+            cursor: pointer;
+            color: #718096;
+            transition: color 0.3s;
+        }
+        
+        .close-modal:hover {
+            color: #2D3748;
+        }
+        
+        .modal-body {
+            padding: 25px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2D3748;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(142, 197, 252, 0.1);
+        }
+        
+        .avatar-upload {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .avatar-preview {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+            overflow: hidden;
+        }
+        
+        .avatar-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .btn-upload {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #4a5568;
+        }
+        
+        .btn-upload:hover {
+            background: #edf2f7;
+            border-color: #cbd5e0;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .btn-cancel {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #4a5568;
+        }
+        
+        .btn-cancel:hover {
+            background: #edf2f7;
+            border-color: #cbd5e0;
+        }
+        
+        .btn-save {
+            background: var(--gradient);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            color: white;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(142, 197, 252, 0.3);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* 账号设置样式 */
+        .settings-modal {
+            max-width: 800px !important;
+        }
+        
+        .settings-tabs {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 20px;
+        }
+        
+        .tab-button {
+            padding: 12px 20px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #718096;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab-button:hover {
+            color: var(--primary-color);
+        }
+        
+        .tab-button.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+        
+        .tab-content {
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .tab-pane {
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .tab-pane.active {
+            display: block;
+        }
+        
+        .setting-section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #f7fafc;
+        }
+        
+        .setting-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        
+        .setting-section h4 {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            color: #2D3748;
+            font-size: 16px;
+        }
+        
+        .setting-section h4 i {
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+        
+        /* 开关样式 */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+            margin-right: 15px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: var(--primary-color);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        /* 选项样式 */
+        .privacy-option,
+        .notification-option {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: #f7fafc;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
+        
+        .privacy-option:hover,
+        .notification-option:hover {
+            background: #edf2f7;
+        }
+        
+        .option-info {
+            flex: 1;
+        }
+        
+        .option-title {
+            display: block;
+            font-weight: 500;
+            color: #2D3748;
+            margin-bottom: 4px;
+        }
+        
+        .option-description {
+            display: block;
+            font-size: 12px;
+            color: #718096;
+        }
+        
+        /* 单选按钮样式 */
+        .radio-option {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            cursor: pointer;
+        }
+        
+        .radio-option input {
+            margin-right: 10px;
+        }
+        
+        .radio-label {
+            font-size: 14px;
+            color: #2D3748;
+        }
+        
+        /* 安全状态样式 */
+        .security-status {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: #f7fafc;
+            border-radius: 8px;
+        }
+        
+        .status-item i {
+            margin-right: 10px;
+            color: #718096;
+        }
+        
+        .status-item span:first-of-type {
+            flex: 1;
+            font-size: 14px;
+            color: #2D3748;
+        }
+        
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-badge.success {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+        
+        .status-value {
+            font-size: 12px;
+            color: #718096;
+        }
+        
+        .btn-link {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-size: 12px;
+            text-decoration: underline;
+        }
+        
+        .btn-link:hover {
+            color: #40a9ff;
+        }
+        
+        /* 密码强度检测 */
+        .password-strength {
+            margin-top: 8px;
+        }
+        
+        .strength-bar {
+            height: 4px;
+            background: #e2e8f0;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 4px;
+        }
+        
+        .strength-bar::before {
+            content: "";
+            display: block;
+            height: 100%;
+            width: 0%;
+            background: #e53e3e;
+            transition: all 0.3s;
+        }
+        
+        .strength-text {
+            font-size: 12px;
+            color: #718096;
+        }
+        
+        .password-match {
+            margin-top: 8px;
+            font-size: 12px;
+            color: #38a169;
+            display: flex;
+            align-items: center;
+        }
+        
+        .password-match i {
+            margin-right: 4px;
+        }
+        
+        /* 帖子弹窗样式 */
+        .posts-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .posts-modal-content {
+            background: white;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideInUp 0.3s ease-out;
+        }
+        
+        .posts-container {
+            max-height: calc(80vh - 80px);
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .posts-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .posts-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        
+        .posts-container::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+        
+        .posts-container::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        
+        .post-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--primary-color);
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.4s ease-out;
+        }
+        
+        .post-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .post-content {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #333;
+            margin-bottom: 15px;
+            word-wrap: break-word;
+        }
+        
+        .post-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .post-stats {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .post-likes i {
+            color: #e74c3c;
+        }
+        
+        .post-comments i {
+            color: #3498db;
+        }
+        
+        /* 空状态样式 */
+        .posts-empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        
+        .posts-empty-state i {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: #ccc;
+        }
+        
+        .posts-empty-state h4 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        
+        .posts-empty-state p {
+            margin: 0;
+            color: #999;
+        }
+        
+        /* 点赞弹窗样式 */
+        .likes-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .likes-modal-content {
+            background: white;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideInUp 0.3s ease-out;
+        }
+        
+        .likes-container {
+            max-height: calc(80vh - 80px);
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .likes-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .likes-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        
+        .likes-container::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+        
+        .likes-container::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        
+        .like-card {
+            background: #fff5f5;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #e74c3c;
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.4s ease-out;
+        }
+        
+        .like-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .liked-post-content {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #333;
+            margin-bottom: 15px;
+            word-wrap: break-word;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #3498db;
+        }
+        
+        .like-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .like-stats {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .like-type i {
+            color: #e74c3c;
+        }
+        
+        /* 评论弹窗样式 */
+        .comments-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .comments-modal-content {
+            background: white;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideInUp 0.3s ease-out;
+        }
+        
+        .comments-container {
+            max-height: calc(80vh - 80px);
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .comments-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .comments-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        
+        .comments-container::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+        
+        .comments-container::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        
+        .comment-card {
+            background: #f0f8ff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #3498db;
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.4s ease-out;
+        }
+        
+        .comment-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .comment-content {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #333;
+            margin-bottom: 15px;
+            word-wrap: break-word;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #3498db;
+        }
+        
+        .original-post {
+            font-size: 13px;
+            line-height: 1.5;
+            color: #666;
+            margin-bottom: 15px;
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 2px solid #95a5a6;
+        }
+        
+        .comment-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .comment-stats {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .comment-type i {
+            color: #3498db;
+        }
+        
+        /* 空状态样式 */
+        .likes-empty-state,
+        .comments-empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        
+        .likes-empty-state i,
+        .comments-empty-state i {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: #ccc;
+        }
+        
+        .likes-empty-state h4,
+        .comments-empty-state h4 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        
+        .likes-empty-state p,
+        .comments-empty-state p {
+            margin: 0;
+            color: #999;
+        }
+        
+        /* 动画效果 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
 </head>
 <body>
@@ -534,6 +1400,11 @@
                     </div>
                     <div class="stat-number" id="post-count">0</div>
                     <div class="stat-label">我的帖子</div>
+                    <div class="stat-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="posts-progress"></div>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="stat-card" onclick="viewLikes()">
@@ -542,6 +1413,11 @@
                     </div>
                     <div class="stat-number" id="like-count">0</div>
                     <div class="stat-label">获赞数量</div>
+                    <div class="stat-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="likes-progress"></div>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="stat-card" onclick="viewComments()">
@@ -550,6 +1426,11 @@
                     </div>
                     <div class="stat-number" id="comment-count">0</div>
                     <div class="stat-label">评论数量</div>
+                    <div class="stat-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="comments-progress"></div>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="stat-card" onclick="viewActivity()">
@@ -558,6 +1439,11 @@
                     </div>
                     <div class="stat-number" id="activity-days">0</div>
                     <div class="stat-label">活跃天数</div>
+                    <div class="stat-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="activity-progress"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
             
@@ -655,75 +1541,444 @@
         </div>
     </section>
 
+    <!-- 编辑资料模态框 -->
+    <div id="edit-profile-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>编辑个人资料</h3>
+                <span class="close-modal" onclick="closeEditProfileModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="edit-profile-form">
+                    <div class="form-group">
+                        <label for="edit-username">用户名</label>
+                        <input type="text" id="edit-username" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-email">邮箱地址</label>
+                        <input type="email" id="edit-email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-bio">个人简介</label>
+                        <textarea id="edit-bio" name="bio" rows="3" placeholder="介绍一下自己..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-avatar">头像</label>
+                        <div class="avatar-upload">
+                            <div class="avatar-preview" id="avatar-preview">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <input type="file" id="edit-avatar" name="avatar" accept="image/*" style="display: none;">
+                            <button type="button" class="btn-upload" onclick="document.getElementById('edit-avatar').click()">
+                                <i class="fas fa-camera"></i> 更换头像
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-cancel" onclick="closeEditProfileModal()">取消</button>
+                        <button type="submit" class="btn-save">保存更改</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+        </div>
+    </section>
+
+    <!-- 编辑资料模态框 -->
+    <div id="edit-profile-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>编辑个人资料</h3>
+                <span class="close-modal" onclick="closeEditProfileModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="edit-profile-form">
+                    <div class="form-group">
+                        <label for="edit-username">用户名</label>
+                        <input type="text" id="edit-username" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-email">邮箱地址</label>
+                        <input type="email" id="edit-email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-bio">个人简介</label>
+                        <textarea id="edit-bio" name="bio" rows="3" placeholder="介绍一下自己..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-avatar">头像</label>
+                        <div class="avatar-upload">
+                            <div class="avatar-preview" id="avatar-preview">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <input type="file" id="edit-avatar" name="avatar" accept="image/*" style="display: none;">
+                            <button type="button" class="btn-upload" onclick="document.getElementById('edit-avatar').click()">
+                                <i class="fas fa-camera"></i> 更换头像
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-cancel" onclick="closeEditProfileModal()">取消</button>
+                        <button type="submit" class="btn-save">保存更改</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+        </div>
+    </section>
+
     <script src="supabase-config.js"></script>
     <script src="user-state.js"></script>
     <script>
         // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', function() {
-            updateUserInterface();
+            initializeUserState();
         });
         
-        // 更新用户界面状态
-        function updateUserInterface() {
-            const isLoggedIn = window.UserStateManager.isLoggedIn();
-            const userInfo = window.UserStateManager.getUserInfo();
-            
-            // 更新导航栏
-            const authButtons = document.getElementById('auth-buttons');
-            const userMenu = document.getElementById('user-menu');
-            
-            if (isLoggedIn && userInfo) {
-                authButtons.style.display = 'none';
-                userMenu.style.display = 'flex';
+        // 初始化用户状态
+        async function initializeUserState() {
+            try {
+                // 等待用户状态管理器初始化完成
+                await window.UserStateManager.waitForInitialization();
                 
-                // 更新用户名
-                const userNameElement = document.getElementById('user-name');
+                // 更新用户界面
+                updateUserInterface();
+                
+                // 监听用户状态变化
+                window.addEventListener('userStateChange', function(event) {
+                    console.log('用户状态变化:', event.detail);
+                    updateUserInterface();
+                });
+                
+                // 监听页面可见性变化（当用户从其他标签页返回时）
+                document.addEventListener('visibilitychange', function() {
+                    if (!document.hidden) {
+                        // 页面变为可见时，重新检查登录状态
+                        checkLoginStatus();
+                    }
+                });
+                
+                // 监听storage事件（当其他标签页修改了localStorage时）
+                window.addEventListener('storage', function(event) {
+                    if (event.key === 'heart-harbor-session') {
+                        console.log('检测到会话状态变化，重新检查登录状态');
+                        checkLoginStatus();
+                    }
+                });
+                
+            } catch (error) {
+                console.error('初始化用户状态失败:', error);
+                // 即使初始化失败，也显示默认界面
+                updateUserInterface();
+            }
+        }
+        
+        // 检查登录状态
+        async function checkLoginStatus() {
+            try {
+                console.log('检查登录状态...');
+                
+                // 更新用户状态
+                const user = await window.UserStateManager.updateUserState();
+                
+                if (user) {
+                    console.log('用户已登录:', user.email);
+                    // 触发界面更新
+                    updateUserInterface();
+                } else {
+                    console.log('用户未登录');
+                    // 触发界面更新
+                    updateUserInterface();
+                }
+                
+            } catch (error) {
+                console.error('检查登录状态失败:', error);
+            }
+        }
+        
+        // 更新用户界面状态
+        async function updateUserInterface() {
+            try {
+                const isLoggedIn = window.UserStateManager.isLoggedIn();
+                const userInfo = window.UserStateManager.getUserInfo();
+                
+                console.log('更新用户界面状态:', { isLoggedIn, userInfo });
+                
+                // 更新导航栏
+                const authButtons = document.getElementById('auth-buttons');
+                const userMenu = document.getElementById('user-menu');
+                
+                if (isLoggedIn && userInfo) {
+                    // 用户已登录
+                    if (authButtons) authButtons.style.display = 'none';
+                    if (userMenu) userMenu.style.display = 'flex';
+                    
+                    // 更新用户名显示
+                    const userNameElement = document.getElementById('user-name');
+                    const profileUsername = document.getElementById('profile-username');
+                    const profileUserid = document.getElementById('profile-userid');
+                    
+                    if (userNameElement) {
+                        userNameElement.textContent = userInfo.username || userInfo.email || '用户';
+                    }
+                    if (profileUsername) {
+                        profileUsername.textContent = userInfo.username || userInfo.email || '用户';
+                    }
+                    if (profileUserid) {
+                        profileUserid.textContent = `用户ID: ${userInfo.id || '未知'}`;
+                    }
+                    
+                    // 显示退出登录按钮，隐藏登录提示
+                    const logoutSection = document.getElementById('logout-section');
+                    const loginPrompt = document.getElementById('login-prompt');
+                    if (logoutSection) logoutSection.style.display = 'block';
+                    if (loginPrompt) loginPrompt.style.display = 'none';
+                    
+                    // 加载用户详细信息
+                    const userId = userInfo.id || (userInfo.user && userInfo.user.id);
+                    if (userId) {
+                        await loadUserDetails(userId);
+                        // 加载用户统计数据
+                        await loadUserStats();
+                    } else {
+                        console.warn('无法获取用户ID，跳过加载详细信息');
+                        resetUserInfo();
+                    }
+                    
+                } else {
+                    // 用户未登录
+                    if (authButtons) authButtons.style.display = 'flex';
+                    if (userMenu) userMenu.style.display = 'none';
+                    
+                    // 显示登录提示，隐藏退出登录按钮
+                    const logoutSection = document.getElementById('logout-section');
+                    const loginPrompt = document.getElementById('login-prompt');
+                    if (logoutSection) logoutSection.style.display = 'none';
+                    if (loginPrompt) loginPrompt.style.display = 'block';
+                    
+                    // 重置用户信息显示
+                    resetUserInfo();
+                    
+                    // 重置统计数据
+                    resetStats();
+                }
+                
+            } catch (error) {
+                console.error('更新用户界面状态失败:', error);
+                
+                // 出错时显示未登录状态
+                const authButtons = document.getElementById('auth-buttons');
+                const userMenu = document.getElementById('user-menu');
+                if (authButtons) authButtons.style.display = 'flex';
+                if (userMenu) userMenu.style.display = 'none';
+                
+                resetUserInfo();
+                resetStats();
+            }
+        }
+        
+        // 加载用户详细信息
+        async function loadUserDetails(userId) {
+            try {
+                console.log('开始加载用户详细信息，用户ID:', userId);
+                
+                if (!window.HeartHarborServices || !window.HeartHarborServices.UserStatsService) {
+                    console.warn('用户统计服务不可用，无法加载用户详细信息');
+                    return;
+                }
+                
+                // 使用UserStatsService获取用户详细信息
+                const result = await window.HeartHarborServices.UserStatsService.getUserDetails(userId);
+                
+                if (!result.success) {
+                    console.warn('获取用户详细信息失败:', result.error);
+                    // 尝试使用备用方法获取用户信息
+                    await loadUserDetailsFallback(userId);
+                    return;
+                }
+                
+                const userData = result.data;
+                console.log('用户详细信息加载成功:', userData);
+                
+                // 更新用户信息显示
                 const profileUsername = document.getElementById('profile-username');
                 const profileUserid = document.getElementById('profile-userid');
+                const profileEmail = document.getElementById('profile-email');
+                const profileBio = document.getElementById('profile-bio');
+                const profileJoinDate = document.getElementById('profile-join-date');
+                const profileLastLogin = document.getElementById('profile-last-login');
                 
-                userNameElement.textContent = userInfo.username || '用户';
-                profileUsername.textContent = userInfo.username || '用户';
-                profileUserid.textContent = `用户ID: ${userInfo.id || '未知'}`;
+                if (profileUsername) {
+                    profileUsername.textContent = userData.username || '用户';
+                }
+                if (profileUserid) {
+                    profileUserid.textContent = `用户ID: ${userId}`;
+                }
+                if (profileEmail) {
+                    profileEmail.textContent = userData.email || '未设置邮箱';
+                }
+                if (profileBio) {
+                    profileBio.textContent = userData.bio || '这个人很懒，还没有写个人简介';
+                }
+                if (profileJoinDate && userData.created_at) {
+                    const joinDate = new Date(userData.created_at);
+                    profileJoinDate.textContent = `加入时间: ${joinDate.toLocaleDateString('zh-CN')}`;
+                }
+                if (profileLastLogin && userData.last_login) {
+                    const lastLogin = new Date(userData.last_login);
+                    profileLastLogin.textContent = `最后登录: ${lastLogin.toLocaleDateString('zh-CN')}`;
+                }
                 
-                // 显示退出登录按钮
-                document.getElementById('logout-section').style.display = 'block';
-                document.getElementById('login-prompt').style.display = 'none';
+                // 更新编辑表单中的默认值
+                const editUsername = document.getElementById('edit-username');
+                const editEmail = document.getElementById('edit-email');
+                const editBio = document.getElementById('edit-bio');
                 
-                // 加载用户统计数据
-                loadUserStats();
-            } else {
-                authButtons.style.display = 'flex';
-                userMenu.style.display = 'none';
+                if (editUsername) editUsername.value = userData.username || '';
+                if (editEmail) editEmail.value = userData.email || '';
+                if (editBio) editBio.value = userData.bio || '';
                 
-                // 显示登录提示
-                document.getElementById('logout-section').style.display = 'none';
-                document.getElementById('login-prompt').style.display = 'block';
+                // 更新头像显示
+                const avatarPreview = document.getElementById('avatar-preview');
+                if (avatarPreview) {
+                    if (userData.avatar_url) {
+                        avatarPreview.innerHTML = '';
+                        const img = document.createElement('img');
+                        img.src = userData.avatar_url;
+                        img.alt = '用户头像';
+                        img.style.width = '100%';
+                        img.style.height = '100%';
+                        img.style.borderRadius = '50%';
+                        img.style.objectFit = 'cover';
+                        avatarPreview.appendChild(img);
+                    } else {
+                        avatarPreview.innerHTML = '<i class="fas fa-user"></i>';
+                    }
+                }
                 
-                // 重置统计数据
-                resetStats();
+                // 更新编辑表单中的信息（移除重复声明，直接使用已存在的变量）
+                
+            } catch (error) {
+                console.error('加载用户详细信息失败:', error);
+            }
+        }
+        
+        // 重置用户信息显示
+        function resetUserInfo() {
+            const profileUsername = document.getElementById('profile-username');
+            const profileUserid = document.getElementById('profile-userid');
+            
+            if (profileUsername) profileUsername.textContent = '未登录用户';
+            if (profileUserid) profileUserid.textContent = '请登录后查看个人信息';
+            
+            // 重置头像
+            const avatarPreview = document.getElementById('avatar-preview');
+            if (avatarPreview) {
+                avatarPreview.innerHTML = '<i class="fas fa-user"></i>';
             }
         }
         
         // 加载用户统计数据
         async function loadUserStats() {
             try {
-                // 模拟用户统计数据
-                const stats = {
-                    posts: 12,
-                    likes: 156,
-                    comments: 89,
-                    activityDays: 45
-                };
+                const userInfo = window.UserStateManager.getUserInfo();
+                if (!userInfo) {
+                    resetStats();
+                    return;
+                }
+                
+                // 从Supabase获取真实数据
+                const userStats = await getUserStatsFromSupabase(userInfo.id);
                 
                 // 更新统计数据显示
-                document.getElementById('post-count').textContent = stats.posts;
-                document.getElementById('like-count').textContent = stats.likes;
-                document.getElementById('comment-count').textContent = stats.comments;
-                document.getElementById('activity-days').textContent = stats.activityDays;
+                document.getElementById('post-count').textContent = userStats.posts;
+                document.getElementById('like-count').textContent = userStats.likes;
+                document.getElementById('comment-count').textContent = userStats.comments;
+                document.getElementById('activity-days').textContent = userStats.activityDays;
                 
             } catch (error) {
                 console.error('加载统计数据失败:', error);
                 resetStats();
+            }
+        }
+        
+        // 从Supabase获取用户统计数据
+        async function getUserStatsFromSupabase(userId) {
+            try {
+                console.log('开始获取用户统计数据，用户ID:', userId);
+                
+                // 检查服务是否可用
+                if (!window.HeartHarborServices || !window.HeartHarborServices.UserStatsService) {
+                    console.warn('用户统计服务不可用，使用默认数据');
+                    return {
+                        posts: 0,
+                        likes: 0,
+                        comments: 0,
+                        activityDays: 0
+                    };
+                }
+                
+                // 使用UserStatsService获取真实数据
+                const userStats = await window.HeartHarborServices.UserStatsService.getUserStats(userId);
+                
+                console.log('获取到的用户统计数据:', userStats);
+                
+                // 添加统计数据的可视化效果
+                updateStatsVisualization(userStats);
+                
+                return userStats;
+                
+            } catch (error) {
+                console.error('获取Supabase统计数据失败:', error);
+                // 返回默认数据
+                return {
+                    posts: 0,
+                    likes: 0,
+                    comments: 0,
+                    activityDays: 0
+                };
+            }
+        }
+        
+        // 更新统计数据可视化效果
+        function updateStatsVisualization(stats) {
+            // 为统计数据添加动画效果
+            const statCards = document.querySelectorAll('.stat-card');
+            statCards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.transform = 'translateY(0)';
+                    card.style.opacity = '1';
+                }, index * 100);
+            });
+            
+            // 添加进度条效果
+            const maxPosts = Math.max(stats.posts, 10);
+            const maxLikes = Math.max(stats.likes, 50);
+            const maxComments = Math.max(stats.comments, 20);
+            const maxActivity = Math.max(stats.activityDays, 30);
+            
+            updateProgressBar('posts-progress', stats.posts / maxPosts);
+            updateProgressBar('likes-progress', stats.likes / maxLikes);
+            updateProgressBar('comments-progress', stats.comments / maxComments);
+            updateProgressBar('activity-progress', stats.activityDays / maxActivity);
+        }
+        
+        // 更新进度条
+        function updateProgressBar(elementId, progress) {
+            const progressBar = document.getElementById(elementId);
+            if (progressBar) {
+                progressBar.style.width = (progress * 100) + '%';
+                
+                // 根据进度值设置颜色
+                if (progress > 0.7) {
+                    progressBar.style.background = 'var(--success-color)';
+                } else if (progress > 0.3) {
+                    progressBar.style.background = 'var(--warning-color)';
+                } else {
+                    progressBar.style.background = 'var(--error-color)';
+                }
             }
         }
         
@@ -733,37 +1988,117 @@
             document.getElementById('like-count').textContent = '0';
             document.getElementById('comment-count').textContent = '0';
             document.getElementById('activity-days').textContent = '0';
+            
+            // 重置进度条
+            resetProgressBars();
+        }
+        
+        // 重置进度条
+        function resetProgressBars() {
+            const progressBars = ['posts-progress', 'likes-progress', 'comments-progress', 'activity-progress'];
+            progressBars.forEach(id => {
+                const progressBar = document.getElementById(id);
+                if (progressBar) {
+                    progressBar.style.width = '0%';
+                    progressBar.style.background = 'var(--error-color)';
+                }
+            });
         }
         
         // 查看我的帖子
-        function viewMyPosts() {
+        async function viewMyPosts() {
             const isLoggedIn = window.UserStateManager.isLoggedIn();
             if (!isLoggedIn) {
                 showNotification('请先登录后查看我的帖子');
                 return;
             }
+            
+            const userInfo = window.UserStateManager.getUserInfo();
+            if (!userInfo) {
+                showNotification('无法获取用户信息');
+                return;
+            }
+            
             showNotification('正在加载我的帖子...');
-            // 这里可以跳转到我的帖子页面
+            
+            try {
+                // 使用UserStatsService获取用户帖子列表
+                const result = await window.HeartHarborServices.UserStatsService.getUserPosts(userInfo.id, 20, 0);
+                
+                if (result.success && result.data && result.data.length > 0) {
+                    // 显示帖子列表
+                    displayMyPosts(result.data);
+                } else {
+                    showNotification('您还没有发布过帖子');
+                }
+            } catch (error) {
+                console.error('加载我的帖子失败:', error);
+                showNotification('加载帖子失败，请重试');
+            }
         }
         
-        // 查看点赞
-        function viewLikes() {
+        // 查看点赞记录
+        async function viewLikes() {
             const isLoggedIn = window.UserStateManager.isLoggedIn();
             if (!isLoggedIn) {
                 showNotification('请先登录后查看点赞记录');
                 return;
             }
+            
+            const userInfo = window.UserStateManager.getUserInfo();
+            if (!userInfo) {
+                showNotification('无法获取用户信息');
+                return;
+            }
+            
             showNotification('正在加载点赞记录...');
+            
+            try {
+                // 使用UserStatsService获取用户点赞记录
+                const result = await window.HeartHarborServices.UserStatsService.getUserLikes(userInfo.id, 20, 0);
+                
+                if (result.success && result.data && result.data.length > 0) {
+                    // 显示点赞记录
+                    displayMyLikes(result.data);
+                } else {
+                    showNotification('您还没有点赞过任何帖子');
+                }
+            } catch (error) {
+                console.error('加载点赞记录失败:', error);
+                showNotification('加载点赞记录失败，请重试');
+            }
         }
         
-        // 查看评论
-        function viewComments() {
+        // 查看评论记录
+        async function viewComments() {
             const isLoggedIn = window.UserStateManager.isLoggedIn();
             if (!isLoggedIn) {
                 showNotification('请先登录后查看评论记录');
                 return;
             }
+            
+            const userInfo = window.UserStateManager.getUserInfo();
+            if (!userInfo) {
+                showNotification('无法获取用户信息');
+                return;
+            }
+            
             showNotification('正在加载评论记录...');
+            
+            try {
+                // 使用UserStatsService获取用户评论记录
+                const result = await window.HeartHarborServices.UserStatsService.getUserComments(userInfo.id, 20, 0);
+                
+                if (result.success && result.data && result.data.length > 0) {
+                    // 显示评论记录
+                    displayMyComments(result.data);
+                } else {
+                    showNotification('您还没有发表过评论');
+                }
+            } catch (error) {
+                console.error('加载评论记录失败:', error);
+                showNotification('加载评论记录失败，请重试');
+            }
         }
         
         // 查看活跃度
@@ -774,6 +2109,700 @@
                 return;
             }
             showNotification('正在加载活跃度统计...');
+            // 这里可以显示详细的活跃度统计图表
+        }
+        
+        // 显示我的帖子（弹窗模式）
+        function displayMyPosts(posts) {
+            // 创建模态框容器
+            const modalOverlay = document.createElement('div');
+            modalOverlay.className = 'posts-modal-overlay';
+            modalOverlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.6);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 2000;
+                animation: fadeIn 0.3s ease-out;
+            `;
+            
+            // 创建模态框内容
+            const modalContent = document.createElement('div');
+            modalContent.className = 'posts-modal-content';
+            modalContent.style.cssText = `
+                background: white;
+                border-radius: 16px;
+                width: 90%;
+                max-width: 800px;
+                max-height: 80vh;
+                overflow: hidden;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                animation: slideInUp 0.3s ease-out;
+            `;
+            
+            // 模态框头部
+            const modalHeader = document.createElement('div');
+            modalHeader.style.cssText = `
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 20px 25px;
+                border-bottom: 1px solid #f0f0f0;
+                background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+                color: white;
+            `;
+            
+            const modalTitle = document.createElement('h3');
+            modalTitle.textContent = `我的帖子 (${posts.length}条)`;
+            modalTitle.style.cssText = `
+                margin: 0;
+                font-size: 1.3rem;
+                font-weight: 600;
+            `;
+            
+            const closeButton = document.createElement('button');
+            closeButton.innerHTML = '<i class="fas fa-times"></i>';
+            closeButton.style.cssText = `
+                background: rgba(255, 255, 255, 0.2);
+                border: none;
+                width: 36px;
+                height: 36px;
+                border-radius: 50%;
+                color: white;
+                font-size: 16px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: background 0.3s;
+            `;
+            closeButton.onclick = () => modalOverlay.remove();
+            closeButton.onmouseenter = () => closeButton.style.background = 'rgba(255, 255, 255, 0.3)';
+            closeButton.onmouseleave = () => closeButton.style.background = 'rgba(255, 255, 255, 0.2)';
+            
+            modalHeader.appendChild(modalTitle);
+            modalHeader.appendChild(closeButton);
+            
+            // 帖子列表容器
+            const postsContainer = document.createElement('div');
+            postsContainer.className = 'posts-container';
+            postsContainer.style.cssText = `
+                max-height: calc(80vh - 80px);
+                overflow-y: auto;
+                padding: 20px;
+            `;
+            
+            if (posts.length === 0) {
+                const emptyState = document.createElement('div');
+                emptyState.style.cssText = `
+                    text-align: center;
+                    padding: 60px 20px;
+                    color: #666;
+                `;
+                emptyState.innerHTML = `
+                    <i class="fas fa-file-alt" style="font-size: 48px; margin-bottom: 20px; color: #ccc;"></i>
+                    <h4 style="margin: 0 0 10px 0; color: #333;">还没有发布过帖子</h4>
+                    <p style="margin: 0; color: #999;">去树洞发表您的第一条帖子吧！</p>
+                `;
+                postsContainer.appendChild(emptyState);
+            } else {
+                posts.forEach((post, index) => {
+                    const postCard = document.createElement('div');
+                    postCard.className = 'post-card';
+                    postCard.style.cssText = `
+                        background: #f8f9fa;
+                        border-radius: 12px;
+                        padding: 20px;
+                        margin-bottom: 15px;
+                        border-left: 4px solid var(--primary-color);
+                        transition: all 0.3s ease;
+                        animation: fadeInUp 0.4s ease-out ${index * 0.1}s both;
+                    `;
+                    
+                    postCard.onmouseenter = () => {
+                        postCard.style.transform = 'translateY(-2px)';
+                        postCard.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
+                    };
+                    postCard.onmouseleave = () => {
+                        postCard.style.transform = 'translateY(0)';
+                        postCard.style.boxShadow = 'none';
+                    };
+                    
+                    // 帖子内容
+                    const postContent = document.createElement('div');
+                    postContent.className = 'post-content';
+                    postContent.style.cssText = `
+                        font-size: 14px;
+                        line-height: 1.6;
+                        color: #333;
+                        margin-bottom: 15px;
+                        word-wrap: break-word;
+                    `;
+                    postContent.textContent = post.content || '无内容';
+                    
+                    // 帖子元信息
+                    const postMeta = document.createElement('div');
+                    postMeta.className = 'post-meta';
+                    postMeta.style.cssText = `
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        font-size: 12px;
+                        color: #666;
+                    `;
+                    
+                    const postDate = document.createElement('span');
+                    postDate.className = 'post-date';
+                    postDate.textContent = new Date(post.created_at).toLocaleString('zh-CN');
+                    
+                    const postStats = document.createElement('div');
+                    postStats.className = 'post-stats';
+                    postStats.style.cssText = `
+                        display: flex;
+                        gap: 15px;
+                    `;
+                    
+                    const likesSpan = document.createElement('span');
+                    likesSpan.className = 'post-likes';
+                    likesSpan.innerHTML = `<i class="fas fa-heart" style="color: #e74c3c;"></i> ${post.like_count || 0}`;
+                    
+                    const commentsSpan = document.createElement('span');
+                    commentsSpan.className = 'post-comments';
+                    commentsSpan.innerHTML = `<i class="fas fa-comment" style="color: #3498db;"></i> ${post.comment_count || 0}`;
+                    
+                    postStats.appendChild(likesSpan);
+                    postStats.appendChild(commentsSpan);
+                    
+                    postMeta.appendChild(postDate);
+                    postMeta.appendChild(postStats);
+                    
+                    postCard.appendChild(postContent);
+                    postCard.appendChild(postMeta);
+                    postsContainer.appendChild(postCard);
+                });
+            }
+            
+            // 组装模态框
+            modalContent.appendChild(modalHeader);
+            modalContent.appendChild(postsContainer);
+            modalOverlay.appendChild(modalContent);
+            
+            // 点击背景关闭
+            modalOverlay.onclick = (e) => {
+                if (e.target === modalOverlay) {
+                    modalOverlay.remove();
+                }
+            };
+            
+            // 添加ESC键关闭
+            const handleKeydown = (e) => {
+                if (e.key === 'Escape') {
+                    modalOverlay.remove();
+                    document.removeEventListener('keydown', handleKeydown);
+                }
+            };
+            document.addEventListener('keydown', handleKeydown);
+            
+            // 添加到页面
+            document.body.appendChild(modalOverlay);
+            
+            // 移除旧的模态框事件监听器
+            modalOverlay.addEventListener('click', (e) => {
+                if (e.target === modalOverlay) {
+                    modalOverlay.remove();
+                }
+            });
+        }
+        
+        // 显示我的点赞记录（弹窗模式）
+        function displayMyLikes(likes) {
+            // 创建模态框容器
+            const modalOverlay = document.createElement('div');
+            modalOverlay.className = 'likes-modal-overlay';
+            modalOverlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.6);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 2000;
+                animation: fadeIn 0.3s ease-out;
+            `;
+            
+            // 创建模态框内容
+            const modalContent = document.createElement('div');
+            modalContent.className = 'likes-modal-content';
+            modalContent.style.cssText = `
+                background: white;
+                border-radius: 16px;
+                width: 90%;
+                max-width: 800px;
+                max-height: 80vh;
+                overflow: hidden;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                animation: slideInUp 0.3s ease-out;
+            `;
+            
+            // 模态框头部
+            const modalHeader = document.createElement('div');
+            modalHeader.style.cssText = `
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 20px 25px;
+                border-bottom: 1px solid #f0f0f0;
+                background: linear-gradient(135deg, #e74c3c, #c0392b);
+                color: white;
+            `;
+            
+            const modalTitle = document.createElement('h3');
+            modalTitle.textContent = `我的点赞记录 (${likes.length}条)`;
+            modalTitle.style.cssText = `
+                margin: 0;
+                font-size: 1.3rem;
+                font-weight: 600;
+            `;
+            
+            const closeButton = document.createElement('button');
+            closeButton.innerHTML = '<i class="fas fa-times"></i>';
+            closeButton.style.cssText = `
+                background: rgba(255, 255, 255, 0.2);
+                border: none;
+                width: 36px;
+                height: 36px;
+                border-radius: 50%;
+                color: white;
+                font-size: 16px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: background 0.3s;
+            `;
+            closeButton.onclick = () => modalOverlay.remove();
+            closeButton.onmouseenter = () => closeButton.style.background = 'rgba(255, 255, 255, 0.3)';
+            closeButton.onmouseleave = () => closeButton.style.background = 'rgba(255, 255, 255, 0.2)';
+            
+            modalHeader.appendChild(modalTitle);
+            modalHeader.appendChild(closeButton);
+            
+            // 点赞记录容器
+            const likesContainer = document.createElement('div');
+            likesContainer.className = 'likes-container';
+            likesContainer.style.cssText = `
+                max-height: calc(80vh - 80px);
+                overflow-y: auto;
+                padding: 20px;
+            `;
+            
+            if (likes.length === 0) {
+                const emptyState = document.createElement('div');
+                emptyState.style.cssText = `
+                    text-align: center;
+                    padding: 60px 20px;
+                    color: #666;
+                `;
+                emptyState.innerHTML = `
+                    <i class="fas fa-heart" style="font-size: 48px; margin-bottom: 20px; color: #ccc;"></i>
+                    <h4 style="margin: 0 0 10px 0; color: #333;">还没有点赞过任何帖子</h4>
+                    <p style="margin: 0; color: #999;">去树洞发现有趣的内容并点赞吧！</p>
+                `;
+                likesContainer.appendChild(emptyState);
+            } else {
+                likes.forEach((like, index) => {
+                    const likeCard = document.createElement('div');
+                    likeCard.className = 'like-card';
+                    likeCard.style.cssText = `
+                        background: #fff5f5;
+                        border-radius: 12px;
+                        padding: 20px;
+                        margin-bottom: 15px;
+                        border-left: 4px solid #e74c3c;
+                        transition: all 0.3s ease;
+                        animation: fadeInUp 0.4s ease-out ${index * 0.1}s both;
+                    `;
+                    
+                    likeCard.onmouseenter = () => {
+                        likeCard.style.transform = 'translateY(-2px)';
+                        likeCard.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
+                    };
+                    likeCard.onmouseleave = () => {
+                        likeCard.style.transform = 'translateY(0)';
+                        likeCard.style.boxShadow = 'none';
+                    };
+                    
+                    // 点赞的帖子内容
+                    const postContent = document.createElement('div');
+                    postContent.className = 'liked-post-content';
+                    postContent.style.cssText = `
+                        font-size: 14px;
+                        line-height: 1.6;
+                        color: #333;
+                        margin-bottom: 15px;
+                        word-wrap: break-word;
+                        background: #f8f9fa;
+                        padding: 15px;
+                        border-radius: 8px;
+                        border-left: 3px solid #3498db;
+                    `;
+                    postContent.textContent = like.post?.content || '帖子内容不可用';
+                    
+                    // 点赞元信息
+                    const likeMeta = document.createElement('div');
+                    likeMeta.className = 'like-meta';
+                    likeMeta.style.cssText = `
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        font-size: 12px;
+                        color: #666;
+                    `;
+                    
+                    const likeDate = document.createElement('span');
+                    likeDate.className = 'like-date';
+                    likeDate.innerHTML = `<i class="fas fa-clock" style="margin-right: 5px;"></i> ${new Date(like.created_at).toLocaleString('zh-CN')}`;
+                    
+                    const likeStats = document.createElement('div');
+                    likeStats.className = 'like-stats';
+                    likeStats.style.cssText = `
+                        display: flex;
+                        gap: 15px;
+                    `;
+                    
+                    const likeType = document.createElement('span');
+                    likeType.className = 'like-type';
+                    likeType.innerHTML = `<i class="fas fa-heart" style="color: #e74c3c;"></i> 点赞`;
+                    
+                    likeStats.appendChild(likeType);
+                    
+                    likeMeta.appendChild(likeDate);
+                    likeMeta.appendChild(likeStats);
+                    
+                    likeCard.appendChild(postContent);
+                    likeCard.appendChild(likeMeta);
+                    likesContainer.appendChild(likeCard);
+                });
+            }
+            
+            // 组装模态框
+            modalContent.appendChild(modalHeader);
+            modalContent.appendChild(likesContainer);
+            modalOverlay.appendChild(modalContent);
+            
+            // 点击背景关闭
+            modalOverlay.onclick = (e) => {
+                if (e.target === modalOverlay) {
+                    modalOverlay.remove();
+                }
+            };
+            
+            // 添加ESC键关闭
+            const handleKeydown = (e) => {
+                if (e.key === 'Escape') {
+                    modalOverlay.remove();
+                    document.removeEventListener('keydown', handleKeydown);
+                }
+            };
+            document.addEventListener('keydown', handleKeydown);
+            
+            // 添加到页面
+            document.body.appendChild(modalOverlay);
+        }
+        
+        // 显示我的评论记录（弹窗模式）
+        function displayMyComments(comments) {
+            // 创建模态框容器
+            const modalOverlay = document.createElement('div');
+            modalOverlay.className = 'comments-modal-overlay';
+            modalOverlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.6);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 2000;
+                animation: fadeIn 0.3s ease-out;
+            `;
+            
+            // 创建模态框内容
+            const modalContent = document.createElement('div');
+            modalContent.className = 'comments-modal-content';
+            modalContent.style.cssText = `
+                background: white;
+                border-radius: 16px;
+                width: 90%;
+                max-width: 800px;
+                max-height: 80vh;
+                overflow: hidden;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                animation: slideInUp 0.3s ease-out;
+            `;
+            
+            // 模态框头部
+            const modalHeader = document.createElement('div');
+            modalHeader.style.cssText = `
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 20px 25px;
+                border-bottom: 1px solid #f0f0f0;
+                background: linear-gradient(135deg, #3498db, #2980b9);
+                color: white;
+            `;
+            
+            const modalTitle = document.createElement('h3');
+            modalTitle.textContent = `我的评论记录 (${comments.length}条)`;
+            modalTitle.style.cssText = `
+                margin: 0;
+                font-size: 1.3rem;
+                font-weight: 600;
+            `;
+            
+            const closeButton = document.createElement('button');
+            closeButton.innerHTML = '<i class="fas fa-times"></i>';
+            closeButton.style.cssText = `
+                background: rgba(255, 255, 255, 0.2);
+                border: none;
+                width: 36px;
+                height: 36px;
+                border-radius: 50%;
+                color: white;
+                font-size: 16px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: background 0.3s;
+            `;
+            closeButton.onclick = () => modalOverlay.remove();
+            closeButton.onmouseenter = () => closeButton.style.background = 'rgba(255, 255, 255, 0.3)';
+            closeButton.onmouseleave = () => closeButton.style.background = 'rgba(255, 255, 255, 0.2)';
+            
+            modalHeader.appendChild(modalTitle);
+            modalHeader.appendChild(closeButton);
+            
+            // 评论记录容器
+            const commentsContainer = document.createElement('div');
+            commentsContainer.className = 'comments-container';
+            commentsContainer.style.cssText = `
+                max-height: calc(80vh - 80px);
+                overflow-y: auto;
+                padding: 20px;
+            `;
+            
+            if (comments.length === 0) {
+                const emptyState = document.createElement('div');
+                emptyState.style.cssText = `
+                    text-align: center;
+                    padding: 60px 20px;
+                    color: #666;
+                `;
+                emptyState.innerHTML = `
+                    <i class="fas fa-comment" style="font-size: 48px; margin-bottom: 20px; color: #ccc;"></i>
+                    <h4 style="margin: 0 0 10px 0; color: #333;">还没有发表过评论</h4>
+                    <p style="margin: 0; color: #999;">去树洞参与讨论并发表您的评论吧！</p>
+                `;
+                commentsContainer.appendChild(emptyState);
+            } else {
+                comments.forEach((comment, index) => {
+                    const commentCard = document.createElement('div');
+                    commentCard.className = 'comment-card';
+                    commentCard.style.cssText = `
+                        background: #f0f8ff;
+                        border-radius: 12px;
+                        padding: 20px;
+                        margin-bottom: 15px;
+                        border-left: 4px solid #3498db;
+                        transition: all 0.3s ease;
+                        animation: fadeInUp 0.4s ease-out ${index * 0.1}s both;
+                    `;
+                    
+                    commentCard.onmouseenter = () => {
+                        commentCard.style.transform = 'translateY(-2px)';
+                        commentCard.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
+                    };
+                    commentCard.onmouseleave = () => {
+                        commentCard.style.transform = 'translateY(0)';
+                        commentCard.style.boxShadow = 'none';
+                    };
+                    
+                    // 评论内容
+                    const commentContent = document.createElement('div');
+                    commentContent.className = 'comment-content';
+                    commentContent.style.cssText = `
+                        font-size: 14px;
+                        line-height: 1.6;
+                        color: #333;
+                        margin-bottom: 15px;
+                        word-wrap: break-word;
+                        background: white;
+                        padding: 15px;
+                        border-radius: 8px;
+                        border-left: 3px solid #3498db;
+                    `;
+                    commentContent.textContent = comment.content || '无内容';
+                    
+                    // 原帖内容
+                    const originalPost = document.createElement('div');
+                    originalPost.className = 'original-post';
+                    originalPost.style.cssText = `
+                        font-size: 13px;
+                        line-height: 1.5;
+                        color: #666;
+                        margin-bottom: 15px;
+                        background: #f8f9fa;
+                        padding: 12px;
+                        border-radius: 6px;
+                        border-left: 2px solid #95a5a6;
+                    `;
+                    originalPost.innerHTML = `
+                        <div style="font-weight: 600; margin-bottom: 5px; color: #2c3e50;">原帖内容：</div>
+                        <div>${comment.post?.content || '帖子内容不可用'}</div>
+                    `;
+                    
+                    // 评论元信息
+                    const commentMeta = document.createElement('div');
+                    commentMeta.className = 'comment-meta';
+                    commentMeta.style.cssText = `
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        font-size: 12px;
+                        color: #666;
+                    `;
+                    
+                    const commentDate = document.createElement('span');
+                    commentDate.className = 'comment-date';
+                    commentDate.innerHTML = `<i class="fas fa-clock" style="margin-right: 5px;"></i> ${new Date(comment.created_at).toLocaleString('zh-CN')}`;
+                    
+                    const commentStats = document.createElement('div');
+                    commentStats.className = 'comment-stats';
+                    commentStats.style.cssText = `
+                        display: flex;
+                        gap: 15px;
+                    `;
+                    
+                    const commentType = document.createElement('span');
+                    commentType.className = 'comment-type';
+                    commentType.innerHTML = `<i class="fas fa-comment" style="color: #3498db;"></i> 评论`;
+                    
+                    commentStats.appendChild(commentType);
+                    
+                    commentMeta.appendChild(commentDate);
+                    commentMeta.appendChild(commentStats);
+                    
+                    commentCard.appendChild(commentContent);
+                    commentCard.appendChild(originalPost);
+                    commentCard.appendChild(commentMeta);
+                    commentsContainer.appendChild(commentCard);
+                });
+            }
+            
+            // 组装模态框
+            modalContent.appendChild(modalHeader);
+            modalContent.appendChild(commentsContainer);
+            modalOverlay.appendChild(modalContent);
+            
+            // 点击背景关闭
+            modalOverlay.onclick = (e) => {
+                if (e.target === modalOverlay) {
+                    modalOverlay.remove();
+                }
+            };
+            
+            // 添加ESC键关闭
+            const handleKeydown = (e) => {
+                if (e.key === 'Escape') {
+                    modalOverlay.remove();
+                    document.removeEventListener('keydown', handleKeydown);
+                }
+            };
+            document.addEventListener('keydown', handleKeydown);
+            
+            // 添加到页面
+            document.body.appendChild(modalOverlay);
+        }
+        
+        // 创建模态框
+        function createModal(title) {
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 1000;
+            `;
+            
+            const modalContent = document.createElement('div');
+            modalContent.className = 'modal-content';
+            modalContent.style.cssText = `
+                background: white;
+                border-radius: 10px;
+                padding: 20px;
+                max-width: 600px;
+                max-height: 80vh;
+                overflow-y: auto;
+                width: 90%;
+            `;
+            
+            const modalHeader = document.createElement('div');
+            modalHeader.style.cssText = `
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 15px;
+                border-bottom: 1px solid #eee;
+                padding-bottom: 10px;
+            `;
+            
+            const modalTitle = document.createElement('h3');
+            modalTitle.textContent = title;
+            modalTitle.style.margin = '0';
+            
+            const closeButton = document.createElement('button');
+            closeButton.innerHTML = '×';
+            closeButton.style.cssText = `
+                background: none;
+                border: none;
+                font-size: 24px;
+                cursor: pointer;
+                color: #666;
+            `;
+            closeButton.onclick = () => modal.remove();
+            
+            modalHeader.appendChild(modalTitle);
+            modalHeader.appendChild(closeButton);
+            modalContent.appendChild(modalHeader);
+            modal.appendChild(modalContent);
+            
+            // 点击背景关闭
+            modal.onclick = (e) => {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            };
+            
+            return modalContent;
         }
         
         // 打开设置
@@ -783,7 +2812,252 @@
                 showNotification('请先登录后进行设置');
                 return;
             }
-            showNotification('正在打开账号设置...');
+            
+            // 创建账号设置模态框
+            const modal = createSettingsModal();
+            document.body.appendChild(modal);
+            
+            // 显示模态框
+            setTimeout(() => {
+                modal.style.display = 'flex';
+                modal.querySelector('.modal-content').style.transform = 'translateY(0)';
+                modal.querySelector('.modal-content').style.opacity = '1';
+            }, 10);
+        }
+        
+        // 创建账号设置模态框
+        function createSettingsModal() {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.display = 'none';
+            
+            const userInfo = window.UserStateManager.getUserInfo();
+            
+            modal.innerHTML = `
+                <div class="modal-content settings-modal" style="max-width: 800px; max-height: 90vh; overflow-y: auto;">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-cog"></i> 账号设置</h3>
+                        <span class="close-modal" onclick="closeModal(this)">&times;</span>
+                    </div>
+                    <div class="modal-body">
+                        <div class="settings-tabs">
+                            <div class="tab-buttons">
+                                <button class="tab-button active" onclick="switchTab(this, 'basic')">基本信息</button>
+                                <button class="tab-button" onclick="switchTab(this, 'security')">安全设置</button>
+                                <button class="tab-button" onclick="switchTab(this, 'privacy')">隐私设置</button>
+                                <button class="tab-button" onclick="switchTab(this, 'notifications')">通知设置</button>
+                            </div>
+                            
+                            <div class="tab-content">
+                                <!-- 基本信息标签页 -->
+                                <div id="basic-tab" class="tab-pane active">
+                                    <div class="setting-section">
+                                        <h4><i class="fas fa-user"></i> 个人信息</h4>
+                                        <form id="basic-info-form">
+                                            <div class="form-group">
+                                                <label for="settings-username">用户名</label>
+                                                <input type="text" id="settings-username" name="username" value="${userInfo.username || userInfo.email || ''}" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="settings-email">邮箱地址</label>
+                                                <input type="email" id="settings-email" name="email" value="${userInfo.email || ''}" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="settings-bio">个人简介</label>
+                                                <textarea id="settings-bio" name="bio" rows="3" placeholder="介绍一下自己...">${userInfo.bio || ''}</textarea>
+                                            </div>
+                                            <div class="form-actions">
+                                                <button type="button" class="btn-cancel" onclick="closeModal(this)">取消</button>
+                                                <button type="submit" class="btn-save">保存更改</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                
+                                <!-- 安全设置标签页 -->
+                                <div id="security-tab" class="tab-pane">
+                                    <div class="setting-section">
+                                        <h4><i class="fas fa-lock"></i> 修改密码</h4>
+                                        <form id="change-password-form">
+                                            <div class="form-group">
+                                                <label for="current-password">当前密码</label>
+                                                <input type="password" id="current-password" name="currentPassword" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="new-password">新密码</label>
+                                                <input type="password" id="new-password" name="newPassword" required minlength="6">
+                                                <div class="password-strength">
+                                                    <div class="strength-bar"></div>
+                                                    <span class="strength-text">密码强度: 弱</span>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="confirm-password">确认新密码</label>
+                                                <input type="password" id="confirm-password" name="confirmPassword" required>
+                                                <div class="password-match" style="display: none;">
+                                                    <i class="fas fa-check-circle"></i> 密码匹配
+                                                </div>
+                                            </div>
+                                            <div class="form-actions">
+                                                <button type="button" class="btn-cancel" onclick="closeModal(this)">取消</button>
+                                                <button type="submit" class="btn-save">修改密码</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    
+                                    <div class="setting-section">
+                                        <h4><i class="fas fa-shield-alt"></i> 安全状态</h4>
+                                        <div class="security-status">
+                                            <div class="status-item">
+                                                <i class="fas fa-check-circle"></i>
+                                                <span>邮箱已验证</span>
+                                                <span class="status-badge success">已认证</span>
+                                            </div>
+                                            <div class="status-item">
+                                                <i class="fas fa-clock"></i>
+                                                <span>最后登录时间</span>
+                                                <span class="status-value">${new Date().toLocaleString('zh-CN')}</span>
+                                            </div>
+                                            <div class="status-item">
+                                                <i class="fas fa-mobile-alt"></i>
+                                                <span>设备管理</span>
+                                                <button class="btn-link" onclick="manageDevices()">查看设备</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 隐私设置标签页 -->
+                                <div id="privacy-tab" class="tab-pane">
+                                    <div class="setting-section">
+                                        <h4><i class="fas fa-eye"></i> 隐私偏好</h4>
+                                        <div class="privacy-options">
+                                            <div class="privacy-option">
+                                                <label class="switch">
+                                                    <input type="checkbox" id="profile-public" checked>
+                                                    <span class="slider"></span>
+                                                </label>
+                                                <div class="option-info">
+                                                    <span class="option-title">公开个人资料</span>
+                                                    <span class="option-description">允许其他用户查看您的个人资料</span>
+                                                </div>
+                                            </div>
+                                            <div class="privacy-option">
+                                                <label class="switch">
+                                                    <input type="checkbox" id="activity-public" checked>
+                                                    <span class="slider"></span>
+                                                </label>
+                                                <div class="option-info">
+                                                    <span class="option-title">公开活动记录</span>
+                                                    <span class="option-description">显示您的发帖和评论活动</span>
+                                                </div>
+                                            </div>
+                                            <div class="privacy-option">
+                                                <label class="switch">
+                                                    <input type="checkbox" id="search-index" checked>
+                                                    <span class="slider"></span>
+                                                </label>
+                                                <div class="option-info">
+                                                    <span class="option-title">允许搜索索引</span>
+                                                    <span class="option-description">允许搜索引擎收录您的公开信息</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="setting-section">
+                                        <h4><i class="fas fa-ban"></i> 屏蔽管理</h4>
+                                        <div class="blocked-users">
+                                            <p>您当前屏蔽了 <strong>0</strong> 个用户</p>
+                                            <button class="btn-link" onclick="manageBlockedUsers()">管理屏蔽列表</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 通知设置标签页 -->
+                                <div id="notifications-tab" class="tab-pane">
+                                    <div class="setting-section">
+                                        <h4><i class="fas fa-bell"></i> 通知偏好</h4>
+                                        <div class="notification-options">
+                                            <div class="notification-option">
+                                                <label class="switch">
+                                                    <input type="checkbox" id="email-notifications" checked>
+                                                    <span class="slider"></span>
+                                                </label>
+                                                <div class="option-info">
+                                                    <span class="option-title">邮件通知</span>
+                                                    <span class="option-description">接收重要通知的邮件提醒</span>
+                                                </div>
+                                            </div>
+                                            <div class="notification-option">
+                                                <label class="switch">
+                                                    <input type="checkbox" id="push-notifications" checked>
+                                                    <span class="slider"></span>
+                                                </label>
+                                                <div class="option-info">
+                                                    <span class="option-title">推送通知</span>
+                                                    <span class="option-description">接收实时推送通知</span>
+                                                </div>
+                                            </div>
+                                            <div class="notification-option">
+                                                <label class="switch">
+                                                    <input type="checkbox" id="like-notifications" checked>
+                                                    <span class="slider"></span>
+                                                </label>
+                                                <div class="option-info">
+                                                    <span class="option-title">点赞通知</span>
+                                                    <span class="option-description">有人点赞您的帖子时通知</span>
+                                                </div>
+                                            </div>
+                                            <div class="notification-option">
+                                                <label class="switch">
+                                                    <input type="checkbox" id="comment-notifications" checked>
+                                                    <span class="slider"></span>
+                                                </label>
+                                                <div class="option-info">
+                                                    <span class="option-title">评论通知</span>
+                                                    <span class="option-description">有人评论您的帖子时通知</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="setting-section">
+                                        <h4><i class="fas fa-calendar"></i> 通知频率</h4>
+                                        <div class="frequency-options">
+                                            <label class="radio-option">
+                                                <input type="radio" name="frequency" value="immediate" checked>
+                                                <span class="radio-label">实时通知</span>
+                                            </label>
+                                            <label class="radio-option">
+                                                <input type="radio" name="frequency" value="daily">
+                                                <span class="radio-label">每日摘要</span>
+                                            </label>
+                                            <label class="radio-option">
+                                                <input type="radio" name="frequency" value="weekly">
+                                                <span class="radio-label">每周摘要</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // 添加事件监听器
+            modal.querySelector('#basic-info-form').addEventListener('submit', handleBasicInfoSubmit);
+            modal.querySelector('#change-password-form').addEventListener('submit', handlePasswordChange);
+            
+            // 密码强度检测
+            const newPasswordInput = modal.querySelector('#new-password');
+            const confirmPasswordInput = modal.querySelector('#confirm-password');
+            
+            newPasswordInput.addEventListener('input', updatePasswordStrength);
+            confirmPasswordInput.addEventListener('input', checkPasswordMatch);
+            
+            return modal;
         }
         
         // 打开隐私设置
@@ -793,7 +3067,7 @@
                 showNotification('请先登录后设置隐私');
                 return;
             }
-            showNotification('正在打开隐私设置...');
+            openSettingsModal('privacy');
         }
         
         // 打开通知设置
@@ -803,22 +3077,734 @@
                 showNotification('请先登录后设置通知');
                 return;
             }
-            showNotification('正在打开通知设置...');
+            openSettingsModal('notifications');
         }
         
         // 打开帮助中心
         function openHelp() {
-            showNotification('正在打开帮助中心...');
+            const helpModal = createHelpModal();
+            document.body.appendChild(helpModal);
         }
         
         // 打开关于我们
         function openAbout() {
-            showNotification('正在打开关于我们...');
+            const aboutModal = createAboutModal();
+            document.body.appendChild(aboutModal);
         }
         
         // 打开意见反馈
         function openFeedback() {
-            showNotification('正在打开意见反馈...');
+            const feedbackModal = createFeedbackModal();
+            document.body.appendChild(feedbackModal);
+        }
+        
+        // 创建帮助中心模态框
+        function createHelpModal() {
+            const modal = document.createElement('div');
+            modal.className = 'settings-modal-overlay';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.6);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 2000;
+                animation: fadeIn 0.3s ease-out;
+            `;
+            
+            const modalContent = document.createElement('div');
+            modalContent.className = 'settings-modal-content';
+            modalContent.style.cssText = `
+                background: white;
+                border-radius: 16px;
+                width: 90%;
+                max-width: 600px;
+                max-height: 80vh;
+                overflow: hidden;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                animation: slideInUp 0.3s ease-out;
+            `;
+            
+            modalContent.innerHTML = `
+                <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; padding: 20px 25px; border-bottom: 1px solid #f0f0f0; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white;">
+                    <h3 style="margin: 0; font-size: 1.3rem; font-weight: 600;">帮助中心</h3>
+                    <button class="close-btn" style="background: rgba(255, 255, 255, 0.2); border: none; width: 36px; height: 36px; border-radius: 50%; color: white; font-size: 16px; cursor: pointer; transition: background 0.3s;">&times;</button>
+                </div>
+                <div class="modal-body" style="padding: 25px; max-height: calc(80vh - 80px); overflow-y: auto;">
+                    <div class="help-section">
+                        <h4 style="color: var(--primary-color); margin-bottom: 15px;">常见问题</h4>
+                        <div class="faq-list">
+                            <div class="faq-item" style="margin-bottom: 15px; border-left: 3px solid var(--primary-color); padding-left: 15px;">
+                                <h5 style="margin: 0 0 8px 0; color: #333;">如何修改个人资料？</h5>
+                                <p style="margin: 0; color: #666; font-size: 14px;">点击个人中心页面的"编辑资料"按钮，在弹出的窗口中修改您的用户名、邮箱和个人简介。</p>
+                            </div>
+                            <div class="faq-item" style="margin-bottom: 15px; border-left: 3px solid var(--primary-color); padding-left: 15px;">
+                                <h5 style="margin: 0 0 8px 0; color: #333;">如何查看我的帖子？</h5>
+                                <p style="margin: 0; color: #666; font-size: 14px;">点击个人中心页面的"我的帖子"统计卡片，会弹出一个窗口显示您发布的所有帖子。</p>
+                            </div>
+                            <div class="faq-item" style="margin-bottom: 15px; border-left: 3px solid var(--primary-color); padding-left: 15px;">
+                                <h5 style="margin: 0 0 8px 0; color: #333;">如何修改密码？</h5>
+                                <p style="margin: 0; color: #666; font-size: 14px;">在账号设置中点击"安全设置"标签页，输入当前密码和新密码即可修改。</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="help-section" style="margin-top: 25px;">
+                        <h4 style="color: var(--primary-color); margin-bottom: 15px;">联系我们</h4>
+                        <div class="contact-info" style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                            <p style="margin: 0 0 10px 0; color: #333;">
+                                <i class="fas fa-envelope" style="color: var(--primary-color); margin-right: 8px;"></i>
+                                邮箱：support@heartharbor.com
+                            </p>
+                            <p style="margin: 0 0 10px 0; color: #333;">
+                                <i class="fas fa-phone" style="color: var(--primary-color); margin-right: 8px;"></i>
+                                电话：400-123-4567
+                            </p>
+                            <p style="margin: 0; color: #333;">
+                                <i class="fas fa-clock" style="color: var(--primary-color); margin-right: 8px;"></i>
+                                工作时间：周一至周五 9:00-18:00
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // 关闭按钮事件
+            modalContent.querySelector('.close-btn').onclick = () => modal.remove();
+            
+            // 点击背景关闭
+            modal.onclick = (e) => {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            };
+            
+            // ESC键关闭
+            const handleKeydown = (e) => {
+                if (e.key === 'Escape') {
+                    modal.remove();
+                    document.removeEventListener('keydown', handleKeydown);
+                }
+            };
+            document.addEventListener('keydown', handleKeydown);
+            
+            modal.appendChild(modalContent);
+            return modal;
+        }
+        
+        // 创建关于我们模态框
+        function createAboutModal() {
+            const modal = document.createElement('div');
+            modal.className = 'settings-modal-overlay';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.6);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 2000;
+                animation: fadeIn 0.3s ease-out;
+            `;
+            
+            const modalContent = document.createElement('div');
+            modalContent.className = 'settings-modal-content';
+            modalContent.style.cssText = `
+                background: white;
+                border-radius: 16px;
+                width: 90%;
+                max-width: 500px;
+                max-height: 80vh;
+                overflow: hidden;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                animation: slideInUp 0.3s ease-out;
+            `;
+            
+            modalContent.innerHTML = `
+                <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; padding: 20px 25px; border-bottom: 1px solid #f0f0f0; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white;">
+                    <h3 style="margin: 0; font-size: 1.3rem; font-weight: 600;">关于我们</h3>
+                    <button class="close-btn" style="background: rgba(255, 255, 255, 0.2); border: none; width: 36px; height: 36px; border-radius: 50%; color: white; font-size: 16px; cursor: pointer; transition: background 0.3s;">&times;</button>
+                </div>
+                <div class="modal-body" style="padding: 25px; text-align: center;">
+                    <div class="about-logo" style="margin-bottom: 20px;">
+                        <i class="fas fa-heart" style="font-size: 48px; color: var(--primary-color);"></i>
+                    </div>
+                    <h4 style="color: var(--primary-color); margin-bottom: 15px;">心屿 - 校园匿名心理支持平台</h4>
+                    <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">
+                        心屿是一个专为大学生设计的匿名心理支持平台，旨在为校园中的同学们提供一个安全、私密的倾诉空间。
+                        在这里，您可以匿名分享心情、寻求帮助，与同龄人互相支持。
+                    </p>
+                    <div class="version-info" style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <p style="margin: 0; color: #333;">版本：v1.0.0</p>
+                        <p style="margin: 0; color: #333;">更新日期：2024年11月</p>
+                    </div>
+                    <div class="team-info">
+                        <p style="color: #999; font-size: 14px;">开发团队：心屿开发组</p>
+                    </div>
+                </div>
+            `;
+            
+            // 关闭按钮事件
+            modalContent.querySelector('.close-btn').onclick = () => modal.remove();
+            
+            // 点击背景关闭
+            modal.onclick = (e) => {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            };
+            
+            // ESC键关闭
+            const handleKeydown = (e) => {
+                if (e.key === 'Escape') {
+                    modal.remove();
+                    document.removeEventListener('keydown', handleKeydown);
+                }
+            };
+            document.addEventListener('keydown', handleKeydown);
+            
+            modal.appendChild(modalContent);
+            return modal;
+        }
+        
+        // 创建意见反馈模态框
+        function createFeedbackModal() {
+            const modal = document.createElement('div');
+            modal.className = 'settings-modal-overlay';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.6);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 2000;
+                animation: fadeIn 0.3s ease-out;
+            `;
+            
+            const modalContent = document.createElement('div');
+            modalContent.className = 'settings-modal-content';
+            modalContent.style.cssText = `
+                background: white;
+                border-radius: 16px;
+                width: 90%;
+                max-width: 500px;
+                max-height: 80vh;
+                overflow: hidden;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                animation: slideInUp 0.3s ease-out;
+            `;
+            
+            modalContent.innerHTML = `
+                <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; padding: 20px 25px; border-bottom: 1px solid #f0f0f0; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white;">
+                    <h3 style="margin: 0; font-size: 1.3rem; font-weight: 600;">意见反馈</h3>
+                    <button class="close-btn" style="background: rgba(255, 255, 255, 0.2); border: none; width: 36px; height: 36px; border-radius: 50%; color: white; font-size: 16px; cursor: pointer; transition: background 0.3s;">&times;</button>
+                </div>
+                <div class="modal-body" style="padding: 25px;">
+                    <form id="feedback-form">
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label for="feedback-type" style="display: block; margin-bottom: 8px; font-weight: 500; color: #333;">反馈类型</label>
+                            <select id="feedback-type" name="type" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;">
+                                <option value="bug">Bug报告</option>
+                                <option value="suggestion">功能建议</option>
+                                <option value="complaint">投诉</option>
+                                <option value="other">其他</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label for="feedback-content" style="display: block; margin-bottom: 8px; font-weight: 500; color: #333;">反馈内容</label>
+                            <textarea id="feedback-content" name="content" rows="5" placeholder="请详细描述您的问题或建议..." style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; resize: vertical;"></textarea>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label for="feedback-contact" style="display: block; margin-bottom: 8px; font-weight: 500; color: #333;">联系方式（选填）</label>
+                            <input type="text" id="feedback-contact" name="contact" placeholder="邮箱或手机号" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;">
+                        </div>
+                        <div class="form-actions" style="display: flex; justify-content: flex-end; gap: 10px;">
+                            <button type="button" class="btn-cancel" style="padding: 10px 20px; border: 1px solid #ddd; background: white; border-radius: 6px; cursor: pointer;">取消</button>
+                            <button type="submit" class="btn-submit" style="padding: 10px 20px; border: none; background: var(--primary-color); color: white; border-radius: 6px; cursor: pointer;">提交反馈</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            
+            // 表单提交事件
+            modalContent.querySelector('#feedback-form').addEventListener('submit', handleFeedbackSubmit);
+            
+            // 关闭按钮事件
+            modalContent.querySelector('.close-btn').onclick = () => modal.remove();
+            
+            // 取消按钮事件
+            modalContent.querySelector('.btn-cancel').onclick = () => modal.remove();
+            
+            // 点击背景关闭
+            modal.onclick = (e) => {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            };
+            
+            // ESC键关闭
+            const handleKeydown = (e) => {
+                if (e.key === 'Escape') {
+                    modal.remove();
+                    document.removeEventListener('keydown', handleKeydown);
+                }
+            };
+            document.addEventListener('keydown', handleKeydown);
+            
+            modal.appendChild(modalContent);
+            return modal;
+        }
+        
+        // 处理反馈提交
+        function handleFeedbackSubmit(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const feedback = {
+                type: formData.get('type'),
+                content: formData.get('content'),
+                contact: formData.get('contact'),
+                timestamp: new Date().toISOString()
+            };
+            
+            // 这里可以添加提交到服务器的逻辑
+            console.log('提交反馈:', feedback);
+            
+            showNotification('感谢您的反馈！我们会尽快处理。');
+            e.target.closest('.settings-modal-overlay').remove();
+        }
+        
+        // 密码强度检测
+        function updatePasswordStrength() {
+            const password = document.getElementById('new-password').value;
+            const strengthBar = document.querySelector('.strength-bar');
+            const strengthText = document.querySelector('.strength-text');
+            
+            if (!strengthBar || !strengthText) return;
+            
+            let strength = 0;
+            let color = '#e53e3e';
+            let text = '密码强度: 弱';
+            
+            if (password.length >= 8) strength++;
+            if (/[a-z]/.test(password)) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^a-zA-Z0-9]/.test(password)) strength++;
+            
+            switch (strength) {
+                case 0:
+                case 1:
+                    color = '#e53e3e';
+                    text = '密码强度: 弱';
+                    break;
+                case 2:
+                case 3:
+                    color = '#d69e2e';
+                    text = '密码强度: 中';
+                    break;
+                case 4:
+                case 5:
+                    color = '#38a169';
+                    text = '密码强度: 强';
+                    break;
+            }
+            
+            strengthBar.style.setProperty('--strength-color', color);
+            strengthBar.style.width = (strength / 5 * 100) + '%';
+            strengthText.textContent = text;
+            strengthText.style.color = color;
+        }
+        
+        // 检查密码匹配
+        function checkPasswordMatch() {
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            const matchIndicator = document.querySelector('.password-match');
+            
+            if (!matchIndicator) return;
+            
+            if (newPassword && confirmPassword) {
+                if (newPassword === confirmPassword) {
+                    matchIndicator.style.display = 'flex';
+                    matchIndicator.style.color = '#38a169';
+                    matchIndicator.innerHTML = '<i class="fas fa-check-circle"></i> 密码匹配';
+                } else {
+                    matchIndicator.style.display = 'flex';
+                    matchIndicator.style.color = '#e53e3e';
+                    matchIndicator.innerHTML = '<i class="fas fa-times-circle"></i> 密码不匹配';
+                }
+            } else {
+                matchIndicator.style.display = 'none';
+            }
+        }
+        
+        // 处理个人信息表单提交
+        function handleBasicInfoSubmit(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const userInfo = {
+                username: formData.get('username'),
+                email: formData.get('email'),
+                bio: formData.get('bio')
+            };
+            
+            // 验证表单数据
+            if (!userInfo.username || !userInfo.email) {
+                showNotification('请填写完整的个人信息');
+                return;
+            }
+            
+            // 更新用户信息
+            updateUserProfile(userInfo).then(result => {
+                if (result.success) {
+                    showNotification('个人信息更新成功');
+                    closeModal(e.target.closest('.settings-modal-overlay'));
+                    updateUserInterface();
+                } else {
+                    showNotification('更新失败：' + result.error);
+                }
+            });
+        }
+        
+        // 处理密码修改
+        function handlePasswordChange(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const currentPassword = formData.get('currentPassword');
+            const newPassword = formData.get('newPassword');
+            const confirmPassword = formData.get('confirmPassword');
+            
+            // 验证表单数据
+            if (!currentPassword || !newPassword || !confirmPassword) {
+                showNotification('请填写所有密码字段');
+                return;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                showNotification('新密码和确认密码不匹配');
+                return;
+            }
+            
+            if (newPassword.length < 6) {
+                showNotification('新密码长度至少为6位');
+                return;
+            }
+            
+            // 这里可以添加修改密码的API调用
+            changePassword(currentPassword, newPassword).then(result => {
+                if (result.success) {
+                    showNotification('密码修改成功');
+                    e.target.reset();
+                    updatePasswordStrength();
+                    checkPasswordMatch();
+                } else {
+                    showNotification('密码修改失败：' + result.error);
+                }
+            });
+        }
+        
+        // 修改密码API调用
+        async function changePassword(currentPassword, newPassword) {
+            try {
+                // 检查服务是否可用
+                if (!window.HeartHarborServices || !window.HeartHarborServices.AuthService) {
+                    return { success: false, error: '认证服务不可用' };
+                }
+                
+                // 这里应该调用实际的修改密码API
+                // 暂时模拟成功
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                return { success: true };
+                
+            } catch (error) {
+                console.error('修改密码失败:', error);
+                return { success: false, error: '网络错误: ' + error.message };
+            }
+        }
+        
+        // 关闭模态框
+        function closeModal(modal) {
+            if (modal) {
+                modal.remove();
+            }
+        }
+        
+        // 管理设备
+        function manageDevices() {
+            showNotification('设备管理功能开发中...');
+        }
+        
+        // 管理屏蔽用户
+        function manageBlockedUsers() {
+            showNotification('屏蔽管理功能开发中...');
+        }
+        
+        // 打开设置模态框
+        function openSettingsModal(tab) {
+            const modal = createSettingsModal();
+            document.body.appendChild(modal);
+            
+            // 切换到指定标签页
+            if (tab) {
+                const tabButton = modal.querySelector(`[data-tab="${tab}"]`);
+                if (tabButton) {
+                    tabButton.click();
+                }
+            }
+        }
+        
+        // 创建设置模态框
+        function createSettingsModal() {
+            const modal = document.createElement('div');
+            modal.className = 'settings-modal-overlay';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.6);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 2000;
+                animation: fadeIn 0.3s ease-out;
+            `;
+            
+            const modalContent = document.createElement('div');
+            modalContent.className = 'settings-modal-content';
+            modalContent.style.cssText = `
+                background: white;
+                border-radius: 16px;
+                width: 90%;
+                max-width: 800px;
+                max-height: 80vh;
+                overflow: hidden;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                animation: slideInUp 0.3s ease-out;
+            `;
+            
+            // 获取当前用户信息
+            const userInfo = window.UserStateManager.getUserInfo();
+            
+            modalContent.innerHTML = `
+                <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; padding: 20px 25px; border-bottom: 1px solid #f0f0f0; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white;">
+                    <h3 style="margin: 0; font-size: 1.3rem; font-weight: 600;">账号设置</h3>
+                    <button class="close-btn" style="background: rgba(255, 255, 255, 0.2); border: none; width: 36px; height: 36px; border-radius: 50%; color: white; font-size: 16px; cursor: pointer; transition: background 0.3s;">&times;</button>
+                </div>
+                <div class="modal-body" style="padding: 0;">
+                    <div class="settings-tabs" style="display: flex; border-bottom: 1px solid #f0f0f0;">
+                        <button class="tab-button active" data-tab="basic" style="flex: 1; padding: 15px; border: none; background: none; cursor: pointer; border-bottom: 3px solid var(--primary-color);">个人信息</button>
+                        <button class="tab-button" data-tab="security" style="flex: 1; padding: 15px; border: none; background: none; cursor: pointer;">安全设置</button>
+                        <button class="tab-button" data-tab="privacy" style="flex: 1; padding: 15px; border: none; background: none; cursor: pointer;">隐私设置</button>
+                        <button class="tab-button" data-tab="notifications" style="flex: 1; padding: 15px; border: none; background: none; cursor: pointer;">通知设置</button>
+                    </div>
+                    <div class="tab-content" style="max-height: calc(80vh - 140px); overflow-y: auto;">
+                        <!-- 标签页内容会通过JavaScript动态加载 -->
+                    </div>
+                </div>
+            `;
+            
+            // 标签页切换功能
+            const tabButtons = modalContent.querySelectorAll('.tab-button');
+            const tabContent = modalContent.querySelector('.tab-content');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // 移除所有active类
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    // 添加active类到当前按钮
+                    button.classList.add('active');
+                    // 加载对应标签页内容
+                    loadTabContent(button.dataset.tab, tabContent);
+                });
+            });
+            
+            // 关闭按钮事件
+            modalContent.querySelector('.close-btn').onclick = () => modal.remove();
+            
+            // 点击背景关闭
+            modal.onclick = (e) => {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            };
+            
+            // ESC键关闭
+            const handleKeydown = (e) => {
+                if (e.key === 'Escape') {
+                    modal.remove();
+                    document.removeEventListener('keydown', handleKeydown);
+                }
+            };
+            document.addEventListener('keydown', handleKeydown);
+            
+            // 默认加载第一个标签页
+            loadTabContent('basic', tabContent);
+            
+            modal.appendChild(modalContent);
+            return modal;
+        }
+        
+        // 加载标签页内容
+        function loadTabContent(tab, container) {
+            const userInfo = window.UserStateManager.getUserInfo();
+            
+            switch (tab) {
+                case 'basic':
+                    container.innerHTML = `
+                        <div class="tab-pane active" style="padding: 25px;">
+                            <div class="setting-section">
+                                <h4 style="color: var(--primary-color); margin-bottom: 15px;">个人信息</h4>
+                                <form id="basic-info-form">
+                                    <div class="form-group" style="margin-bottom: 20px;">
+                                        <label for="settings-username" style="display: block; margin-bottom: 8px; font-weight: 500; color: #333;">用户名</label>
+                                        <input type="text" id="settings-username" name="username" value="${userInfo.username || userInfo.email || ''}" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;">
+                                    </div>
+                                    <div class="form-group" style="margin-bottom: 20px;">
+                                        <label for="settings-email" style="display: block; margin-bottom: 8px; font-weight: 500; color: #333;">邮箱地址</label>
+                                        <input type="email" id="settings-email" name="email" value="${userInfo.email || ''}" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;">
+                                    </div>
+                                    <div class="form-group" style="margin-bottom: 20px;">
+                                        <label for="settings-bio" style="display: block; margin-bottom: 8px; font-weight: 500; color: #333;">个人简介</label>
+                                        <textarea id="settings-bio" name="bio" rows="3" placeholder="介绍一下自己..." style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; resize: vertical;">${userInfo.bio || ''}</textarea>
+                                    </div>
+                                    <div class="form-actions" style="display: flex; justify-content: flex-end; gap: 10px;">
+                                        <button type="button" class="btn-cancel" style="padding: 10px 20px; border: 1px solid #ddd; background: white; border-radius: 6px; cursor: pointer;">取消</button>
+                                        <button type="submit" class="btn-save" style="padding: 10px 20px; border: none; background: var(--primary-color); color: white; border-radius: 6px; cursor: pointer;">保存更改</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // 添加表单事件监听器
+                    container.querySelector('#basic-info-form').addEventListener('submit', handleBasicInfoSubmit);
+                    break;
+                    
+                case 'security':
+                    container.innerHTML = `
+                        <div class="tab-pane active" style="padding: 25px;">
+                            <div class="setting-section">
+                                <h4 style="color: var(--primary-color); margin-bottom: 15px;">修改密码</h4>
+                                <form id="change-password-form">
+                                    <div class="form-group" style="margin-bottom: 20px;">
+                                        <label for="current-password" style="display: block; margin-bottom: 8px; font-weight: 500; color: #333;">当前密码</label>
+                                        <input type="password" id="current-password" name="currentPassword" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;">
+                                    </div>
+                                    <div class="form-group" style="margin-bottom: 20px;">
+                                        <label for="new-password" style="display: block; margin-bottom: 8px; font-weight: 500; color: #333;">新密码</label>
+                                        <input type="password" id="new-password" name="newPassword" required minlength="6" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;">
+                                        <div class="password-strength" style="margin-top: 8px;">
+                                            <div class="strength-bar" style="height: 4px; background: #e2e8f0; border-radius: 2px; overflow: hidden; margin-bottom: 4px; width: 0%; transition: width 0.3s;"></div>
+                                            <span class="strength-text" style="font-size: 12px; color: #718096;">密码强度: 弱</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style="margin-bottom: 20px;">
+                                        <label for="confirm-password" style="display: block; margin-bottom: 8px; font-weight: 500; color: #333;">确认新密码</label>
+                                        <input type="password" id="confirm-password" name="confirmPassword" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;">
+                                        <div class="password-match" style="margin-top: 8px; font-size: 12px; color: #38a169; display: none; align-items: center;"></div>
+                                    </div>
+                                    <div class="form-actions" style="display: flex; justify-content: flex-end; gap: 10px;">
+                                        <button type="button" class="btn-cancel" style="padding: 10px 20px; border: 1px solid #ddd; background: white; border-radius: 6px; cursor: pointer;">取消</button>
+                                        <button type="submit" class="btn-save" style="padding: 10px 20px; border: none; background: var(--primary-color); color: white; border-radius: 6px; cursor: pointer;">修改密码</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // 添加表单事件监听器
+                    const passwordForm = container.querySelector('#change-password-form');
+                    passwordForm.addEventListener('submit', handlePasswordChange);
+                    
+                    // 添加密码强度检测
+                    const newPasswordInput = container.querySelector('#new-password');
+                    const confirmPasswordInput = container.querySelector('#confirm-password');
+                    
+                    newPasswordInput.addEventListener('input', updatePasswordStrength);
+                    confirmPasswordInput.addEventListener('input', checkPasswordMatch);
+                    break;
+                    
+                case 'privacy':
+                    container.innerHTML = `
+                        <div class="tab-pane active" style="padding: 25px;">
+                            <div class="setting-section">
+                                <h4 style="color: var(--primary-color); margin-bottom: 15px;">隐私偏好</h4>
+                                <div class="privacy-options">
+                                    <div class="privacy-option" style="display: flex; align-items: center; margin-bottom: 15px;">
+                                        <label class="switch" style="position: relative; display: inline-block; width: 50px; height: 24px; margin-right: 15px;">
+                                            <input type="checkbox" id="profile-public" checked style="opacity: 0; width: 0; height: 0;">
+                                            <span class="slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 24px;"></span>
+                                        </label>
+                                        <div class="option-info">
+                                            <span class="option-title" style="display: block; font-weight: 500; color: #333;">公开个人资料</span>
+                                            <span class="option-description" style="font-size: 12px; color: #666;">允许其他用户查看您的个人资料</span>
+                                        </div>
+                                    </div>
+                                    <div class="privacy-option" style="display: flex; align-items: center; margin-bottom: 15px;">
+                                        <label class="switch" style="position: relative; display: inline-block; width: 50px; height: 24px; margin-right: 15px;">
+                                            <input type="checkbox" id="activity-public" checked style="opacity: 0; width: 0; height: 0;">
+                                            <span class="slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 24px;"></span>
+                                        </label>
+                                        <div class="option-info">
+                                            <span class="option-title" style="display: block; font-weight: 500; color: #333;">公开活动记录</span>
+                                            <span class="option-description" style="font-size: 12px; color: #666;">显示您的发帖和评论活动</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'notifications':
+                    container.innerHTML = `
+                        <div class="tab-pane active" style="padding: 25px;">
+                            <div class="setting-section">
+                                <h4 style="color: var(--primary-color); margin-bottom: 15px;">通知偏好</h4>
+                                <div class="notification-options">
+                                    <div class="notification-option" style="display: flex; align-items: center; margin-bottom: 15px;">
+                                        <label class="switch" style="position: relative; display: inline-block; width: 50px; height: 24px; margin-right: 15px;">
+                                            <input type="checkbox" id="email-notifications" checked style="opacity: 0; width: 0; height: 0;">
+                                            <span class="slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 24px;"></span>
+                                        </label>
+                                        <div class="option-info">
+                                            <span class="option-title" style="display: block; font-weight: 500; color: #333;">邮件通知</span>
+                                            <span class="option-description" style="font-size: 12px; color: #666;">接收重要通知的邮件提醒</span>
+                                        </div>
+                                    </div>
+                                    <div class="notification-option" style="display: flex; align-items: center; margin-bottom: 15px;">
+                                        <label class="switch" style="position: relative; display: inline-block; width: 50px; height: 24px; margin-right: 15px;">
+                                            <input type="checkbox" id="push-notifications" checked style="opacity: 0; width: 0; height: 0;">
+                                            <span class="slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 24px;"></span>
+                                        </label>
+                                        <div class="option-info">
+                                            <span class="option-title" style="display: block; font-weight: 500; color: #333;">推送通知</span>
+                                            <span class="option-description" style="font-size: 12px; color: #666;">接收实时推送通知</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+            }
         }
         
         // 退出登录
@@ -864,7 +3850,137 @@
                 showNotification('请先登录后编辑资料');
                 return;
             }
-            showNotification('正在打开编辑资料页面...');
+            openEditProfileModal();
+        });
+        
+        // 打开编辑资料模态框
+        function openEditProfileModal() {
+            const userInfo = window.UserStateManager.getUserInfo();
+            if (!userInfo) {
+                showNotification('无法获取用户信息');
+                return;
+            }
+            
+            // 填充表单数据
+            document.getElementById('edit-username').value = userInfo.username || '';
+            document.getElementById('edit-email').value = userInfo.email || '';
+            document.getElementById('edit-bio').value = userInfo.bio || '';
+            
+            // 显示模态框
+            document.getElementById('edit-profile-modal').style.display = 'flex';
+        }
+        
+        // 关闭编辑资料模态框
+        function closeEditProfileModal() {
+            document.getElementById('edit-profile-modal').style.display = 'none';
+        }
+        
+        // 处理头像上传预览
+        document.getElementById('edit-avatar').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const avatarPreview = document.getElementById('avatar-preview');
+                    avatarPreview.innerHTML = '';
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    avatarPreview.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // 处理表单提交
+        document.getElementById('edit-profile-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const isLoggedIn = window.UserStateManager.isLoggedIn();
+            if (!isLoggedIn) {
+                showNotification('请先登录后编辑资料');
+                return;
+            }
+            
+            const formData = new FormData(this);
+            const userInfo = {
+                username: formData.get('username'),
+                email: formData.get('email'),
+                bio: formData.get('bio')
+            };
+            
+            try {
+                // 更新用户信息到Supabase
+                const result = await updateUserProfile(userInfo);
+                
+                if (result.success) {
+                    showNotification('个人资料更新成功');
+                    closeEditProfileModal();
+                    
+                    // 更新本地用户信息
+                    window.UserStateManager.updateUserInfo(userInfo);
+                    
+                    // 刷新界面
+                    updateUserInterface();
+                } else {
+                    showNotification('更新失败：' + result.error);
+                }
+                
+            } catch (error) {
+                console.error('更新个人资料失败:', error);
+                showNotification('更新失败，请重试');
+            }
+        });
+        
+        // 更新用户资料到Supabase
+        async function updateUserProfile(userInfo) {
+            try {
+                // 检查服务是否可用
+                if (!window.HeartHarborServices || !window.HeartHarborServices.AuthService) {
+                    return { success: false, error: '认证服务不可用' };
+                }
+                
+                const currentUser = await window.HeartHarborServices.AuthService.getCurrentUser();
+                if (!currentUser.data.user) {
+                    return { success: false, error: '用户未登录' };
+                }
+                
+                // 检查UserStatsService是否可用
+                if (!window.HeartHarborServices.UserStatsService) {
+                    console.warn('UserStatsService不可用，尝试直接使用Supabase客户端');
+                    // 直接使用Supabase客户端更新用户信息
+                    const { data, error } = await window.HeartHarborServices.supabaseClient
+                        .from('users')
+                        .update(userInfo)
+                        .eq('id', currentUser.data.user.id)
+                        .select();
+                    
+                    if (error) {
+                        throw error;
+                    }
+                    
+                    return { success: true, data };
+                }
+                
+                // 使用UserStatsService更新用户资料
+                const updateResult = await window.HeartHarborServices.UserStatsService.updateUserProfile(currentUser.data.user.id, userInfo);
+                
+                if (updateResult.success) {
+                    return { success: true };
+                } else {
+                    return { success: false, error: updateResult.error };
+                }
+                
+            } catch (error) {
+                console.error('更新用户资料失败:', error);
+                return { success: false, error: '网络错误: ' + error.message };
+            }
+        }
+        
+        // 点击模态框外部关闭
+        document.getElementById('edit-profile-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeEditProfileModal();
+            }
         });
         
         // 添加CSS动画
