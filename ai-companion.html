@@ -1346,25 +1346,11 @@
                         </div>
                     </div>
                     <div class="character-controls">
-                        <div class="character-actions">
-                            <button class="character-btn" id="initBtn" disabled>
-                                <i class="fas fa-cog"></i> 初始化SDK
-                            </button>
-                            <button class="character-btn" id="startBtn" disabled>
-                                <i class="fas fa-play"></i> 启动虚拟人
-                            </button>
-                            <button class="character-btn" id="stopBtn" onclick="stopAvatar()">
-                                <i class="fas fa-stop"></i> 停止虚拟人
-                            </button>
-                            <button class="character-btn" id="destroyBtn" disabled>
-                                <i class="fas fa-trash"></i> 销毁SDK
-                            </button>
-                        </div>
                         <div class="character-info">
                             <p><strong>讯飞虚拟人</strong> - 你的AI陪伴伙伴</p>
                             <div class="character-status">
                                 <span class="status-indicator"></span>
-                                <span id="characterMode">SDK状态: <span id="sdkStatus">未加载</span></span>
+                                <span id="characterMode">SDK状态: <span id="sdkStatus">自动加载中...</span></span>
                             </div>
                         </div>
                     </div>
@@ -1571,8 +1557,201 @@
         function initVirtualCharacter() {
             console.log('1 - 初始化虚拟人物...');
             
-            // 直接使用讯飞虚拟人API
-            initXunfeiVirtualHuman();
+            // 初始化页面可见性监听
+            initPageVisibilityListener();
+            
+            // 页面加载时自动启动虚拟人
+            setTimeout(() => {
+                autoStartVirtualHuman();
+            }, 1000); // 延迟1秒确保页面完全加载
+        }
+        
+        // 自动启动虚拟人
+        async function autoStartVirtualHuman() {
+            console.log('开始自动启动虚拟人流程...');
+            
+            try {
+                // 重置错误状态
+                window.autoStartErrorCount = window.autoStartErrorCount || 0;
+                
+                // 如果连续失败次数过多，停止自动重试
+                if (window.autoStartErrorCount > 3) {
+                    console.warn('自动启动失败次数过多，停止自动重试');
+                    showMessage('自动启动失败次数过多，请刷新页面重试', 'error');
+                    return;
+                }
+                
+                // 等待SDK加载
+                await waitForSDKLoaded();
+                
+                // 初始化SDK
+                await initSDK();
+                
+                // 启动虚拟人
+                await startAvatar();
+                
+                console.log('虚拟人自动启动成功');
+                showMessage('虚拟人已自动启动', 'success');
+                
+                // 重置错误计数
+                window.autoStartErrorCount = 0;
+                
+                // 设置自动启动标志
+                window.isVirtualHumanAutoStarted = true;
+                
+            } catch (error) {
+                console.error('自动启动虚拟人失败:', error);
+                
+                // 增加错误计数
+                window.autoStartErrorCount = (window.autoStartErrorCount || 0) + 1;
+                
+                showMessage('自动启动失败: ' + error.message, 'error');
+                
+                // 对于恢复场景，提供更友好的提示
+                if (window.isVirtualHumanAutoStarted) {
+                    showMessage('虚拟人恢复失败，将在下次页面可见时重试', 'warning');
+                }
+                
+                // 提供手动启动按钮作为备选方案
+                enableManualButtons();
+            }
+        }
+        
+        // 自动关闭虚拟人
+        function autoStopVirtualHuman() {
+            console.log('自动关闭虚拟人...');
+            
+            if (interactiveSDK && isPlaying) {
+                try {
+                    stopAvatar();
+                    console.log('虚拟人已自动停止');
+                } catch (error) {
+                    console.error('自动停止虚拟人失败:', error);
+                }
+            }
+            
+            // 重置自动启动标志
+            window.isVirtualHumanAutoStarted = false;
+        }
+        
+        // 初始化页面可见性监听
+        function initPageVisibilityListener() {
+            // 页面可见性API
+            let hidden = '';
+            let visibilityChange = '';
+            
+            if (typeof document.hidden !== 'undefined') {
+                hidden = 'hidden';
+                visibilityChange = 'visibilitychange';
+            } else if (typeof document.msHidden !== 'undefined') {
+                hidden = 'msHidden';
+                visibilityChange = 'msvisibilitychange';
+            } else if (typeof document.webkitHidden !== 'undefined') {
+                hidden = 'webkitHidden';
+                visibilityChange = 'webkitvisibilitychange';
+            }
+            
+            // 监听页面可见性变化
+            if (typeof document.addEventListener !== 'undefined' && hidden !== '') {
+                document.addEventListener(visibilityChange, function() {
+                    if (document[hidden]) {
+                        // 页面不可见，停止虚拟人
+                        console.log('页面不可见，自动停止虚拟人');
+                        autoStopVirtualHuman();
+                    } else {
+                        // 页面可见，恢复虚拟人
+                        console.log('页面可见，检查是否需要恢复虚拟人');
+                        if (window.isVirtualHumanAutoStarted) {
+                            console.log('尝试恢复虚拟人，当前状态:', { 
+                                isPlaying: isPlaying, 
+                                interactiveSDK: !!interactiveSDK 
+                            });
+                            setTimeout(() => {
+                                // 更加宽松的重启条件
+                                if (!isPlaying || !interactiveSDK) {
+                                    console.log('符合重启条件，开始恢复虚拟人');
+                                    autoStartVirtualHuman();
+                                } else {
+                                    console.log('虚拟人已在运行状态，无需恢复');
+                                }
+                            }, 1500); // 增加延迟确保页面完全加载
+                        }
+                    }
+                }, false);
+            }
+            
+            // 监听页面卸载事件
+            window.addEventListener('beforeunload', function() {
+                console.log('页面即将关闭，自动停止虚拟人');
+                autoStopVirtualHuman();
+            });
+            
+            // 监听页面隐藏事件（如切换标签页）
+            window.addEventListener('blur', function() {
+                console.log('页面失去焦点，自动停止虚拟人');
+                autoStopVirtualHuman();
+            });
+            
+            window.addEventListener('focus', function() {
+                console.log('页面获得焦点，检查是否需要恢复虚拟人');
+                if (window.isVirtualHumanAutoStarted) {
+                    console.log('尝试恢复虚拟人，当前状态:', { 
+                        isPlaying: isPlaying, 
+                        interactiveSDK: !!interactiveSDK 
+                    });
+                    setTimeout(() => {
+                        // 更加宽松的重启条件
+                        if (!isPlaying || !interactiveSDK) {
+                            console.log('符合重启条件，开始恢复虚拟人');
+                            autoStartVirtualHuman();
+                        } else {
+                            console.log('虚拟人已在运行状态，无需恢复');
+                        }
+                    }, 1500);
+                }
+            });
+        }
+        
+        // 等待SDK加载
+        function waitForSDKLoaded() {
+            return new Promise((resolve, reject) => {
+                const maxWaitTime = 10000; // 10秒超时
+                const startTime = Date.now();
+                
+                const checkSDK = () => {
+                    if (typeof window.Interactive !== 'undefined' || typeof window.AvatarPlatform !== 'undefined') {
+                        console.log('SDK加载完成');
+                        resolve();
+                        return;
+                    }
+                    
+                    if (Date.now() - startTime > maxWaitTime) {
+                        reject(new Error('SDK加载超时，请检查网络连接'));
+                        return;
+                    }
+                    
+                    setTimeout(checkSDK, 100);
+                };
+                
+                checkSDK();
+            });
+        }
+        
+        // 启用手动按钮作为备选方案
+        function enableManualButtons() {
+            // 由于按钮已被删除，提供备选的用户提示
+            console.log('自动启动失败，提供备选操作提示');
+            
+            // 在状态栏显示重试按钮
+            const statusElement = document.getElementById('sdkStatus');
+            if (statusElement) {
+                statusElement.innerHTML = `
+                    <span style="color: #e53e3e;">自动启动失败</span>
+                    <button onclick="window.location.reload()" style="margin-left: 10px; padding: 2px 8px; background: #3182ce; color: white; border: none; border-radius: 4px; cursor: pointer;">刷新重试</button>
+                `;
+            }
+            
+            showMessage('自动启动失败，请刷新页面重试', 'warning');
         }
 
         
@@ -1685,8 +1864,8 @@
                 isSDKInitialized = true;
                 updateCharacterMode('SDK已初始化');
                 
-                // 启用启动按钮
-                document.getElementById('startBtn').disabled = false;
+                // 启动按钮已被删除，自动进入下一步
+                console.log('SDK初始化成功，准备启动虚拟人');
                 
             } catch (error) {
                 console.error('SDK初始化失败:', error);
@@ -2770,14 +2949,11 @@
                 sdkStatus.textContent = isSDKInitialized ? '已初始化' : '未加载';
             }
             
-            // 更新按钮状态
-            const startBtn = document.getElementById('startBtn');
-            const stopBtn = document.getElementById('stopBtn');
-            const destroyBtn = document.getElementById('destroyBtn');
-            
-            if (startBtn) startBtn.disabled = !isSDKInitialized || isPlaying;
-            if (stopBtn) stopBtn.disabled = !isSDKInitialized || !isPlaying;
-            if (destroyBtn) destroyBtn.disabled = !isSDKInitialized;
+            // 按钮状态更新 - 由于按钮已被删除，仅记录状态变化
+            console.log('按钮状态更新:', {
+                isSDKInitialized: isSDKInitialized,
+                isPlaying: isPlaying
+            });
         }
 
         // 保存API配置
@@ -3262,24 +3438,8 @@
 
         // 初始化讯飞虚拟人事件监听
         function initXunfeiEventListeners() {
-            const initBtn = document.getElementById('initBtn');
-            const startBtn = document.getElementById('startBtn');
-            const stopBtn = document.getElementById('stopBtn');
-            const destroyBtn = document.getElementById('destroyBtn');
-
-            if (initBtn) {
-                initBtn.addEventListener('click', initSDK);
-            }
-
-            if (startBtn) {
-                startBtn.addEventListener('click', startAvatar);
-            }
-
-            // stopBtn 已通过 onclick 属性绑定事件
-
-            if (destroyBtn) {
-                destroyBtn.addEventListener('click', destroySDK);
-            }
+            // 按钮已被删除，事件监听已整合到自动流程中
+            console.log('虚拟人事件监听器已整合到自动流程中');
         }
 
         // 初始化VMS事件监听
