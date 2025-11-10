@@ -527,10 +527,10 @@
             position: relative;
         }
         
-        .wp.wrapper2 {
+        /* .wp.wrapper2 {
             height: 0;
             width: 100%;
-        }
+        } */
         
         .subtitle {
             position: absolute;
@@ -556,7 +556,7 @@
             background: white;
         }
         
-        .character-actions {
+        .character-control-buttons {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
@@ -578,9 +578,45 @@
             gap: 5px;
         }
         
-        .character-btn:hover {
+        .character-btn:hover:not(:disabled) {
             border-color: var(--ai-color);
             color: var(--ai-color);
+        }
+        
+        .character-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .start-btn {
+            background: #5D8BF4;
+            color: white;
+            border-color: #5D8BF4;
+        }
+        
+        .start-btn:hover:not(:disabled) {
+            background: #4a7be0;
+            border-color: #4a7be0;
+            transform: translateY(-2px);
+        }
+        
+        .stop-btn {
+            background: #f56565;
+            color: white;
+            border-color: #f56565;
+        }
+        
+        .stop-btn:hover:not(:disabled) {
+            background: #e55353;
+            border-color: #e55353;
+            transform: translateY(-2px);
+        }
+        
+        .character-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
         }
         
         .character-info {
@@ -676,63 +712,10 @@
             color: var(--ai-color);
         }
         
-        .mood-selector {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        
-        .mood-option {
-            display: flex;
-            align-items: center;
-            padding: 10px 12px;
-            background: white;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .mood-option:hover {
-            border-color: var(--ai-color);
-        }
-        
-        .mood-option.active {
-            border-color: var(--ai-color);
-            background: rgba(93, 139, 244, 0.1);
-        }
-        
-        .mood-option i {
-            margin-right: 10px;
-            color: var(--ai-color);
-            font-size: 16px;
-        }
-        
         /* 虚拟人物动画关键帧 */
         @keyframes float {
             0%, 100% { transform: translateY(0px); }
             50% { transform: translateY(-10px); }
-        }
-        
-        @keyframes warmBreath {
-            0%, 100% { transform: scaleX(0.8); opacity: 0.3; }
-            50% { transform: scaleX(1.2); opacity: 0.6; }
-        }
-        
-        @keyframes professionalPulse {
-            0%, 100% { transform: scaleX(1); opacity: 0.4; }
-            50% { transform: scaleX(1.1); opacity: 0.7; }
-        }
-        
-        @keyframes friendlyBounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-5px); }
-            60% { transform: translateY(-3px); }
-        }
-        
-        @keyframes encouragingGlow {
-            0%, 100% { box-shadow: 0 0 5px rgba(237, 137, 54, 0.5); }
-            50% { box-shadow: 0 0 20px rgba(237, 137, 54, 0.8); }
         }
         
         @keyframes poseChange {
@@ -972,6 +955,48 @@
             font-size: 16px;
         }
         
+        /* 虚拟人物形象选择器样式 */
+        .avatar-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        
+        .avatar-option {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 10px 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.8rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 60px;
+        }
+        
+        .avatar-option:hover {
+            border-color: var(--ai-color);
+            background: rgba(93, 139, 244, 0.05);
+            transform: translateY(-2px);
+        }
+        
+        .avatar-option.active {
+            border-color: var(--ai-color);
+            background: rgba(93, 139, 244, 0.1);
+            box-shadow: 0 2px 8px rgba(93, 139, 244, 0.2);
+        }
+        
+        .avatar-option i {
+            margin-bottom: 5px;
+            color: var(--ai-color);
+            font-size: 20px;
+            display: block;
+        }
+        
         .quick-actions {
             display: grid;
             grid-template-columns: 1fr;
@@ -1122,6 +1147,22 @@
                 font-size: 0.85rem;
             }
             
+            /* 移动端优化虚拟人物形象选择器 */
+            .avatar-selector {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 6px;
+            }
+            
+            .avatar-option {
+                padding: 8px 6px;
+                font-size: 0.75rem;
+                min-height: 55px;
+            }
+            
+            .avatar-option i {
+                font-size: 18px;
+            }
+            
             .control-section {
                 margin-bottom: 20px;
             }
@@ -1219,6 +1260,71 @@
             border-color: #f56565;
             color: #f56565;
         }
+        
+        /* 消息提示样式 */
+        .message-prompt {
+            position: fixed;
+            top: 100px;
+            right: 30px;
+            z-index: 10000;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-left: 4px solid #e2e8f0;
+            max-width: 300px;
+            animation: slideInRight 0.3s ease-out;
+        }
+        
+        .message-prompt.success {
+            border-left-color: #48bb78;
+            background: #f0fff4;
+        }
+        
+        .message-prompt.error {
+            border-left-color: #f56565;
+            background: #fff5f5;
+        }
+        
+        .message-prompt.warning {
+            border-left-color: #ed8936;
+            background: #fffaf0;
+        }
+        
+        .message-prompt-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #4a5568;
+        }
+        
+        .message-prompt i {
+            font-size: 16px;
+        }
+        
+        .message-prompt.success i {
+            color: #48bb78;
+        }
+        
+        .message-prompt.error i {
+            color: #f56565;
+        }
+        
+        .message-prompt.warning i {
+            color: #ed8936;
+        }
+        
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1294,23 +1400,31 @@
                         </div>
                         
                         <div class="control-section">
-                            <h4><i class="fas fa-smile"></i> 情绪模式</h4>
-                            <div class="mood-selector">
-                                <div class="mood-option active" data-mood="warm">
-                                    <i class="fas fa-sun"></i>
-                                    温暖关怀
+                            <h4><i class="fas fa-user-astronaut"></i> 虚拟人物形象</h4>
+                            <div class="avatar-selector">
+                                <div class="avatar-option active" data-avatar="xiaowan">
+                                    <i class="fas fa-user-circle"></i>
+                                    小丸
                                 </div>
-                                <div class="mood-option" data-mood="professional">
-                                    <i class="fas fa-stethoscope"></i>
-                                    专业严谨
+                                <div class="avatar-option" data-avatar="xiaomei">
+                                    <i class="fas fa-user"></i>
+                                    小美
                                 </div>
-                                <div class="mood-option" data-mood="friendly">
-                                    <i class="fas fa-laugh"></i>
-                                    轻松友好
+                                <div class="avatar-option" data-avatar="xiaoming">
+                                    <i class="fas fa-user-graduate"></i>
+                                    小明
                                 </div>
-                                <div class="mood-option" data-mood="encouraging">
-                                    <i class="fas fa-trophy"></i>
-                                    积极鼓励
+                                <div class="avatar-option" data-avatar="xiaoyu">
+                                    <i class="fas fa-user-tie"></i>
+                                    小雨
+                                </div>
+                                <div class="avatar-option" data-avatar="xiaogang">
+                                    <i class="fas fa-user-ninja"></i>
+                                    小刚
+                                </div>
+                                <div class="avatar-option" data-avatar="xiaohong">
+                                    <i class="fas fa-user-friends"></i>
+                                    小红
                                 </div>
                             </div>
                         </div>
@@ -1339,18 +1453,26 @@
                             <div class="wrapper1" id="avatarContainer">
                                 <!-- <div style="color: white; text-align: center; padding: 20px;">虚拟人视频将在此处显示</div> -->
                             </div>
-                            <div class="wp wrapper2"></div>
-                            <!-- <p class="subtitle">
-                                <span id="subtitleText">等待字幕...</span>
-                            </p> -->
+                            <!-- <div class="wp wrapper2"></div> -->
+                            <p class="subtitle">
+                                
+                            </p>
                         </div>
                     </div>
                     <div class="character-controls">
+                        <div class="character-control-buttons">
+                            <button class="character-btn start-btn" id="startVirtualHuman">
+                                <i class="fas fa-play"></i> 启动虚拟人
+                            </button>
+                            <button class="character-btn stop-btn" id="stopVirtualHuman" disabled>
+                                <i class="fas fa-stop"></i> 停止虚拟人
+                            </button>
+                        </div>
                         <div class="character-info">
                             <p><strong>讯飞虚拟人</strong> - 你的AI陪伴伙伴</p>
                             <div class="character-status">
                                 <span class="status-indicator"></span>
-                                <span id="characterMode">SDK状态: <span id="sdkStatus">自动加载中...</span></span>
+                                <span id="characterMode">SDK状态: <span id="sdkStatus">等待启动...</span></span>
                             </div>
                         </div>
                     </div>
@@ -1455,7 +1577,8 @@
         
         // 当前设置
         let currentRole = 'companion';
-        let currentMood = 'warm';
+        let currentAvatar = 'xiaowan';
+        let currentVoice = 'zh-CN-XiaoxiaoNeural';
         
         // 语音识别相关变量
         let recognition = null;
@@ -1560,26 +1683,56 @@
             // 初始化页面可见性监听
             initPageVisibilityListener();
             
-            // 页面加载时自动启动虚拟人
-            setTimeout(() => {
-                autoStartVirtualHuman();
-            }, 1000); // 延迟1秒确保页面完全加载
+            // 不再自动启动虚拟人，改为手动按钮控制
+            console.log('虚拟人启动改为手动控制模式');
+            updateVirtualHumanStatus('等待启动');
+            
+            // 监听SDK加载完成，启用启动按钮
+            if (window.onSDKLoaded) {
+                const originalOnSDKLoaded = window.onSDKLoaded;
+                window.onSDKLoaded = function() {
+                    originalOnSDKLoaded();
+                    enableStartButton();
+                };
+            }
         }
         
-        // 自动启动虚拟人
-        async function autoStartVirtualHuman() {
-            console.log('开始自动启动虚拟人流程...');
+        // 启用启动按钮
+        function enableStartButton() {
+            const startBtn = document.getElementById('startVirtualHuman');
+            const stopBtn = document.getElementById('stopVirtualHuman');
+            
+            if (startBtn) {
+                startBtn.disabled = false;
+                startBtn.innerHTML = '<i class="fas fa-play"></i> 启动虚拟人';
+            }
+            
+            if (stopBtn) {
+                stopBtn.disabled = true;
+            }
+            
+            updateVirtualHumanStatus('SDK已加载，可启动');
+            console.log('启动按钮已启用');
+        }
+        
+        // 手动启动虚拟人
+        async function startVirtualHuman() {
+            console.log('手动启动虚拟人...');
             
             try {
-                // 重置错误状态
-                window.autoStartErrorCount = window.autoStartErrorCount || 0;
+                const startBtn = document.getElementById('startVirtualHuman');
+                const stopBtn = document.getElementById('stopVirtualHuman');
                 
-                // 如果连续失败次数过多，停止自动重试
-                if (window.autoStartErrorCount > 3) {
-                    console.warn('自动启动失败次数过多，停止自动重试');
-                    showMessage('自动启动失败次数过多，请刷新页面重试', 'error');
-                    return;
+                if (startBtn) {
+                    startBtn.disabled = true;
+                    startBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 启动中...';
                 }
+                
+                if (stopBtn) {
+                    stopBtn.disabled = true;
+                }
+                
+                updateVirtualHumanStatus('启动中...');
                 
                 // 等待SDK加载
                 await waitForSDKLoaded();
@@ -1590,124 +1743,142 @@
                 // 启动虚拟人
                 await startAvatar();
                 
-                console.log('虚拟人自动启动成功');
-                showMessage('虚拟人已自动启动', 'success');
+                console.log('虚拟人手动启动成功');
+                showMessage('虚拟人已启动', 'success');
                 
-                // 重置错误计数
-                window.autoStartErrorCount = 0;
+                // 更新按钮状态
+                if (startBtn) {
+                    startBtn.disabled = true;
+                    startBtn.innerHTML = '<i class="fas fa-play"></i> 已启动';
+                }
                 
-                // 设置自动启动标志
-                window.isVirtualHumanAutoStarted = true;
+                if (stopBtn) {
+                    stopBtn.disabled = false;
+                }
+                
+                updateVirtualHumanStatus('运行中');
                 
             } catch (error) {
-                console.error('自动启动虚拟人失败:', error);
+                console.error('手动启动虚拟人失败:', error);
                 
-                // 增加错误计数
-                window.autoStartErrorCount = (window.autoStartErrorCount || 0) + 1;
+                const startBtn = document.getElementById('startVirtualHuman');
+                const stopBtn = document.getElementById('stopVirtualHuman');
                 
-                showMessage('自动启动失败: ' + error.message, 'error');
-                
-                // 对于恢复场景，提供更友好的提示
-                if (window.isVirtualHumanAutoStarted) {
-                    showMessage('虚拟人恢复失败，将在下次页面可见时重试', 'warning');
+                if (startBtn) {
+                    startBtn.disabled = false;
+                    startBtn.innerHTML = '<i class="fas fa-play"></i> 启动虚拟人';
                 }
                 
-                // 提供手动启动按钮作为备选方案
-                enableManualButtons();
+                if (stopBtn) {
+                    stopBtn.disabled = true;
+                }
+                
+                updateVirtualHumanStatus('启动失败');
+                showMessage('启动失败: ' + error.message, 'error');
             }
         }
         
-        // 自动关闭虚拟人
-        function autoStopVirtualHuman() {
-            console.log('自动关闭虚拟人...');
+        // 停止虚拟人
+        function stopVirtualHuman() {
+            console.log('手动停止虚拟人...');
             
-            if (interactiveSDK && isPlaying) {
-                try {
-                    stopAvatar();
-                    console.log('虚拟人已自动停止');
-                } catch (error) {
-                    console.error('自动停止虚拟人失败:', error);
+            try {
+                const startBtn = document.getElementById('startVirtualHuman');
+                const stopBtn = document.getElementById('stopVirtualHuman');
+                
+                if (stopBtn) {
+                    stopBtn.disabled = true;
+                    stopBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 停止中...';
                 }
+                
+                updateVirtualHumanStatus('停止中...');
+                
+                // 停止虚拟人播放
+                if (interactiveSDK && interactiveSDK.stop) {
+                    interactiveSDK.stop();
+                }
+                
+                // 销毁SDK
+                if (interactiveSDK && interactiveSDK.destroy) {
+                    interactiveSDK.destroy();
+                    interactiveSDK = null;
+                    isSDKInitialized = false;
+                    isXunfeiConnected = false;
+                    isPlaying = false;
+                }
+                
+                // 清空视频容器
+                const avatarContainer = document.getElementById('avatarContainer');
+                if (avatarContainer) {
+                    avatarContainer.innerHTML = '';
+                }
+                
+                console.log('虚拟人手动停止成功');
+                showMessage('虚拟人已停止', 'success');
+                
+                // 更新按钮状态
+                if (startBtn) {
+                    startBtn.disabled = false;
+                    startBtn.innerHTML = '<i class="fas fa-play"></i> 启动虚拟人';
+                }
+                
+                if (stopBtn) {
+                    stopBtn.disabled = true;
+                    stopBtn.innerHTML = '<i class="fas fa-stop"></i> 停止虚拟人';
+                }
+                
+                updateVirtualHumanStatus('已停止');
+                
+            } catch (error) {
+                console.error('手动停止虚拟人失败:', error);
+                
+                const stopBtn = document.getElementById('stopVirtualHuman');
+                if (stopBtn) {
+                    stopBtn.disabled = false;
+                    stopBtn.innerHTML = '<i class="fas fa-stop"></i> 停止虚拟人';
+                }
+                
+                updateVirtualHumanStatus('停止失败');
+                showMessage('停止失败: ' + error.message, 'error');
             }
-            
-            // 重置自动启动标志
-            window.isVirtualHumanAutoStarted = false;
         }
         
-        // 初始化页面可见性监听
-        function initPageVisibilityListener() {
-            // 页面可见性API
-            let hidden = '';
-            let visibilityChange = '';
-            
-            if (typeof document.hidden !== 'undefined') {
-                hidden = 'hidden';
-                visibilityChange = 'visibilitychange';
-            } else if (typeof document.msHidden !== 'undefined') {
-                hidden = 'msHidden';
-                visibilityChange = 'msvisibilitychange';
-            } else if (typeof document.webkitHidden !== 'undefined') {
-                hidden = 'webkitHidden';
-                visibilityChange = 'webkitvisibilitychange';
-            }
-            
-            // 监听页面可见性变化
-            if (typeof document.addEventListener !== 'undefined' && hidden !== '') {
-                document.addEventListener(visibilityChange, function() {
-                    if (document[hidden]) {
-                        // 页面不可见，停止虚拟人
-                        console.log('页面不可见，自动停止虚拟人');
-                        autoStopVirtualHuman();
+        // 更新虚拟人状态显示
+        function updateVirtualHumanStatus(status) {
+            const sdkStatus = document.getElementById('sdkStatus');
+            if (sdkStatus) {
+                sdkStatus.textContent = status;
+                
+                // 根据状态更新指示器颜色
+                const statusIndicator = document.querySelector('.status-indicator');
+                if (statusIndicator) {
+                    if (status.includes('运行') || status.includes('启动')) {
+                        statusIndicator.style.background = '#48bb78'; // 绿色
+                    } else if (status.includes('停止') || status.includes('失败')) {
+                        statusIndicator.style.background = '#f56565'; // 红色
+                    } else if (status.includes('等待') || status.includes('加载')) {
+                        statusIndicator.style.background = '#ed8936'; // 橙色
                     } else {
-                        // 页面可见，恢复虚拟人
-                        console.log('页面可见，检查是否需要恢复虚拟人');
-                        if (window.isVirtualHumanAutoStarted) {
-                            console.log('尝试恢复虚拟人，当前状态:', { 
-                                isPlaying: isPlaying, 
-                                interactiveSDK: !!interactiveSDK 
-                            });
-                            setTimeout(() => {
-                                // 更加宽松的重启条件
-                                if (!isPlaying || !interactiveSDK) {
-                                    console.log('符合重启条件，开始恢复虚拟人');
-                                    autoStartVirtualHuman();
-                                } else {
-                                    console.log('虚拟人已在运行状态，无需恢复');
-                                }
-                            }, 1500); // 增加延迟确保页面完全加载
-                        }
+                        statusIndicator.style.background = '#a0aec0'; // 灰色
                     }
-                }, false);
+                }
             }
-            
-            // 监听页面卸载事件
+        }
+        
+        // 初始化页面可见性监听（只保留页面卸载时的清理）
+        function initPageVisibilityListener() {
+            // 监听页面卸载事件，进行必要的清理
             window.addEventListener('beforeunload', function() {
-                console.log('页面即将关闭，自动停止虚拟人');
-                autoStopVirtualHuman();
-            });
-            
-            // 监听页面隐藏事件（如切换标签页）
-            window.addEventListener('blur', function() {
-                console.log('页面失去焦点，自动停止虚拟人');
-                autoStopVirtualHuman();
-            });
-            
-            window.addEventListener('focus', function() {
-                console.log('页面获得焦点，检查是否需要恢复虚拟人');
-                if (window.isVirtualHumanAutoStarted) {
-                    console.log('尝试恢复虚拟人，当前状态:', { 
-                        isPlaying: isPlaying, 
-                        interactiveSDK: !!interactiveSDK 
-                    });
-                    setTimeout(() => {
-                        // 更加宽松的重启条件
-                        if (!isPlaying || !interactiveSDK) {
-                            console.log('符合重启条件，开始恢复虚拟人');
-                            autoStartVirtualHuman();
-                        } else {
-                            console.log('虚拟人已在运行状态，无需恢复');
-                        }
-                    }, 1500);
+                console.log('页面即将关闭，执行清理操作');
+                
+                // 如果虚拟人正在运行，停止它
+                if (interactiveSDK && isPlaying) {
+                    try {
+                        stopVirtualHuman();
+                        console.log('虚拟人已停止');
+                    } catch (error) {
+                        console.error('停止虚拟人失败:', error);
+                    }
                 }
             });
         }
@@ -1737,22 +1908,7 @@
             });
         }
         
-        // 启用手动按钮作为备选方案
-        function enableManualButtons() {
-            // 由于按钮已被删除，提供备选的用户提示
-            console.log('自动启动失败，提供备选操作提示');
-            
-            // 在状态栏显示重试按钮
-            const statusElement = document.getElementById('sdkStatus');
-            if (statusElement) {
-                statusElement.innerHTML = `
-                    <span style="color: #e53e3e;">自动启动失败</span>
-                    <button onclick="window.location.reload()" style="margin-left: 10px; padding: 2px 8px; background: #3182ce; color: white; border: none; border-radius: 4px; cursor: pointer;">刷新重试</button>
-                `;
-            }
-            
-            showMessage('自动启动失败，请刷新页面重试', 'warning');
-        }
+        // 这个函数已不再需要，因为现在完全使用手动控制
 
         
         // 初始化讯飞虚拟人SDK - 按照测试文件的方式
@@ -2470,18 +2626,18 @@
                 if (e.key === 'Enter') sendMessage();
             });
 
-            // 语音输入
-            if (voiceButton) {
-                voiceButton.addEventListener('click', toggleVoiceRecognition);
-                
-                // 检查浏览器是否支持语音识别
-                if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                    voiceButton.disabled = true;
-                    voiceButton.title = '您的浏览器不支持语音识别';
-                    voiceButton.innerHTML = '<i class="fas fa-microphone-slash"></i>';
-                } else {
-                    initSpeechRecognition();
-                }
+            // 虚拟人控制按钮
+            const startBtn = document.getElementById('startVirtualHuman');
+            const stopBtn = document.getElementById('stopVirtualHuman');
+            
+            if (startBtn) {
+                startBtn.addEventListener('click', startVirtualHuman);
+                startBtn.disabled = true; // 初始禁用，等待SDK加载
+            }
+            
+            if (stopBtn) {
+                stopBtn.addEventListener('click', stopVirtualHuman);
+                stopBtn.disabled = true; // 初始禁用
             }
 
             // 语音输入
@@ -3469,6 +3625,73 @@
                 });
             }
         }
+        
+        // VMS虚拟人启动函数
+        function startVMS() {
+            console.log('启动VMS虚拟人');
+            try {
+                // 检查SDK是否已加载
+                if (typeof window.Interactive === 'undefined' && typeof window.AvatarPlatform === 'undefined') {
+                    console.error('VMS SDK未加载');
+                    showMessage('VMS SDK未加载，请稍后重试', 'error');
+                    return;
+                }
+                
+                // 自动启动虚拟人流程
+                autoStartVirtualHuman();
+                
+                // 更新按钮状态
+                const startBtn = document.getElementById('startVMS');
+                const stopBtn = document.getElementById('stopVMS');
+                if (startBtn) startBtn.disabled = true;
+                if (stopBtn) stopBtn.disabled = false;
+                
+                showMessage('VMS虚拟人启动中...', 'success');
+                
+            } catch (error) {
+                console.error('启动VMS失败:', error);
+                showMessage('启动VMS失败: ' + error.message, 'error');
+            }
+        }
+        
+        // VMS虚拟人停止函数
+        function stopVMS() {
+            console.log('停止VMS虚拟人');
+            try {
+                // 停止虚拟人播放
+                if (window.avatarInstance) {
+                    window.avatarInstance.stop();
+                    delete window.avatarInstance;
+                }
+                
+                // 清理相关资源
+                if (window.characterWebSocket) {
+                    window.characterWebSocket.close();
+                    delete window.characterWebSocket;
+                }
+                
+                // 重置状态
+                window.isVirtualHumanStarted = false;
+                
+                // 更新按钮状态
+                const startBtn = document.getElementById('startVMS');
+                const stopBtn = document.getElementById('stopVMS');
+                if (startBtn) startBtn.disabled = false;
+                if (stopBtn) stopBtn.disabled = true;
+                
+                // 更新状态显示
+                const sdkStatus = document.getElementById('sdkStatus');
+                if (sdkStatus) {
+                    sdkStatus.textContent = '已停止';
+                }
+                
+                showMessage('VMS虚拟人已停止', 'success');
+                
+            } catch (error) {
+                console.error('停止VMS失败:', error);
+                showMessage('停止VMS失败: ' + error.message, 'error');
+            }
+        }
 
         // 聊天记录功能
         
@@ -3849,24 +4072,24 @@
                     if (sessionResult.success) {
                         supabaseSessionId = sessionResult.data.id;
                         localStorage.setItem('supabase_session_id', supabaseSessionId);
-                        console.log('创建新的Supabase会话:', supabaseSessionId);
-                    } else {
-                        console.error('创建Supabase会话失败:', sessionResult.error);
-                        return;
+                        console.log('新的Supabase会话已创建:', supabaseSessionId);
                     }
                 }
                 
-                // 保存消息到Supabase
-                const messageResult = await window.HeartHarborServices.AIChatService.sendMessage(
-                    supabaseSessionId, 
-                    content, 
-                    type === 'user' ? 'user' : 'assistant'
-                );
-                
-                if (messageResult.success) {
-                    console.log('消息已保存到Supabase');
-                } else {
-                    console.error('保存消息到Supabase失败:', messageResult.error);
+                if (supabaseSessionId) {
+                    // 保存消息到Supabase
+                    const role = type === 'user' ? 'user' : 'assistant';
+                    const messageResult = await window.HeartHarborServices.AIChatService.addMessage(
+                        supabaseSessionId, 
+                        role, 
+                        content
+                    );
+                    
+                    if (messageResult.success) {
+                        console.log('消息已保存到Supabase');
+                    } else {
+                        console.warn('Supabase消息保存失败:', messageResult.error);
+                    }
                 }
                 
             } catch (error) {
@@ -3874,42 +4097,79 @@
             }
         }
         
-        // 修改原有的消息添加函数，添加记录功能
-        async function addUserMessage(message) {
-            addUserMessageToUI(message);
-            await addMessageToHistory('user', message);
+        // 初始化应用
+        async function initApp() {
+            try {
+                console.log('开始初始化AI心灵伙伴应用...');
+                
+                // 检查登录状态
+                const isLoggedIn = await checkLoginStatus();
+                
+                if (!isLoggedIn) {
+                    console.log('用户未登录，显示未授权界面');
+                    showUnauthorizedView();
+                    return;
+                }
+                
+                console.log('用户已登录，继续初始化...');
+                
+                // 初始化事件监听器
+                initEventListeners();
+                
+                // 尝试加载之前的聊天记录
+                await loadChatHistory();
+                
+                // 初始化讯飞虚拟人
+                initXunfeiVirtualHuman();
+                
+                // 初始化虚拟人物
+                initVirtualCharacter();
+                
+                // 启用发送按钮
+                if (sendButton) sendButton.disabled = false;
+                
+                console.log('AI心灵伙伴应用初始化完成');
+                
+            } catch (error) {
+                console.error('应用初始化失败:', error);
+                showMessage('应用初始化失败: ' + error.message, 'error');
+                
+                // 启用降级模式
+                enableFallbackMode();
+            }
         }
         
-        async function addAIMessage(message) {
-            addAIMessageToUI(message);
-            await addMessageToHistory('ai', message);
+        // 启用降级模式
+        function enableFallbackMode() {
+            console.log('启用降级模式');
+            
+            // 启用基础聊天功能
+            if (sendButton) sendButton.disabled = false;
+            
+            // 显示基础虚拟人物
+            loadStaticCharacter();
+            
+            // 更新状态显示
+            updateCharacterMode('基础模式 - 仅支持文本聊天');
+            
+            showMessage('已启用基础模式，虚拟人功能暂时不可用', 'warning');
         }
-
-        // 初始化
-        document.addEventListener('DOMContentLoaded', async () => {
-            // 等待用户状态管理器初始化
-            await window.UserStateManager.waitForInitialization();
+        
+        // 页面加载完成后初始化应用
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('页面DOM加载完成，开始初始化应用...');
             
-            // 检查登录状态
-            const isLoggedIn = window.UserStateManager.isLoggedIn();
-            if (!isLoggedIn) {
-                showUnauthorizedView();
-                return;
+            // 延迟初始化以确保所有资源加载完成
+            setTimeout(() => {
+                initApp();
+            }, 100);
+        });
+        
+        // 防止页面卸载时数据丢失
+        window.addEventListener('beforeunload', function() {
+            if (chatHistory.length > 0) {
+                saveChatHistory();
             }
-            
-            // 用户已登录，正常初始化
-            initEventListeners();
-            initXunfeiEventListeners(); // 初始化讯飞虚拟人事件监听
-            initVMSEventListeners(); // 初始化VMS虚拟人事件监听
-            
-            // 初始化聊天记录
-            const hasHistory = await loadChatHistory();
-            if (!hasHistory) {
-                startNewSession();
-            }
-            
-            scrollToBottom();
         });
     </script>
 </body>
-</html>
