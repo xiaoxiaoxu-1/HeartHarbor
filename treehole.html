@@ -1162,8 +1162,17 @@
                     // 显示成功提示
                     showNotification('分享成功！你的心声已被树洞接收。');
                     
-                    // 重新加载帖子列表
-                    await loadPosts();
+                    // 立即在前端显示新帖子（乐观更新）
+                    prependNewPost(result.data);
+                    
+                    // 同时异步重新加载帖子列表（确保数据一致性）
+                    setTimeout(async () => {
+                        try {
+                            await loadPosts();
+                        } catch (error) {
+                            console.error('后台刷新帖子列表失败:', error);
+                        }
+                    }, 1000);
                     
                     // 更新统计
                     updateStats();
@@ -1178,6 +1187,89 @@
                 postButton.disabled = !postContent.value.trim();
                 postButton.innerHTML = '<i class="fas fa-paper-plane"></i> 发布';
             }
+        }
+        
+        // 在帖子列表最前面添加新发布的帖子
+        function prependNewPost(postData) {
+            // 获取当前帖子列表的HTML
+            const currentPostsHtml = postsList.innerHTML;
+            
+            // 如果有加载提示，先清除
+            if (currentPostsHtml.includes('加载中') || currentPostsHtml.includes('还没有人分享')) {
+                postsList.innerHTML = '';
+            }
+            
+            // 生成新帖子的HTML
+            const newPostHtml = generatePostHtml(postData);
+            
+            // 在列表最前面插入新帖子
+            postsList.insertAdjacentHTML('afterbegin', newPostHtml);
+            
+            // 添加新帖子的动画效果
+            const newPostElement = postsList.querySelector('.post-item:first-child');
+            if (newPostElement) {
+                newPostElement.style.opacity = '0';
+                newPostElement.style.transform = 'translateY(-20px)';
+                
+                // 添加淡入动画
+                setTimeout(() => {
+                    newPostElement.style.transition = 'all 0.5s ease';
+                    newPostElement.style.opacity = '1';
+                    newPostElement.style.transform = 'translateY(0)';
+                }, 100);
+            }
+        }
+        
+        // 生成单个帖子的HTML
+        function generatePostHtml(post) {
+            const postDate = new Date(post.created_at || new Date());
+            const timeAgo = getTimeAgo(postDate);
+            const username = post.is_anonymous ? '匿名用户' : (post.user?.username || '用户');
+            
+            return `
+                <div class="post-item" data-post-id="${post.id}">
+                    <div class="post-content">
+                        ${post.content}
+                    </div>
+                    <div class="post-meta">
+                        <div>
+                            <span class="post-mood mood-${post.mood || 'happy'}">
+                                <i class="fas fa-${getMoodIcon(post.mood || 'happy')}"></i> ${getMoodText(post.mood || 'happy')}
+                            </span>
+                            <span>${username} • ${timeAgo}</span>
+                        </div>
+                        <div class="post-actions-small">
+                            <div class="post-action like-action" onclick="toggleLike(this, '${post.id}')" data-liked="false">
+                                <i class="far fa-heart"></i> 
+                                <span class="like-count">0</span>
+                            </div>
+                            <div class="post-action comment-action" onclick="toggleComments(this, '${post.id}')">
+                                <i class="fas fa-comment"></i> <span class="comment-count">0</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 评论区域 -->
+                    <div class="comments-section">
+                        <div class="comments-toggle" onclick="toggleComments(this, '${post.id}')">
+                            <i class="fas fa-chevron-down"></i>
+                            <span>查看评论</span>
+                        </div>
+                        <div class="comments-container">
+                            <div class="comment-form">
+                                <textarea class="comment-textarea" placeholder="写下你的评论..." maxlength="300"></textarea>
+                                <div class="comment-actions">
+                                    <span class="comment-length">0/300</span>
+                                    <button class="comment-btn" onclick="addComment(this, '${post.id}')">发布评论</button>
+                                </div>
+                            </div>
+                            <div class="comments-list" id="comments-${post.id}">
+                                <!-- 评论列表将动态加载 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
         }
         
         // 切换点赞状态

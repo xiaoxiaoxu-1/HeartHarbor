@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文章详情 - 心屿</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #8EC5FC;
+            --secondary-color: #E0C3FC;
+            --accent-color: #FFB6C1;
+            --knowledge-color: #805AD5;
+            --text-color: #333;
+            --light-text: #666;
+            --bg-color: #f9f7fe;
+            --card-bg: #ffffff;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --gradient: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            --knowledge-gradient: linear-gradient(135deg, #805AD5, #9F7AEA);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f3ff 0%, #f0edf5 100%);
+            min-height: 100vh;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* 导航栏 */
+        header {
+            background: var(--gradient);
+            padding: 15px 0;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+            font-size: 28px;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 25px;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+        
+        .nav-links a:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* 面包屑导航 */
+        .breadcrumb {
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+            color: var(--light-text);
+        }
+        
+        .breadcrumb a {
+            color: var(--knowledge-color);
+            text-decoration: none;
+        }
+        
+        .breadcrumb span {
+            margin: 0 8px;
+        }
+        
+        /* 文章主体 */
+        .article-container {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 40px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        
+        .article-header {
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            padding: 40px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .article-title {
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            color: #2D3748;
+            line-height: 1.3;
+        }
+        
+        .article-meta {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 25px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--light-text);
+            font-size: 0.9rem;
+        }
+        
+        .article-tags {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        
+        .article-tag {
+            background: rgba(128, 90, 213, 0.1);
+            color: var(--knowledge-color);
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .article-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border: 2px solid #E2E8F0;
+            border-radius: 20px;
+            background: white;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+        
+        .action-btn:hover {
+            border-color: var(--knowledge-color);
+            color: var(--knowledge-color);
+        }
+        
+        .action-btn.liked {
+            border-color: #FF6B6B;
+            color: #FF6B6B;
+        }
+        
+        .action-btn.bookmarked {
+            border-color: var(--knowledge-color);
+            color: var(--knowledge-color);
+        }
+        
+        /* 文章内容 */
+        .article-content {
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            padding: 40px;
+            margin-bottom: 30px;
+            line-height: 1.8;
+        }
+        
+        .article-content h2 {
+            font-size: 1.5rem;
+            margin: 35px 0 15px;
+            color: #2D3748;
+            border-left: 4px solid var(--knowledge-color);
+            padding-left: 15px;
+        }
+        
+        .article-content h3 {
+            font-size: 1.2rem;
+            margin: 25px 0 12px;
+            color: #4A5568;
+        }
+        
+        .article-content p {
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+        
+        .article-content ul {
+            margin: 15px 0 20px 30px;
+        }
+        
+        .article-content li {
+            margin-bottom: 8px;
+        }
+        
+        .article-content blockquote {
+            border-left: 4px solid var(--knowledge-color);
+            background: rgba(128, 90, 213, 0.05);
+            padding: 20px;
+            margin: 25px 0;
+            font-style: italic;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        /* 侧边栏 */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+        }
+        
+        .sidebar-section {
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            padding: 25px;
+        }
+        
+        .sidebar-section h3 {
+            margin-bottom: 15px;
+            color: var(--knowledge-color);
+        }
+        
+        .author-info {
+            text-align: center;
+        }
+        
+        .author-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--knowledge-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+            margin: 0 auto 15px;
+        }
+        
+        .author-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .author-title {
+            color: var(--light-text);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+        
+        .related-articles {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .related-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: #F7FAFC;
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--text-color);
+            transition: all 0.3s;
+        }
+        
+        .related-item:hover {
+            background: rgba(128, 90, 213, 0.1);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .article-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                position: static;
+                order: -1;
+            }
+            
+            .article-title {
+                font-size: 1.8rem;
+            }
+        }
+        
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .article-header, .article-content, .sidebar-section {
+            animation: fadeIn 0.6s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="index.html" class="logo">
+                    <i class="fas fa-heart"></i>
+                    <span>心屿</span>
+                </a>
+                <ul class="nav-links">
+                    <li><a href="index.html">首页</a></li>
+                    <li><a href="ai-companion.html">AI心灵伙伴</a></li>
+                    <li><a href="treehole.html">树洞</a></li>
+                    <li><a href="knowledge-base.html">咨询库</a></li>
+                    <li><a href="profile.html">个人中心</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section style="padding: 40px 0;">
+        <div class="container">
+            <!-- 面包屑导航 -->
+            <div class="breadcrumb">
+                <a href="index.html">首页</a>
+                <span>/</span>
+                <a href="knowledge-base.html">心理咨询库</a>
+                <span>/</span>
+                <span>文章详情</span>
+            </div>
+            
+            <div class="article-container">
+                <!-- 主内容区域 -->
+                <div class="main-content">
+                    <!-- 文章头部信息 -->
+                    <div class="article-header">
+                        <h1 class="article-title" id="articleTitle">如何有效管理焦虑情绪？10个科学方法</h1>
+                        
+                        <div class="article-meta">
+                            <div class="meta-item">
+                                <i class="fas fa-user"></i>
+                                <span id="articleAuthor">张心理医生</span>
+                            </div>
+                            <div class="meta-item">
+                                <i class="far fa-clock"></i>
+                                <span id="articleDate">2024年1月15日</span>
+                            </div>
+                            <div class="meta-item">
+                                <i class="far fa-eye"></i>
+                                <span id="articleViews">2,500</span> 次阅读
+                            </div>
+                            <div class="meta-item">
+                                <i class="far fa-clock"></i>
+                                <span id="readTime">8分钟</span>
+                            </div>
+                        </div>
+                        
+                        <div class="article-tags">
+                            <span class="article-tag">焦虑管理</span>
+                            <span class="article-tag">情绪调节</span>
+                            <span class="article-tag">CBT</span>
+                            <span class="article-tag">正念</span>
+                        </div>
+                        
+                        <div class="article-actions">
+                            <button class="action-btn" id="likeBtn" onclick="toggleLike()">
+                                <i class="far fa-heart"></i>
+                                <span id="likeCount">456</span>
+                            </button>
+                            <button class="action-btn" id="bookmarkBtn" onclick="toggleBookmark()">
+                                <i class="far fa-bookmark"></i>
+                                收藏
+                            </button>
+                            <button class="action-btn" onclick="toggleFontSize()">
+                                <i class="fas fa-text-height"></i>
+                                字体
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 文章内容 -->
+                    <div class="article-content" id="articleContent">
+                        <p>焦虑管理是心理健康的重要课题。研究表明，适度的焦虑可以激发动力，但过度焦虑会严重影响生活质量。以下10个科学方法可以帮助你有效管理焦虑：</p>
+                        
+                        <h2>1. 深呼吸练习</h2>
+                        <p>4-7-8呼吸法是最有效的放松技巧之一。吸气4秒，屏息7秒，呼气8秒，重复5-10次。这种深呼吸能够激活副交感神经系统，有效降低压力水平。</p>
+                        
+                        <h2>2. 认知重构</h2>
+                        <p>识别并挑战负面思维，将消极想法转化为积极想法。例如，将"我肯定会失败"改为"这是一个学习和成长的机会"。</p>
+                        
+                        <h2>3. 渐进式肌肉放松</h2>
+                        <p>从脚趾开始，逐步放松全身各个肌肉群。这种技术有助于释放身体紧张，同时提高对身体感觉的觉察能力。</p>
+                        
+                        <h2>4. 正念冥想练习</h2>
+                        <p>专注于当下，接纳情绪而不评判。研究表明，每天坚持10-15分钟的正念练习，能在8周内显著改善焦虑症状。</p>
+                        
+                        <h2>5. 规律运动</h2>
+                        <p>每周至少150分钟中等强度运动，释放内啡肽。运动不仅能缓解焦虑，还能改善睡眠质量和整体健康状况。</p>
+                        
+                        <h2>6. 建立健康作息</h2>
+                        <p>保持规律的睡眠和饮食时间。睡眠不足会加剧焦虑，而规律的作息有助于稳定情绪。</p>
+                        
+                        <h2>7. 限制咖啡因摄入</h2>
+                        <p>每日咖啡因摄入控制在200mg以内。咖啡因会刺激神经系统，可能加重焦虑症状。</p>
+                        
+                        <h2>8. 寻求社会支持</h2>
+                        <p>与朋友家人分享感受，获得情感支持。研究发现，强大的社会支持网络是应对焦虑的重要保护因素。</p>
+                        
+                        <h2>9. 专业心理咨询</h2>
+                        <p>必要时寻求专业心理帮助。认知行为疗法（CBT）已被证明对焦虑障碍有显著效果。</p>
+                        
+                        <h2>10. 药物治疗</h2>
+                        <p>在医生指导下使用抗焦虑药物。药物治疗通常与其他心理干预方法结合使用。</p>
+                        
+                        <blockquote>
+                            <p>记住，焦虑管理是一个过程，需要耐心和坚持。每天练习这些技巧，你会逐渐看到改善。如果焦虑严重影响了你的日常生活，请及时寻求专业帮助。</p>
+                        </blockquote>
+                    </div>
+                </div>
+                
+                <!-- 侧边栏 -->
+                <div class="sidebar">
+                    <div class="sidebar-section author-info">
+                        <div class="author-avatar">
+                            <i class="fas fa-user-md"></i>
+                        </div>
+                        <h4 class="author-name">张心理医生</h4>
+                        <p class="author-title">专业心理咨询师</p>
+                        <p style="font-size: 0.9rem; color: var(--light-text); line-height: 1.5;">
+                            专注于心理健康领域多年，擅长情绪管理、压力应对等心理问题的专业指导。
+                        </p>
+                    </div>
+                    
+                    <div class="sidebar-section">
+                        <h3>相关文章</h3>
+                        <div class="related-articles">
+                            <a href="#" class="related-item">
+                                <i class="fas fa-book"></i>
+                                <span>改善睡眠质量的科学方法</span>
+                            </a>
+                            <a href="#" class="related-item">
+                                <i class="fas fa-book"></i>
+                                <span>建立健康人际关系的要素</span>
+                            </a>
+                            <a href="#" class="related-item">
+                                <i class="fas fa-book"></i>
+                                <span>抑郁症的早期识别与帮助</span>
+                            </a>
+                            <a href="#" class="related-item">
+                                <i class="fas fa-book"></i>
+                                <span>压力管理的实用策略</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="sidebar-section">
+                        <h3>文章信息</h3>
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: var(--light-text);">分类：</span>
+                                <span>情绪管理</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: var(--light-text);">难度：</span>
+                                <span>初级</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: var(--light-text);">收藏数：</span>
+                                <span>123</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: var(--light-text);">点赞数：</span>
+                                <span>456</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // 完整的心理健康知识库数据
+        const articlesData = [
+            {
+                id: 1,
+                title: "如何有效管理焦虑情绪？10个科学方法",
+                excerpt: "焦虑是常见的情绪反应，但过度的焦虑会影响生活质量。本文将介绍基于认知行为疗法和正念冥想的10个科学有效的焦虑管理技巧，帮助你重获内心平静...",
+                content: "焦虑管理是心理健康的重要课题。研究表明，适度的焦虑可以激发动力，但过度焦虑会严重影响生活质量。以下10个方法可以帮助你有效管理焦虑：
+
+
+
+1. 深呼吸练习：4-7-8呼吸法
+
+2. 认知重构：识别并挑战负面思维
+
+3. 渐进式肌肉放松
+
+4. 正念冥想练习
+
+5. 规律运动释放内啡肽
+
+6. 建立健康作息
+
+7. 限制咖啡因摄入
+
+8. 寻求社会支持
+
+9. 专业心理咨询
+
+10. 药物治疗（必要时）",
+                tags: ["焦虑管理", "情绪调节", "CBT", "正念"],
+                category: "anxiety",
+                readTime: "12分钟",
+                views: "2.5k",
+                likes: "456",
+                author: "张心理医生",
+                created_at: "2024年1月15日",
+                difficulty: "初级"
+            },
+            {
+                id: 2,
+                title: "改善睡眠质量的15个科学方法",
+                excerpt: "良好的睡眠是心理健康的基础。本文基于哈佛医学院睡眠研究，提供15个实用的睡眠改善方法，包括睡眠环境优化、睡前习惯调整等...",
+                content: "睡眠质量直接影响心理健康。研究表明，睡眠不足会增加焦虑和抑郁风险。以下15个方法可显著改善睡眠：
+
+
+
+1. 保持规律作息
+
+2. 创造舒适的睡眠环境
+
+3. 避免睡前使用电子设备
+
+4. 睡前放松活动（阅读、冥想）
+
+5. 控制室温在18-22°C
+
+6. 避免睡前大餐
+
+7. 限制咖啡因和酒精
+
+8. 白天适当运动
+
+9. 建立睡前仪式
+
+10. 使用白噪音
+
+11. 尝试渐进式放松
+
+12. 管理压力源
+
+13. 认知行为疗法
+
+14. 必要时寻求专业帮助
+
+15. 药物治疗（医生指导下）",
+                tags: ["睡眠改善", "健康生活", "作息规律", "放松技巧"],
+                category: "anxiety",
+                readTime: "15分钟",
+                views: "3.2k",
+                likes: "589",
+                author: "李睡眠专家",
+                created_at: "2024年1月10日",
+                difficulty: "初级"
+            },
+            {
+                id: 3,
+                title: "建立健康人际关系的12个关键要素",
+                excerpt: "良好的人际关系是幸福生活的重要组成部分。本文将基于心理学研究，探讨建立和维护健康人际关系的12个关键要素...",
+                content: "人际关系质量直接影响心理健康。研究表明，良好的人际关系可以：
+
+
+
+1. 降低压力水平
+
+2. 提高幸福感
+
+3. 增强免疫力
+
+4. 延长寿命
+
+
+
+建立健康人际关系的12个要素：
+
+
+
+1. 有效沟通技巧
+
+2. 同理心培养
+
+3. 边界设定
+
+4. 冲突解决能力
+
+5. 信任建立
+
+6. 相互尊重
+
+7. 情感支持
+
+8. 共同兴趣
+
+9. 时间投入
+
+10. 真诚表达
+
+11. 包容差异
+
+12. 持续维护",
+                tags: ["人际关系", "社交技巧", "沟通", "情感支持"],
+                category: "relationships",
+                readTime: "18分钟",
+                views: "4.1k",
+                likes: "723",
+                author: "王心理咨询师",
+                created_at: "2024年1月5日",
+                difficulty: "中级"
+            },
+            {
+                id: 4,
+                title: "抑郁症的早期识别与自我帮助方法",
+                excerpt: "抑郁症是一种常见但严重的心理健康问题。本文将介绍抑郁症的早期症状识别、风险评估以及有效的自我帮助策略...",
+                content: "抑郁症的早期识别至关重要。常见症状包括：
+
+
+
+情绪症状：
+
+- 持续悲伤、空虚感
+
+- 对活动失去兴趣
+
+- 易怒、烦躁
+
+
+
+身体症状：
+
+- 睡眠障碍
+
+- 食欲变化
+
+- 疲劳乏力
+
+
+
+认知症状：
+
+- 注意力不集中
+
+- 决策困难
+
+- 负面思维
+
+
+
+自我帮助方法：
+
+1. 建立支持系统
+
+2. 规律运动
+
+3. 健康饮食
+
+4. 正念练习
+
+5. 设定小目标
+
+6. 寻求专业帮助",
+                tags: ["抑郁症", "心理健康", "早期识别", "自我帮助"],
+                category: "anxiety",
+                readTime: "20分钟",
+                views: "5.8k",
+                likes: "892",
+                author: "陈精神科医生",
+                created_at: "2024年1月8日",
+                difficulty: "中级"
+            },
+            {
+                id: 5,
+                title: "压力管理的科学策略与实用技巧",
+                excerpt: "现代生活中压力无处不在。本文基于心理学研究，提供科学的压力管理策略和实用的应对技巧，帮助你在高压环境中保持心理健康...",
+                content: "压力管理是现代人必备的生活技能。有效的压力管理包括：
+
+
+
+认知层面：
+
+- 识别压力源
+
+- 调整期望值
+
+- 积极思维训练
+
+
+
+行为层面：
+
+- 时间管理技巧
+
+- 优先级设定
+
+- 学会说\"不\"
+
+
+
+生理层面：
+
+- 深呼吸练习
+
+- 渐进式放松
+
+- 规律运动
+
+
+
+社会层面：
+
+- 寻求支持
+
+- 有效沟通
+
+- 建立边界",
+                tags: ["压力管理", "应对策略", "放松技巧", "时间管理"],
+                category: "stress",
+                readTime: "14分钟",
+                views: "3.9k",
+                likes: "645",
+                author: "赵心理专家",
+                created_at: "2024年1月12日",
+                difficulty: "初级"
+            },
+            {
+                id: 6,
+                title: "正念冥想的入门指南与科学益处",
+                excerpt: "正念冥想是一种简单有效的心理调节方法。本文将详细介绍正念冥想的基本方法、科学依据以及对心理健康的积极影响...",
+                content: "正念冥想已被科学证明对心理健康有显著益处：
+
+
+
+科学益处：
+
+- 降低压力激素水平
+
+- 改善情绪调节
+
+- 增强注意力
+
+- 提高免疫力
+
+
+
+基本方法：
+
+1. 舒适坐姿
+
+2. 关注呼吸
+
+3. 接纳思绪
+
+4. 不评判观察
+
+5. 每日练习
+
+
+
+进阶技巧：
+
+- 身体扫描
+
+- 慈心冥想
+
+- 行走冥想
+
+- 正念饮食",
+                tags: ["正念冥想", "放松技巧", "注意力训练", "情绪调节"],
+                category: "self_care",
+                readTime: "16分钟",
+                views: "4.7k",
+                likes: "781",
+                author: "钱冥想导师",
+                created_at: "2024年1月3日",
+                difficulty: "初级"
+            },
+            {
+                id: 7,
+                title: "情绪智力培养的7个关键步骤",
+                excerpt: "情绪智力是成功和幸福的重要预测因素。本文将介绍情绪智力的核心要素以及培养情绪智力的7个实用步骤...",
+                content: "情绪智力包括四个核心能力：
+
+
+
+1. 自我意识：识别自身情绪
+
+2. 自我管理：调节情绪反应
+
+3. 社会意识：理解他人情绪
+
+4. 关系管理：有效人际互动
+
+
+
+培养步骤：
+
+1. 情绪日记记录
+
+2. 情绪词汇扩展
+
+3. 反思情绪触发点
+
+4. 练习情绪调节
+
+5. 培养同理心
+
+6. 学习有效沟通
+
+7. 持续实践反馈",
+                tags: ["情绪智力", "情商培养", "自我认知", "人际技巧"],
+                category: "anxiety",
+                readTime: "13分钟",
+                views: "3.1k",
+                likes: "534",
+                author: "孙心理学教授",
+                created_at: "2024年1月18日",
+                difficulty: "中级"
+            },
+            {
+                id: 8,
+                title: "创伤后应激障碍(PTSD)的理解与康复",
+                excerpt: "创伤后应激障碍是一种严重的心理障碍。本文将帮助理解PTSD的症状、成因以及科学的康复方法和支持资源...",
+                content: "PTSD的常见症状：
+
+
+
+重新体验：
+
+- 闪回
+
+- 噩梦
+
+- 情绪触发
+
+
+
+回避行为：
+
+- 回避相关刺激
+
+- 情感麻木
+
+
+
+负面认知：
+
+- 自责感
+
+- 负面世界观
+
+
+
+过度警觉：
+
+- 易惊吓
+
+- 睡眠障碍
+
+
+
+康复方法：
+
+- 认知行为疗法
+
+- 眼动脱敏再处理
+
+- 药物治疗
+
+- 支持团体",
+                tags: ["PTSD", "创伤康复", "心理治疗", "支持资源"],
+                category: "anxiety",
+                readTime: "22分钟",
+                views: "2.8k",
+                likes: "412",
+                author: "周创伤专家",
+                created_at: "2024年1月20日",
+                difficulty: "高级"
+            }
+        ];
+
+        // 交互功能
+        let isLiked = false;
+        let isBookmarked = false;
+        let fontSizeLevel = 1;
+
+        // 从URL参数获取文章ID
+        function getArticleIdFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const articleId = parseInt(urlParams.get('id'));
+            return articleId || 1; // 默认为第一篇文章
+        }
+
+        // 加载文章内容
+        function loadArticleContent() {
+            const articleId = getArticleIdFromUrl();
+            const article = articlesData.find(a => a.id === articleId);
+            
+            if (!article) {
+                // 如果找不到文章，重定向到知识库首页
+                window.location.href = 'knowledge-base.html';
+                return;
+            }
+
+            // 更新页面内容
+            document.getElementById('articleTitle').textContent = article.title;
+            document.getElementById('articleAuthor').textContent = article.author;
+            document.getElementById('articleDate').textContent = article.created_at;
+            document.getElementById('articleViews').textContent = article.views;
+            document.getElementById('readTime').textContent = article.readTime;
+            document.getElementById('likeCount').textContent = article.likes;
+            
+            // 更新文章内容
+            const articleContent = document.getElementById('articleContent');
+            articleContent.innerHTML = article.content.replace(/
+
+/g, '<br><br>');
+            
+            // 更新标签
+            const tagsContainer = document.querySelector('.article-tags');
+            tagsContainer.innerHTML = article.tags.map(tag => 
+                `<span class="article-tag">${tag}</span>`
+            ).join('');
+            
+            // 更新页面标题
+            document.title = article.title + ' - 心屿';
+        }
+
+        // 切换点赞
+        function toggleLike() {
+            const likeBtn = document.getElementById('likeBtn');
+            const likeCount = document.getElementById('likeCount');
+            
+            isLiked = !isLiked;
+            
+            if (isLiked) {
+                likeBtn.innerHTML = '<i class="fas fa-heart"></i> <span id="likeCount">' + (parseInt(likeCount.textContent) + 1) + '</span>';
+                likeBtn.classList.add('liked');
+            } else {
+                likeBtn.innerHTML = '<i class="far fa-heart"></i> <span id="likeCount">' + (parseInt(likeCount.textContent) - 1) + '</span>';
+                likeBtn.classList.remove('liked');
+            }
+        }
+        
+        // 切换收藏
+        function toggleBookmark() {
+            const bookmarkBtn = document.getElementById('bookmarkBtn');
+            
+            isBookmarked = !isBookmarked;
+            
+            if (isBookmarked) {
+                bookmarkBtn.innerHTML = '<i class="fas fa-bookmark"></i> 已收藏';
+                bookmarkBtn.classList.add('bookmarked');
+            } else {
+                bookmarkBtn.innerHTML = '<i class="far fa-bookmark"></i> 收藏';
+                bookmarkBtn.classList.remove('bookmarked');
+            }
+        }
+        
+        // 切换字体大小
+        function toggleFontSize() {
+            const content = document.getElementById('articleContent');
+            
+            fontSizeLevel = (fontSizeLevel % 3) + 1;
+            
+            switch (fontSizeLevel) {
+                case 1:
+                    content.style.fontSize = '1rem';
+                    break;
+                case 2:
+                    content.style.fontSize = '1.2rem';
+                    break;
+                case 3:
+                    content.style.fontSize = '1.4rem';
+                    break;
+            }
+        }
+        
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadArticleContent();
+        });
+    </script>
+</body>
+</html>
