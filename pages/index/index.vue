@@ -5,7 +5,7 @@
 			<text class="title">{{title}}</text>
 		</view>
 		<view class="nav-buttons">
-			<button class="nav-btn" @click="goToProfile">1进入个人中心</button>
+			<button class="nav-btn" @click="goToProfile">进入个人中心</button>
 		</view>
 	</view>
 </template>
