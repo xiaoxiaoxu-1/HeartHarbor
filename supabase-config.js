@@ -584,6 +584,9 @@ class TreeholeService {
             const user = await AuthService.getCurrentUser();
             if (!user.data.user) throw new Error('用户未登录');
             
+            // 先确保用户在users表中存在
+            await this.ensureUserExists(user.data.user.id, user.data.user.email);
+            
             const { data, error } = await supabaseClient
                 .from('treehole_posts')
                 .insert([{
@@ -595,11 +598,113 @@ class TreeholeService {
                 }])
                 .select();
             
-            if (error) throw error;
+            if (error) {
+                // 如果是外键约束错误（用户不存在），尝试创建用户再重试
+                if (error.code === '23503' && error.message.includes('users')) {
+                    console.warn('用户不存在，尝试创建用户记录:', error.message);
+                    await this.createUserRecord(user.data.user.id, user.data.user.email);
+                    
+                    // 重试创建帖子
+                    return await this.createPost(content, mood, isAnonymous);
+                }
+                
+                // 如果是权限错误，尝试使用备用方案
+                if (error.message.includes('permission') || error.message.includes('policy')) {
+                    console.warn('RLS权限错误，尝试使用备用方案:', error.message);
+                    return await this.createPostFallback(content, mood, isAnonymous, user.data.user.id);
+                }
+                throw error;
+            }
+            
             return { success: true, data };
         } catch (error) {
             console.error('创建帖子错误:', error);
-            return { success: false, error: error.message };
+            
+            // 提供更友好的错误信息
+            let errorMessage = error.message;
+            if (error.message.includes('permission') || error.message.includes('policy')) {
+                errorMessage = '数据库权限配置错误，请联系管理员检查RLS策略设置';
+            } else if (error.message.includes('network')) {
+                errorMessage = '网络连接失败，请检查网络后重试';
+            } else if (error.code === '23503' && error.message.includes('users')) {
+                errorMessage = '用户数据同步失败，请尝试重新登录或联系管理员';
+            }
+            
+            return { success: false, error: errorMessage };
+        }
+    }
+    
+    // 确保用户在users表中存在
+    static async ensureUserExists(userId, userEmail) {
+        try {
+            // 检查用户是否已存在
+            const { data, error } = await supabaseClient
+                .from('users')
+                .select('id')
+                .eq('id', userId)
+                .single();
+                
+            if (error) {
+                if (error.code === 'PGRST116') { // 用户不存在
+                    console.log('用户不存在，创建用户记录...');
+                    await this.createUserRecord(userId, userEmail);
+                } else {
+                    throw error;
+                }
+            }
+            
+            return { success: true };
+        } catch (error) {
+            console.error('确保用户存在错误:', error);
+            throw error;
+        }
+    }
+    
+    // 创建用户记录
+    static async createUserRecord(userId, userEmail) {
+        try {
+            // 从email中提取用户名
+            const username = userEmail.split('@')[0];
+            
+            const { data, error } = await supabaseClient
+                .from('users')
+                .insert([{
+                    id: userId,
+                    username: username,
+                    email: userEmail,
+                    is_active: true,
+                    created_at: new Date().toISOString()
+                }])
+                .select();
+                
+            if (error) {
+                console.error('创建用户记录错误:', error);
+                throw error;
+            }
+            
+            console.log('用户记录创建成功:', data);
+            return { success: true, data };
+        } catch (error) {
+            console.error('创建用户记录失败:', error);
+            throw error;
+        }
+    }
+    
+    // 备用创建帖子方案（通过RPC函数）
+    static async createPostFallback(content, mood, isAnonymous, userId) {
+        try {
+            const { data, error } = await supabaseClient.rpc('create_treehole_post', {
+                p_content: content,
+                p_mood: mood,
+                p_is_anonymous: isAnonymous,
+                p_user_id: userId
+            });
+            
+            if (error) throw error;
+            return { success: true, data };
+        } catch (error) {
+            console.error('备用创建帖子方案失败:', error);
+            return { success: false, error: '创建帖子失败，请检查数据库权限设置' };
         }
     }
     

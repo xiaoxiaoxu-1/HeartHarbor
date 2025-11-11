@@ -1872,7 +1872,7 @@
             // 获取当前选择的虚拟人物配置
             const avatarConfig = AVATAR_CONFIGS[currentAvatar];
             
-            if (!avatarConfig.avatarId) {
+            if (!avatarConfig) {
                 console.error('虚拟人物配置不存在，currentAvatar:', currentAvatar, 'AVATAR_CONFIGS:', AVATAR_CONFIGS);
                 showMessage(`虚拟人物配置不存在，请选择有效的虚拟人物。当前选择: ${currentAvatar}`, 'error');
                 return;
@@ -1885,17 +1885,19 @@
                 
                 // 显示成功消息 - 添加空值检查
                 const avatarElement = document.querySelector(`.avatar-option[data-avatar="${currentAvatar}"]`);
+                let displayName = avatarConfig.displayName || currentAvatar;
+                
                 if (!avatarElement) {
                     console.warn(`找不到data-avatar为"${currentAvatar}"的元素`);
-                    showMessage(`已成功应用虚拟人物形象: ${avatarConfig.displayName || currentAvatar}`, 'success');
+                    showMessage(`已成功应用虚拟人物形象: ${displayName}`, 'success');
                 } else {
-                    const avatarName = avatarElement.textContent.trim();
-                    showMessage(`已成功应用虚拟人物形象: ${avatarName}`, 'success');
+                    displayName = avatarElement.textContent.trim();
+                    showMessage(`已成功应用虚拟人物形象: ${displayName}`, 'success');
                 }
                 
                 // 打印配置信息到控制台
                 console.log('应用虚拟人物配置成功:', {
-                    avatarName: avatarName,
+                    avatarName: displayName,
                     avatarId: avatarConfig.avatarId,
                     vcn: avatarConfig.vcn,
                     config: XUNFEI_VIRTUAL_CONFIG
@@ -3890,6 +3892,25 @@
             return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
         }
         
+        // 获取用户特定的存储键
+        function getUserChatStorageKey() {
+            try {
+                // 尝试从UserStateManager获取当前用户
+                const user = window.UserStateManager?.getCurrentUser?.();
+                if (user && user.id) {
+                    // 登录用户：使用用户ID作为存储键
+                    return `aiChatSessions_${user.id}`;
+                } else {
+                    // 未登录用户：使用匿名标识
+                    return 'aiChatSessions_anonymous';
+                }
+            } catch (error) {
+                // 如果获取用户信息失败，使用匿名标识
+                console.warn('获取用户信息失败，使用匿名存储键:', error);
+                return 'aiChatSessions_anonymous';
+            }
+        }
+        
         // 保存聊天记录到本地存储
         async function saveChatHistory() {
             try {
@@ -3901,8 +3922,11 @@
                     messageCount: chatHistory.length
                 };
                 
+                // 获取用户特定的存储键
+                const userKey = getUserChatStorageKey();
+                
                 // 获取现有会话列表
-                let sessions = JSON.parse(localStorage.getItem('aiChatSessions') || '[]');
+                let sessions = JSON.parse(localStorage.getItem(userKey) || '[]');
                 
                 // 检查是否已存在当前会话
                 const existingIndex = sessions.findIndex(session => session.sessionId === currentSessionId);
@@ -3917,7 +3941,7 @@
                     }
                 }
                 
-                localStorage.setItem('aiChatSessions', JSON.stringify(sessions));
+                localStorage.setItem(userKey, JSON.stringify(sessions));
                 console.log('聊天记录已保存到本地存储，当前会话:', currentSessionId);
                 
             } catch (error) {
@@ -3935,7 +3959,8 @@
                 }
                 
                 // 如果Supabase加载失败，回退到本地存储
-                const sessions = JSON.parse(localStorage.getItem('aiChatSessions') || '[]');
+                const userKey = getUserChatStorageKey();
+                const sessions = JSON.parse(localStorage.getItem(userKey) || '[]');
                 
                 if (sessionId) {
                     // 加载指定会话
@@ -3960,7 +3985,7 @@
                             document.getElementById(currentRole).checked = true;
                         }
                         
-                        console.log('聊天记录加载成功，会话:', sessionId);
+                        console.log('聊天记录加载成功，会话:', sessionId, '用户存储键:', userKey);
                         return true;
                     }
                 } else {
@@ -4076,7 +4101,8 @@
                         }));
                         
                         // 合并本地会话和Supabase会话
-                        const localSessions = JSON.parse(localStorage.getItem('aiChatSessions') || '[]');
+                        const userKey = getUserChatStorageKey();
+                        const localSessions = JSON.parse(localStorage.getItem(userKey) || '[]');
                         const allSessions = [...supabaseSessions, ...localSessions];
                         
                         // 按时间排序（最新的在前）
@@ -4087,11 +4113,13 @@
                 }
                 
                 // 如果Supabase获取失败，返回本地会话
-                return JSON.parse(localStorage.getItem('aiChatSessions') || '[]');
+                const userKey = getUserChatStorageKey();
+                return JSON.parse(localStorage.getItem(userKey) || '[]');
                 
             } catch (error) {
                 console.error('获取会话列表失败:', error);
-                return JSON.parse(localStorage.getItem('aiChatSessions') || '[]');
+                const userKey = getUserChatStorageKey();
+                return JSON.parse(localStorage.getItem(userKey) || '[]');
             }
         }
         
@@ -4101,7 +4129,8 @@
                 // 删除本地存储的会话
                 let sessions = getChatSessions();
                 sessions = sessions.filter(session => session.sessionId !== sessionId);
-                localStorage.setItem('aiChatSessions', JSON.stringify(sessions));
+                const userKey = getUserChatStorageKey();
+                localStorage.setItem(userKey, JSON.stringify(sessions));
                 
                 // 删除Supabase中的会话
                 try {
