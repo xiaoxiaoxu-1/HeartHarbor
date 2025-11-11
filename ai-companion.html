@@ -374,7 +374,7 @@
             overflow: hidden;
             box-shadow: none;
             min-height: 500px;
-            max-height: 700px;
+            max-height: 900px;
         }
         
         .ai-chat-header {
@@ -535,7 +535,7 @@
         .subtitle {
             position: absolute;
             font-size: 16px;
-            color: #fff;
+            color: #000000;
             font-weight: 600;
             bottom: 20px;
             width: 100%;
@@ -997,6 +997,38 @@
             display: block;
         }
         
+        /* 应用按钮样式 */
+        .apply-section {
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .apply-btn {
+            background: var(--ai-gradient);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(93, 139, 244, 0.3);
+        }
+        
+        .apply-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(93, 139, 244, 0.4);
+        }
+        
+        .apply-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(93, 139, 244, 0.3);
+        }
+        
         .quick-actions {
             display: grid;
             grid-template-columns: 1fr;
@@ -1161,6 +1193,12 @@
             
             .avatar-option i {
                 font-size: 18px;
+            }
+            
+            /* 移动端优化应用按钮 */
+            .apply-btn {
+                padding: 10px 20px;
+                font-size: 14px;
             }
             
             .control-section {
@@ -1402,33 +1440,39 @@
                         <div class="control-section">
                             <h4><i class="fas fa-user-astronaut"></i> 虚拟人物形象</h4>
                             <div class="avatar-selector">
-                                <div class="avatar-option active" data-avatar="xiaowan">
+                                <div class="avatar-option active" data-avatar="xiaoyun">
                                     <i class="fas fa-user-circle"></i>
-                                    小丸
+                                    晓云
                                 </div>
-                                <div class="avatar-option" data-avatar="xiaomei">
+                                <div class="avatar-option" data-avatar="xiaoning">
                                     <i class="fas fa-user"></i>
-                                    小美
+                                    晓宁
                                 </div>
-                                <div class="avatar-option" data-avatar="xiaoming">
+                                <div class="avatar-option" data-avatar="yidan">
                                     <i class="fas fa-user-graduate"></i>
-                                    小明
+                                    依丹
                                 </div>
-                                <div class="avatar-option" data-avatar="xiaoyu">
+                                <div class="avatar-option" data-avatar="yifan">
                                     <i class="fas fa-user-tie"></i>
-                                    小雨
+                                    伊凡
                                 </div>
-                                <div class="avatar-option" data-avatar="xiaogang">
+                                <div class="avatar-option" data-avatar="zelin">
                                     <i class="fas fa-user-ninja"></i>
-                                    小刚
+                                    泽林
                                 </div>
-                                <div class="avatar-option" data-avatar="xiaohong">
+                                <div class="avatar-option" data-avatar="fengyu">
                                     <i class="fas fa-user-friends"></i>
-                                    小红
+                                    风屿
                                 </div>
                             </div>
                         </div>
                         
+                        <!-- 应用按钮 -->
+                        <div class="apply-section">
+                            <button class="apply-btn" id="applyAvatar">
+                                <i class="fas fa-check-circle"></i> 应用人物形象
+                            </button>
+                        </div>
 
                         
                         <div class="action-buttons">
@@ -1574,10 +1618,11 @@
         const clearChatButton = document.getElementById('clearChat');
         const exportChatButton = document.getElementById('exportChat');
         const characterContainer = document.getElementById('characterContainer');
+        const applyAvatarButton = document.getElementById('applyAvatar');
         
         // 当前设置
         let currentRole = 'companion';
-        let currentAvatar = 'xiaowan';
+        let currentAvatar = 'xiaoyun';
         let currentVoice = 'zh-CN-XiaoxiaoNeural';
         
         // 语音识别相关变量
@@ -1611,7 +1656,7 @@
             apiKey: "62911d28b5b7013c52ec2ef3cc3ced71", // 讯飞API Key
             apiSecret: "ODcxM2QwNmQxMWQzMTQzYWUwNWNhN2Zm", // 讯飞API Secret
             sceneId: "241473910644805632", // 场景ID（原serviceId）
-            avatarId: "110022005", // 虚拟人ID
+            avatarId: "110022005", // 虚拟人ID - 默认为晓云
             
             // WebSocket连接配置
             serverUrl: "wss://avatar.cn-huadong-1.xf-yun.com/v1/interact",
@@ -1621,7 +1666,7 @@
                 protocol: "xrtc",
                 fps: 25,
                 bitrate: 1000000,
-                alpha: 1
+                alpha: 0
             },
             
             // 虚拟人配置
@@ -1633,7 +1678,7 @@
             
             // TTS配置
             tts: {
-                vcn: "x4_yiting",
+                vcn: "x4_yiting", // 默认为一婷
                 speed: 50,
                 pitch: 50,
                 volume: 100
@@ -1642,7 +1687,41 @@
             // 字幕配置
             subtitle: {
                 subtitle: 1,
-                font_color: "#ffffff"
+                font_color: "#000000"
+            }
+        };
+        
+        // 虚拟人物形象配置
+        const AVATAR_CONFIGS = {
+            xiaoyun: { // 晓云
+                avatarId: "110022005",
+                vcn: "x4_yiting",
+                displayName: "晓云"
+            },
+            xiaoning: { // 晓宁
+                avatarId: "110314007", 
+                vcn: "x4_yiting",
+                displayName: "晓宁"
+            },
+            yidan: { // 依丹
+                avatarId: "118801001", 
+                vcn: "x4_yiting",
+                displayName: "依丹"
+            },
+            yifan: { // 伊凡
+                avatarId: "110026013", 
+                vcn: "x4_yiting",
+                displayName: "伊凡"
+            },
+            zelin: { // 泽林
+                avatarId: "110017009", 
+                vcn: "x4_yiting",
+                displayName: "泽林"
+            },
+            fengyu: { // 风屿
+                avatarId: "111140001", 
+                vcn: "x4_yiting",
+                displayName: "风屿"
             }
         };
         
@@ -1713,6 +1792,128 @@
             
             updateVirtualHumanStatus('SDK已加载，可启动');
             console.log('启动按钮已启用');
+        }
+        
+        // 初始化虚拟人物形象选择器
+        function initAvatarSelector() {
+            console.log('初始化虚拟人物形象选择器...');
+            
+            // 获取所有虚拟人物形象选项
+            const avatarOptions = document.querySelectorAll('.avatar-option');
+            
+            // 为每个选项添加点击事件
+            avatarOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    // 移除所有选项的active类
+                    avatarOptions.forEach(opt => opt.classList.remove('active'));
+                    
+                    // 为当前点击的选项添加active类
+                    this.classList.add('active');
+                    
+                    // 更新当前选择的虚拟人物
+                    currentAvatar = this.getAttribute('data-avatar');
+                    console.log('选择了虚拟人物:', currentAvatar);
+                    
+                    // 显示当前选择的虚拟人物信息
+                    showMessage(`已选择虚拟人物: ${this.textContent.trim()}`, 'info');
+                });
+            });
+            
+            // 为应用按钮添加点击事件
+            if (applyAvatarButton) {
+                applyAvatarButton.addEventListener('click', applyAvatarConfig);
+            }
+            
+            console.log('虚拟人物形象选择器初始化完成');
+        }
+        
+        // 初始化虚拟人物形象选择器
+        function initAvatarSelector() {
+            console.log('初始化虚拟人物形象选择器...');
+            
+            // 获取所有虚拟人物形象选项
+            const avatarOptions = document.querySelectorAll('.avatar-option');
+            
+            // 为每个选项添加点击事件
+            avatarOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    // 移除所有选项的active类
+                    avatarOptions.forEach(opt => opt.classList.remove('active'));
+                    
+                    // 为当前点击的选项添加active类
+                    this.classList.add('active');
+                    
+                    // 更新当前选择的虚拟人物
+                    currentAvatar = this.getAttribute('data-avatar');
+                    console.log('选择了虚拟人物:', currentAvatar);
+                    
+                    // 显示当前选择的虚拟人物信息
+                    showMessage(`已选择虚拟人物: ${this.textContent.trim()}`, 'info');
+                });
+            });
+            
+            // 为应用按钮添加点击事件
+            if (applyAvatarButton) {
+                applyAvatarButton.addEventListener('click', applyAvatarConfig);
+            }
+            
+            console.log('虚拟人物形象选择器初始化完成');
+        }
+        
+        // 应用虚拟人物配置
+        function applyAvatarConfig() {
+            console.log('应用虚拟人物配置...');
+            
+            if (!currentAvatar) {
+                showMessage('请先选择一个虚拟人物形象', 'warning');
+                return;
+            }
+            
+            // 获取当前选择的虚拟人物配置
+            const avatarConfig = AVATAR_CONFIGS[currentAvatar];
+            
+            if (!avatarConfig.avatarId) {
+                console.error('虚拟人物配置不存在，currentAvatar:', currentAvatar, 'AVATAR_CONFIGS:', AVATAR_CONFIGS);
+                showMessage(`虚拟人物配置不存在，请选择有效的虚拟人物。当前选择: ${currentAvatar}`, 'error');
+                return;
+            }
+            
+            try {
+                // 更新XUNFEI_VIRTUAL_CONFIG的avatarId和tts.vcn
+                XUNFEI_VIRTUAL_CONFIG.avatarId = avatarConfig.avatarId;
+                XUNFEI_VIRTUAL_CONFIG.tts.vcn = avatarConfig.vcn;
+                
+                // 显示成功消息 - 添加空值检查
+                const avatarElement = document.querySelector(`.avatar-option[data-avatar="${currentAvatar}"]`);
+                if (!avatarElement) {
+                    console.warn(`找不到data-avatar为"${currentAvatar}"的元素`);
+                    showMessage(`已成功应用虚拟人物形象: ${avatarConfig.displayName || currentAvatar}`, 'success');
+                } else {
+                    const avatarName = avatarElement.textContent.trim();
+                    showMessage(`已成功应用虚拟人物形象: ${avatarName}`, 'success');
+                }
+                
+                // 打印配置信息到控制台
+                console.log('应用虚拟人物配置成功:', {
+                    avatarName: avatarName,
+                    avatarId: avatarConfig.avatarId,
+                    vcn: avatarConfig.vcn,
+                    config: XUNFEI_VIRTUAL_CONFIG
+                });
+                
+                // 如果虚拟人已经启动，则重新启动以应用新配置
+                if (isPlaying && interactiveSDK) {
+                    console.log('虚拟人正在运行，重新启动以应用新配置...');
+                    stopVirtualHuman();
+                    setTimeout(() => {
+                        startVirtualHuman();
+                    }, 1000);
+                }
+                
+            } catch (error) {
+                console.error('应用虚拟人物配置失败:', error);
+                showMessage('应用虚拟人物配置失败: ' + error.message, 'error');
+            }
         }
         
         // 手动启动虚拟人
@@ -1915,21 +2116,6 @@
         function initXunfeiVirtualHuman() {
             console.log('2 - 初始化讯飞虚拟人SDK...');
             
-            // 显示初始化状态
-            // characterContainer.innerHTML = `
-            //     <div style="text-align: center; padding: 30px; color: #4a5568;">
-            //         <i class="fas fa-cog" style="font-size: 48px; color: #5D8BF4; margin-bottom: 15px;"></i>
-            //         <h3 style="margin-bottom: 10px;">讯飞虚拟人SDK</h3>
-            //         <div style="text-align: left; background: #f8fafc; padding: 15px; border-radius: 8px; margin: 15px 0;">
-            //             <p><strong>SDK配置：</strong></p>
-            //             <p style="font-size: 12px; margin: 5px 0;">APPID: ${XUNFEI_VIRTUAL_CONFIG.appId}</p>
-            //             <p style="font-size: 12px; margin: 5px 0;">Avatar ID: ${XUNFEI_VIRTUAL_CONFIG.avatarId}</p>
-            //             <p style="font-size: 12px; margin: 5px 0;">场景ID: ${XUNFEI_VIRTUAL_CONFIG.sceneId}</p>
-            //             <p style="font-size: 12px; margin: 5px 0;">语音: ${XUNFEI_VIRTUAL_CONFIG.tts.vcn}</p>
-            //         </div>
-            //         <p style="font-size: 12px; color: #718096;">点击"初始化SDK"按钮开始使用</p>
-            //     </div>
-            // `;
             
             // 更新状态显示
             updateCharacterMode('SDK配置已加载');
@@ -2200,7 +2386,7 @@
             
             
             // 直接使用用户输入的avatar_id，不进行格式转换
-            let validAvatarId = avatarId;
+            let validAvatarId = XUNFEI_VIRTUAL_CONFIG.avatarId;
             console.log('使用用户输入的avatar_id:', validAvatarId);
             
             try {
@@ -2227,7 +2413,7 @@
                             protocol: 'xrtc', // 使用xrtc协议
                             fps: 25,
                             bitrate: 1000000,
-                            alpha: 1 // 按照demo项目默认关闭alpha通道
+                            alpha: 0 // 按照demo项目默认关闭alpha通道
                         },
                         avatar: {
                             avatar_id: validAvatarId, // 使用验证后的avatar_id
@@ -2243,11 +2429,15 @@
                         },
                         subtitle: {
                             subtitle: 1,
-                            font_color: '#ffffff'
+                            font_color: '#000000'
                         },
                         avatar_dispatch: { 
                             interactive_mode: 0, // 追加模式
                             content_analysis: 0 // 关闭情感分析
+                        },
+                        background:{
+                            type: "res_key",
+                            data:"22SLM2teIw+aqR6Xsm2JbH6Ng310kDam2NiCY/RQ9n6s3nYJXloZWW1l64/g32vrn7d2lJQR7m9xD5EHYkVs16oFeAIdJxfhcJdI3/gsHlIMTmwHH4xGujcXOoOQo7xJ2k6h6u/NWE4S1qn1dmM0I8bBk73t6WuNCAiVauPXd+zjg69oS5gO+hBuvFu3z1ChvDFY/BFHDvohHUc5YsKI430GQVcXSip6/BqURYCv/YYPRvrxm2F5/zMHIAqoWLB9qzOYvo+HYq87eYIICCLrl4uND8KR+nk29FBYTEZZf8HjvVILb9Uwf9fvnzsMVfMvFWW034XDm60aBPjFBnsMWaff3rIrBCgnvs8az/1Bcpo="
                         }
                     });
                 } else {
@@ -2300,7 +2490,7 @@
                         },
                         stream: {
                             protocol: 'xrtc',
-                            alpha: 1,
+                            alpha: 0,
                             bitrate: 1000000,
                             fps: 25
                         },
@@ -3048,15 +3238,15 @@
         let isXunfeiConnected = false;
         let isPlaying = false;
 
-        // 讯飞虚拟人配置
-        const XUNFEI_CONFIG = {
-            appId: "8b636816",
-            apiKey: "62911d28b5b7013c52ec2ef3cc3ced71",
-            apiSecret: "ODcxM2QwNmQxMWQzMTQzYWUwNWNhN2Zm",
-            sceneId: "241473910644805632",
-            avatarId: "110022005",
-            voice: "x4_yiting"
-        };
+        // 讯飞虚拟人配置 - 已迁移到 XUNFEI_VIRTUAL_CONFIG
+        // const XUNFEI_CONFIG = {
+        //     appId: "8b636816",
+        //     apiKey: "62911d28b5b7013c52ec2ef3cc3ced71",
+        //     apiSecret: "ODcxM2QwNmQxMWQzMTQzYWUwNWNhN2Zm",
+        //     sceneId: "241473910644805632",
+        //     avatarId: "110022005",
+        //     voice: "x4_yiting"
+        // };
 
         // 显示消息
         function showMessage(message, type = 'info') {
@@ -4124,6 +4314,9 @@
                 
                 // 初始化虚拟人物
                 initVirtualCharacter();
+                
+                // 初始化虚拟人物形象选择器
+                initAvatarSelector();
                 
                 // 启用发送按钮
                 if (sendButton) sendButton.disabled = false;
