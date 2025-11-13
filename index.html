@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>心屿 - 校园匿名心理支持平台</title>
+    <title>心屿 - AI心灵伙伴心理支持平台</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
@@ -257,7 +257,7 @@
             display: inline-flex;
             align-items: center;
             background: rgba(93, 139, 244, 0.1);
-            color: var(--ai-color);
+            color: #5D8BF4;
             padding: 5px 15px;
             border-radius: 20px;
             font-size: 0.9rem;
@@ -266,6 +266,226 @@
         
         .ai-badge i {
             margin-right: 5px;
+        }
+        
+        /* AI演示区域样式 */
+        .ai-intro {
+            padding: 80px 0;
+            background: #f8fafc;
+        }
+        
+        .ai-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .ai-demo {
+            display: flex;
+            gap: 40px;
+            align-items: stretch;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .ai-preview {
+            flex: 1;
+            background: white;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        
+        .ai-header {
+            background: var(--ai-gradient);
+            color: white;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .ai-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: var(--ai-color);
+            font-size: 28px;
+        }
+        
+        .ai-info h3 {
+            margin-bottom: 5px;
+            font-size: 1.3rem;
+        }
+        
+        .ai-status {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .ai-body {
+            padding: 20px;
+            min-height: 200px;
+            background: #f8fafc;
+        }
+        
+        .ai-message {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .message-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .message-content .avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: var(--ai-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-right: 10px;
+        }
+        
+        .message-info {
+            flex: 1;
+        }
+        
+        .message-content .user-name {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        
+        .message-time {
+            font-size: 0.8rem;
+            color: var(--light-text);
+        }
+        
+        .message-text {
+            line-height: 1.6;
+            color: var(--text-color);
+        }
+        
+        .ai-controls {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+        }
+        
+        .mode-selector {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        
+        .mode-option {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .mode-option:hover {
+            border-color: var(--ai-color);
+        }
+        
+        .mode-option.active {
+            border-color: var(--ai-color);
+            background: rgba(93, 139, 244, 0.1);
+        }
+        
+        .mode-option i {
+            color: var(--ai-color);
+        }
+        
+        /* AI演示区域样式 */
+        .ai-demo-section {
+            padding: 80px 0;
+            background: linear-gradient(135deg, #f0f4f8 0%, #e8f0f8 100%);
+        }
+        
+        .ai-demo-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .ai-demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+        
+        .demo-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s;
+        }
+        
+        .demo-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .demo-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: var(--ai-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+        }
+        
+        .demo-card h3 {
+            margin-bottom: 15px;
+            color: var(--text-color);
+            font-size: 1.2rem;
+        }
+        
+        .cta-section {
+            text-align: center;
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: var(--shadow);
+        }
+        
+        .cta-section h3 {
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+            color: var(--text-color);
+        }
+        
+        .cta-section p {
+            margin-bottom: 25px;
+            color: var(--light-text);
+            font-size: 1.1rem;
         }
         
         /* 功能区域 */
@@ -313,7 +533,7 @@
         }
         
         .ai-feature .feature-icon {
-            background: var(--ai-color);
+            background: linear-gradient(135deg, #5D8BF4, #8EC5FC);
         }
         
         .feature-card h3 {
@@ -642,6 +862,41 @@
             .ai-demo {
                 flex-direction: column;
             }
+            
+            .ai-demo-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .ai-preview {
+                min-height: auto;
+                margin-bottom: 20px;
+            }
+            
+            .ai-controls {
+                min-width: auto;
+            }
+            
+            .demo-card {
+                padding: 20px;
+            }
+            
+            .demo-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+            }
+            
+            .cta-section {
+                padding: 25px;
+            }
+            
+            .cta-section h3 {
+                font-size: 1.2rem;
+            }
+            
+            .cta-section p {
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
@@ -655,10 +910,10 @@
                     <span>心屿</span>
                 </a>
                 <ul class="nav-links">
-                    <li><a href="index.html">首页</a></li>
+                    <li><a href="index.html" class="active">首页</a></li>
                     <li><a href="ai-companion.html">AI心灵伙伴</a></li>
-                    <li><a href="treehole.html">树洞</a></li>
-                    <li><a href="knowledge-base.html">咨询库</a></li>
+                    <li><a href="treehole.html">匿名树洞</a></li>
+                    <li><a href="knowledge-base.html">心理知识库</a></li>
                     <li><a href="profile.html">个人中心</a></li>
                 </ul>
                 <div class="auth-buttons" id="auth-buttons">
@@ -695,12 +950,12 @@
     <!-- 主要内容区域 -->
     <section class="hero">
         <div class="container hero-content">
-            <h1>你的心事，有回响，不被遗忘</h1>
-            <p>心屿是一个专为大学生设计的匿名心理支持平台，在这里你可以倾诉烦恼、寻求支持，找到温暖和理解。</p>
-            <button class="btn btn-primary">立即体验AI心灵伙伴</button>
+            <h1>你的AI心灵伙伴，随时倾听，理解陪伴</h1>
+            <p>心屿是一个专为大学生设计的AI心理支持平台，通过先进的虚拟人技术和智能对话AI，为你提供24小时在线的心理陪伴和情感支持。</p>
+            <button class="btn btn-primary" onclick="window.location.href='ai-companion.html'">立即体验AI心灵伙伴</button>
             <div class="ai-badge">
                 <i class="fas fa-robot"></i>
-                <span>全新AI虚拟人技术，24小时温暖陪伴</span>
+                <span>AI虚拟人 · 智能对话 · 专业支持</span>
             </div>
         </div>
     </section>
@@ -715,81 +970,82 @@
                         <i class="fas fa-robot"></i>
                     </div>
                     <h3>AI心灵伙伴</h3>
-                    <p>基于先进AI技术的虚拟陪伴者，24小时在线倾听，提供个性化情感支持。</p>
+                    <p>24小时在线的智能AI伙伴，通过自然语言对话为你提供情感支持和心理陪伴。</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <i class="fas fa-comment-dots"></i>
+                        <i class="fas fa-user-astronaut"></i>
                     </div>
-                    <h3>匿名倾诉</h3>
-                    <p>完全匿名的环境，让你可以毫无顾虑地分享内心真实的感受和想法。</p>
+                    <h3>虚拟人技术</h3>
+                    <p>先进的虚拟人形象，逼真的面部表情和肢体语言，让对话更加自然真实。</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <i class="fas fa-hands-helping"></i>
+                        <i class="fas fa-brain"></i>
                     </div>
-                    <h3>温暖回应</h3>
-                    <p>获得来自同伴的"拥抱"和"倾听"，感受被理解和支持的温暖。</p>
+                    <h3>智能对话</h3>
+                    <p>基于深度学习的对话系统，能够理解复杂情感并提供个性化回应。</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <i class="fas fa-book"></i>
+                        <i class="fas fa-heartbeat"></i>
                     </div>
-                    <h3>情绪日记</h3>
-                    <p>记录每日情绪变化，追踪心理状态，更好地了解自己的情绪模式。</p>
+                    <h3>情感分析</h3>
+                    <p>实时分析你的情绪状态，提供精准的情感支持和心理建议。</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <i class="fas fa-spa"></i>
+                        <i class="fas fa-shield-alt"></i>
                     </div>
-                    <h3>正念练习</h3>
-                    <p>提供专业的正念冥想音频，帮助你缓解焦虑、改善睡眠质量。</p>
+                    <h3>隐私安全</h3>
+                    <p>端到端加密技术，确保你的对话内容和个人隐私得到充分保护。</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <i class="fas fa-user-md"></i>
+                        <i class="fas fa-chart-line"></i>
                     </div>
-                    <h3>专业支持</h3>
-                    <p>连接校园心理咨询资源，在需要时获得专业的心理援助。</p>
+                    <h3>情绪追踪</h3>
+                    <p>记录你的情绪变化趋势，帮助你更好地了解和管理自己的情感状态。</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- AI虚拟人区域 -->
-    <section class="ai-companion" id="ai-companion">
+    <!-- AI心灵伙伴介绍区域 -->
+    <section class="ai-intro" id="ai-intro">
         <div class="container">
-            <h2 class="section-title">AI心灵伙伴</h2>
+            <h2 class="section-title">为什么选择AI心灵伙伴</h2>
             <p style="text-align: center; max-width: 800px; margin: 0 auto 40px; color: var(--light-text);">
-                与我们的AI心灵伙伴对话，选择你喜欢的角色和声音，获得24小时不间断的温暖陪伴和专业支持。
+                AI心灵伙伴结合了先进的虚拟人技术和智能对话AI，为你提供专业、贴心的心理支持服务。
             </p>
             
             <div class="ai-container">
                 <div class="ai-demo">
-                    <div class="ai-chat-window">
-                        <div class="ai-chat-header">
-                            <div class="ai-avatar">
+                    <div class="ai-preview">
+                        <div class="ai-header">
+                            <div class="ai-icon">
                                 <i class="fas fa-robot"></i>
                             </div>
                             <div class="ai-info">
-                                <h3 id="ai-name">知心学长</h3>
-                                <div class="ai-status" id="ai-status">在线 · 正在倾听</div>
+                                <h3 id="ai-name">心灵助手</h3>
+                                <div class="ai-status" id="ai-status">在线 · 智能 · 贴心</div>
                             </div>
                         </div>
-                        <div class="ai-chat-body" id="chat-body">
-                            <div class="message ai-message">
+                        <div class="ai-body" id="ai-body">
+                            <div class="ai-message">
                                 <div class="message-content">
-                                    你好，我是你的AI心灵伙伴。无论你有什么烦恼或心事，都可以向我倾诉。我会在这里陪伴你，倾听你的故事。
-                                </div>
-                            </div>
-                            <div class="message user-message">
-                                <div class="message-content">
-                                    最近学习压力好大，感觉有点撑不住了...
-                                </div>
-                            </div>
-                            <div class="message ai-message">
-                                <div class="message-content">
-                                    我能理解你的感受。面对压力时，我们常常会感到无助和疲惫。你愿意和我分享一下具体是什么让你感到压力吗？
+                                    <div class="message-header">
+                                        <div class="avatar">
+                                            <i class="fas fa-robot"></i>
+                                        </div>
+                                        <div class="message-info">
+                                            <div class="user-name">心灵助手</div>
+                                            <div class="message-time">正在输入...</div>
+                                        </div>
+                                    </div>
+                                    <div class="message-text">
+                                        你好！我是你的AI心灵伙伴，随时准备倾听你的心声，为你提供情感支持和专业建议。
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -797,56 +1053,56 @@
                     
                     <div class="ai-controls">
                         <div class="control-group">
-                            <h4>选择伙伴角色</h4>
-                            <div class="role-selector">
-                                <div class="role-option active" data-role="知心学长">
-                                    <i class="fas fa-user-graduate"></i>
-                                    <div>知心学长</div>
+                            <h4>AI特色功能</h4>
+                            <div class="feature-selector">
+                                <div class="feature-option active" data-feature="智能对话">
+                                    <i class="fas fa-comments"></i>
+                                    <div>智能对话</div>
                                 </div>
-                                <div class="role-option" data-role="专业心理师">
+                                <div class="feature-option" data-feature="情感分析">
+                                    <i class="fas fa-heart"></i>
+                                    <div>情感分析</div>
+                                </div>
+                                <div class="feature-option" data-feature="虚拟人">
+                                    <i class="fas fa-user-astronaut"></i>
+                                    <div>虚拟人</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="control-group">
+                            <h4>对话模式</h4>
+                            <div class="mode-selector">
+                                <div class="mode-option active" data-mode="心灵伙伴">
+                                    <i class="fas fa-heart"></i>
+                                    <div>心灵伙伴</div>
+                                </div>
+                                <div class="mode-option" data-mode="专业顾问">
                                     <i class="fas fa-user-md"></i>
-                                    <div>专业心理师</div>
+                                    <div>专业顾问</div>
                                 </div>
-                                <div class="role-option" data-role="温暖朋友">
-                                    <i class="fas fa-user-friends"></i>
-                                    <div>温暖朋友</div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="control-group">
-                            <h4>选择声音</h4>
-                            <div class="voice-selector">
-                                <div class="voice-option active" data-voice="温暖女声">
-                                    <i class="fas fa-female"></i>
-                                    <div>温暖女声</div>
-                                </div>
-                                <div class="voice-option" data-voice="沉稳男声">
-                                    <i class="fas fa-male"></i>
-                                    <div>沉稳男声</div>
-                                </div>
-                                <div class="voice-option" data-voice="青春同龄">
-                                    <i class="fas fa-user"></i>
-                                    <div>青春同龄</div>
+                                <div class="mode-option" data-mode="朋友聊天">
+                                    <i class="fas fa-users"></i>
+                                    <div>朋友聊天</div>
                                 </div>
                             </div>
                         </div>
                         
                         <div class="control-group">
-                            <h4>对话设置</h4>
+                            <h4>开始对话</h4>
                             <div style="display: flex; gap: 10px;">
-                                <button class="btn" style="background: var(--ai-color); color: white; flex: 1;">
-                                    <i class="fas fa-microphone"></i> 语音对话
+                                <button class="btn" style="background: #5D8BF4; color: white; flex: 1;" onclick="window.location.href='ai-companion.html'">
+                                    <i class="fas fa-comment-dots"></i> 文字对话
                                 </button>
                                 <button class="btn" style="background: #f0f4f8; color: var(--text-color); flex: 1;">
-                                    <i class="fas fa-keyboard"></i> 文字输入
+                                    <i class="fas fa-microphone"></i> 语音对话
                                 </button>
                             </div>
                         </div>
                         
                         <div class="control-group">
-                            <button class="btn" style="background: var(--gradient); color: white; width: 100%; padding: 12px;">
-                                <i class="fas fa-comments"></i> 开始与AI伙伴对话
+                            <button class="btn" style="background: linear-gradient(135deg, #5D8BF4, #8EC5FC); color: white; width: 100%; padding: 12px;" onclick="window.location.href='ai-companion.html'">
+                                <i class="fas fa-robot"></i> 立即体验AI心灵伙伴
                             </button>
                         </div>
                     </div>
@@ -855,83 +1111,48 @@
         </div>
     </section>
 
-    <!-- 树洞预览区域 -->
-    <section class="treehole-preview" id="treehole">
+    <!-- AI虚拟人演示区域 -->
+    <section class="ai-demo-section" id="ai-demo">
         <div class="container">
-            <h2 class="section-title">匿名树洞</h2>
-            <div class="posts-container">
-                <div class="post-card">
-                    <div class="post-header">
-                        <div class="avatar">
-                            <i class="fas fa-user"></i>
+            <h2 class="section-title">AI虚拟人技术演示</h2>
+            <div class="ai-demo-container">
+                <div class="ai-demo-grid">
+                    <div class="demo-card">
+                        <div class="demo-icon">
+                            <i class="fas fa-user-astronaut"></i>
                         </div>
-                        <div class="post-info">
-                            <div class="user-name">匿名小鲸鱼</div>
-                            <div class="post-time">2小时前</div>
-                        </div>
+                        <h3>逼真形象</h3>
+                        <p>采用最先进的虚拟人技术，提供高度逼真的虚拟形象，让对话更加自然亲切。</p>
                     </div>
-                    <div class="post-content">
-                        最近考研压力好大，感觉自己怎么学都学不完，看到同学们进度都比我快，真的好焦虑。晚上也睡不好，白天没精神，恶性循环了...
+                    <div class="demo-card">
+                        <div class="demo-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <h3>智能对话</h3>
+                        <p>基于深度学习的智能对话系统，能够理解复杂情感并提供个性化回应。</p>
                     </div>
-                    <div class="post-tags">
-                        <span class="tag">#学业压力</span>
-                        <span class="tag">#焦虑</span>
+                    <div class="demo-card">
+                        <div class="demo-icon">
+                            <i class="fas fa-heartbeat"></i>
+                        </div>
+                        <h3>情感识别</h3>
+                        <p>实时分析用户情绪状态，提供精准的情感支持和心理建议。</p>
                     </div>
-                    <div class="post-actions">
-                        <div class="action-btn">
-                            <i class="fas fa-hands"></i>
-                            <span>拥抱 (24)</span>
+                    <div class="demo-card">
+                        <div class="demo-icon">
+                            <i class="fas fa-shield-alt"></i>
                         </div>
-                        <div class="action-btn">
-                            <i class="fas fa-ear-listen"></i>
-                            <span>倾听 (18)</span>
-                        </div>
-                        <div class="action-btn">
-                            <i class="fas fa-comment"></i>
-                            <span>回应 (12)</span>
-                        </div>
-                        <div class="action-btn">
-                            <i class="fas fa-robot"></i>
-                            <span>AI建议</span>
-                        </div>
+                        <h3>隐私保护</h3>
+                        <p>严格的隐私保护机制，确保对话内容和个人信息安全。</p>
                     </div>
                 </div>
                 
-                <div class="post-card">
-                    <div class="post-header">
-                        <div class="avatar">
-                            <i class="fas fa-user"></i>
-                        </div>
-                        <div class="post-info">
-                            <div class="user-name">匿名小星星</div>
-                            <div class="post-time">1天前</div>
-                        </div>
-                    </div>
-                    <div class="post-content">
-                        和室友关系处不好，感觉被孤立了。每次回到宿舍气氛都很尴尬，想换宿舍又不知道该怎么开口。一个人吃饭，一个人上课，真的好孤独。
-                    </div>
-                    <div class="post-tags">
-                        <span class="tag">#人际关系</span>
-                        <span class="tag">#孤独感</span>
-                    </div>
-                    <div class="post-actions">
-                        <div class="action-btn">
-                            <i class="fas fa-hands"></i>
-                            <span>拥抱 (42)</span>
-                        </div>
-                        <div class="action-btn">
-                            <i class="fas fa-ear-listen"></i>
-                            <span>倾听 (31)</span>
-                        </div>
-                        <div class="action-btn">
-                            <i class="fas fa-comment"></i>
-                            <span>回应 (25)</span>
-                        </div>
-                        <div class="action-btn">
-                            <i class="fas fa-robot"></i>
-                            <span>AI建议</span>
-                        </div>
-                    </div>
+                <div class="cta-section">
+                    <h3>立即体验先进的AI心灵伙伴</h3>
+                    <p>感受科技带来的温暖陪伴</p>
+                    <button class="btn btn-primary" onclick="window.location.href='ai-companion.html'">
+                        <i class="fas fa-play"></i> 开始体验
+                    </button>
                 </div>
             </div>
         </div>
